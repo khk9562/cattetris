@@ -1,4 +1,4 @@
-import { useCallback, useRef } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import styles from './Controls.module.css';
 
 interface Props {
@@ -23,6 +23,13 @@ export default function Controls({ onLeft, onRight, onRotate, onSoftDrop }: Prop
     }
   }, []);
 
+  useEffect(() => {
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+    };
+  }, []);
 
   return (
     <footer className={styles.footer}>
