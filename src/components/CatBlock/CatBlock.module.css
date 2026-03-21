@@ -120,9 +120,11 @@
 .calico {
   background-color: #ffffff;
   background-image:
-    radial-gradient(circle at 10% 10%, #ff9d00 30%, transparent 40%),
-    radial-gradient(circle at 80% 90%, #3a3a3a 30%, transparent 40%),
-    radial-gradient(circle at 50% 30%, #ff9d00 15%, transparent 25%);
+    radial-gradient(circle at 20px 20px, #ff9d00 15px, transparent 18px),
+    radial-gradient(circle at 60px 70px, #3a3a3a 18px, transparent 20px),
+    radial-gradient(circle at 100px 30px, #ff9d00 12px, transparent 15px);
+  background-size: 130px 130px;
+  background-attachment: fixed;
 }
 .calico .earLeft { background-color: #ff9d00; }
 .calico .earRight { background-color: #3a3a3a; }
@@ -152,10 +154,11 @@
   background-image: repeating-linear-gradient(
     45deg,
     transparent,
-    transparent 10px,
-    #e88d14 10px,
-    #e88d14 18px
+    transparent 15px,
+    #e88d14 15px,
+    #e88d14 25px
   );
+  background-attachment: fixed;
 }
 .ginger .earLeft, .ginger .earRight { background-color: #ffb03a; }
 .ginger .tail { border-color: #e88d14; }
@@ -166,10 +169,11 @@
   background-image: repeating-linear-gradient(
     -45deg,
     transparent,
-    transparent 12px,
-    #7a5230 12px,
-    #7a5230 20px
+    transparent 15px,
+    #7a5230 15px,
+    #7a5230 25px
   );
+  background-attachment: fixed;
 }
 .tabby .earLeft, .tabby .earRight { background-color: #c8956c; }
 .tabby .tail { border-color: #7a5230; }
