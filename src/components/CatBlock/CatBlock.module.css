@@ -4,35 +4,41 @@
   position: relative;
   overflow: visible;
   z-index: 0;
+  transition: all 0.2s;
 }
 
 .ghost {
-  border: 1px dashed;
-  opacity: 0.3;
-  background-color: transparent !important;
+  border: 2px dashed rgba(255,255,255,0.4) !important;
+  opacity: 0.4;
+  background: transparent !important;
+  box-shadow: none !important;
 }
 
-/* --- Ears: two triangles positioned from .block --- */
+/* --- Ears --- */
 .earLeft,
 .earRight {
   position: absolute;
-  top: -40%;
-  width: 30%;
-  height: 40%;
-  clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
-  z-index: 3;
+  top: -20%;
+  width: 38%;
+  height: 35%;
+  border-radius: 40% 40% 10% 10% / 60% 60% 10% 10%;
+  background-color: inherit;
+  z-index: -1;
   pointer-events: none;
+  box-shadow: inset 0 2px 3px rgba(255,255,255,0.2);
 }
 
 .earLeft {
-  left: 15%;
+  left: 8%;
+  transform: rotate(-20deg);
 }
 
 .earRight {
-  right: 15%;
+  right: 8%;
+  transform: rotate(20deg);
 }
 
-/* --- Face: fills most of the cell --- */
+/* --- Face --- */
 .face {
   position: absolute;
   inset: 0;
@@ -40,7 +46,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 6%;
+  gap: 8%;
   z-index: 2;
   pointer-events: none;
 }
@@ -48,56 +54,154 @@
 .eyes {
   display: flex;
   gap: 30%;
+  z-index: 3;
 }
 
 .eye {
-  width: 22%;
+  width: 20%;
   aspect-ratio: 1;
   border-radius: 50%;
   background-color: #322f22;
-  min-width: 2px;
-  min-height: 2px;
+  min-width: 3px;
+  min-height: 3px;
 }
 
-/* Mouth: two arcs = ω shape */
+.lightEye {
+  background-color: #fce83a !important; /* Yellow eyes for black cats */
+}
+
 .mouth {
   display: flex;
+  z-index: 3;
 }
 
 .mouthArc {
   width: 22%;
   aspect-ratio: 4 / 3;
-  border-bottom: 1px solid #322f22;
-  border-left: 1px solid #322f22;
-  border-right: 1px solid #322f22;
+  border-bottom: 2px solid #322f22;
+  border-left: 2px solid #322f22;
+  border-right: 2px solid #322f22;
   border-top: none;
   border-radius: 0 0 50% 50%;
-  min-width: 3px;
+  min-width: 4px;
   min-height: 2px;
 }
 
-.light {
-  background-color: transparent;
+.lightMouth {
   border-color: #d0d0d0 !important;
 }
 
-.eye.light {
-  background-color: #d0d0d0;
-}
-
-/* --- Tail: thick curved line --- */
+/* --- Tail --- */
 .tail {
   position: absolute;
-  bottom: 0;
-  right: -50%;
-  width: 50%;
+  bottom: 10%;
+  right: -55%;
+  width: 60%;
   height: 70%;
-  border-right: 3px solid;
-  border-top: 3px solid;
+  border: 8px solid;
+  border-color: inherit;
   border-bottom: none;
   border-left: none;
-  border-radius: 0 70% 0 0;
-  z-index: 3;
+  border-radius: 0 60% 0 0;
+  z-index: -1;
   pointer-events: none;
   background: transparent;
+  filter: drop-shadow(0 2px 2px rgba(0,0,0,0.2));
+  transform-origin: bottom left;
+  transform: rotate(5deg);
 }
+
+/* =========================================
+   Breed Specific Styles
+   ========================================= */
+
+/* 1. Calico (삼색고양이) */
+.calico {
+  background-color: #ffffff;
+  background-image:
+    radial-gradient(circle at 10% 10%, #ff9d00 30%, transparent 40%),
+    radial-gradient(circle at 80% 90%, #3a3a3a 30%, transparent 40%),
+    radial-gradient(circle at 50% 30%, #ff9d00 15%, transparent 25%);
+}
+.calico .earLeft { background-color: #ff9d00; }
+.calico .earRight { background-color: #3a3a3a; }
+.calico .tail { border-color: #3a3a3a; }
+
+/* 2. Tuxedo (턱시도고양이) */
+.tuxedo {
+  background-color: #2b2b2b;
+}
+.tuxedo .face::before {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  width: 85%;
+  height: 65%;
+  background: white;
+  border-radius: 50% 50% 10% 10%;
+  z-index: 1;
+}
+.tuxedo .earLeft, .tuxedo .earRight { background-color: #2b2b2b; }
+.tuxedo .tail { border-color: white; }
+.tuxedo .mouthArc { z-index: 3; }
+
+/* 3. Ginger (치즈냥이) */
+.ginger {
+  background-color: #ffb03a;
+  background-image: repeating-linear-gradient(
+    45deg,
+    transparent,
+    transparent 10px,
+    #e88d14 10px,
+    #e88d14 18px
+  );
+}
+.ginger .earLeft, .ginger .earRight { background-color: #ffb03a; }
+.ginger .tail { border-color: #e88d14; }
+
+/* 4. Tabby (고등어 - 브라운 줄무늬) */
+.tabby {
+  background-color: #c8956c;
+  background-image: repeating-linear-gradient(
+    -45deg,
+    transparent,
+    transparent 12px,
+    #7a5230 12px,
+    #7a5230 20px
+  );
+}
+.tabby .earLeft, .tabby .earRight { background-color: #c8956c; }
+.tabby .tail { border-color: #7a5230; }
+
+/* 5. Black (까만고양이) */
+.black {
+  background-color: #242424;
+}
+.black .earLeft, .black .earRight { background-color: #242424; }
+.black .tail { border-color: #242424; }
+/* .lightEye / .lightMouth handles the bright eyes for black cat automatically in CatBlock.tsx */
+
+/* 6. Siamese (샴고양이) */
+.siamese {
+  background-color: #f5e6d0;
+}
+.siamese .face::before {
+  content: "";
+  position: absolute;
+  width: 75%;
+  height: 70%;
+  background: radial-gradient(circle at 50% 50%, #4a3b32 40%, transparent 70%);
+  z-index: 1;
+}
+.siamese .earLeft, .siamese .earRight { background-color: #4a3b32; }
+.siamese .tail { border-color: #4a3b32; }
+.siamese .eye { background-color: #5ab1f5 !important; }
+.siamese .mouthArc { border-color: white !important; z-index: 3; }
+
+/* 7. Russian Blue (러시안블루) */
+.russianBlue {
+  background-color: #8c9fae;
+}
+.russianBlue .earLeft, .russianBlue .earRight { background-color: #8c9fae; }
+.russianBlue .tail { border-color: #8c9fae; }
+.russianBlue .eye { background-color: #90ee90 !important; }
