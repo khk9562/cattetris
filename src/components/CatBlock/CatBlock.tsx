@@ -47,10 +47,10 @@ export default function CatBlock({ catType, ghost, conn, showFace, showEars, sho
       }}
     >
       {showEars && !ghost && (
-        <div className={styles.ears}>
-          <div className={styles.ear} style={{ backgroundColor: color }} />
-          <div className={styles.ear} style={{ backgroundColor: color }} />
-        </div>
+        <>
+          <div className={styles.earLeft} style={{ backgroundColor: color }} />
+          <div className={styles.earRight} style={{ backgroundColor: color }} />
+        </>
       )}
       {showFace && !ghost && (
         <div className={styles.face}>

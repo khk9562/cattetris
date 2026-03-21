@@ -12,22 +12,24 @@
   background-color: transparent !important;
 }
 
-/* --- Ears: clip-path triangle (% works here) --- */
-.ears {
+/* --- Ears: two triangles positioned from .block --- */
+.earLeft,
+.earRight {
   position: absolute;
-  top: -45%;
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  gap: 15%;
+  top: -40%;
+  width: 30%;
+  height: 40%;
+  clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
   z-index: 3;
   pointer-events: none;
 }
 
-.ear {
-  width: 35%;
-  aspect-ratio: 1;
-  clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+.earLeft {
+  left: 15%;
+}
+
+.earRight {
+  right: 15%;
 }
 
 /* --- Face: fills most of the cell --- */
