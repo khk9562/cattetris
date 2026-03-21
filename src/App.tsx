@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useGame } from './game/useGame';
 import Header from './components/Header/Header';
 import StatsHUD from './components/StatsHUD/StatsHUD';
@@ -9,6 +9,7 @@ import styles from './App.module.css';
 
 export default function App() {
   const game = useGame();
+  const [showGhost, setShowGhost] = useState(true);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -27,12 +28,12 @@ export default function App() {
           e.preventDefault();
           game.moveDown();
           break;
-        case 'Enter':
-        case 'ArrowUp':
-          e.preventDefault();
-          game.rotate();
-          break;
         case 'Space':
+        case 'ArrowUp':
+            e.preventDefault();
+            game.rotate();
+            break;
+        case 'Enter':
           e.preventDefault();
           game.hardDrop();
           break;
@@ -45,7 +46,13 @@ export default function App() {
 
   return (
     <div className={styles.app}>
-      <Header elapsedTime={game.elapsedTime} status={game.status} onTogglePause={game.togglePause} />
+      <Header 
+        elapsedTime={game.elapsedTime} 
+        status={game.status} 
+        onTogglePause={game.togglePause} 
+        showGhost={showGhost}
+        onToggleGhost={() => setShowGhost(!showGhost)}
+      />
 
       <main className={styles.main}>
         {game.status === 'ready' && (
@@ -102,7 +109,7 @@ export default function App() {
         </div>
 
         <div className={styles.boardArea}>
-          <Board board={game.board} currentPiece={game.currentPiece} ghostPiece={game.ghostPiece} />
+          <Board board={game.board} currentPiece={game.currentPiece} ghostPiece={showGhost ? game.ghostPiece : null} />
         </div>
       </main>
 

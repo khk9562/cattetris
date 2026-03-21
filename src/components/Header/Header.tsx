@@ -5,9 +5,11 @@ interface Props {
   elapsedTime: number;
   status: GameStatus;
   onTogglePause: () => void;
+  showGhost: boolean;
+  onToggleGhost: () => void;
 }
 
-export default function Header({ elapsedTime, status, onTogglePause }: Props) {
+export default function Header({ elapsedTime, status, onTogglePause, showGhost, onToggleGhost }: Props) {
   const minutes = String(Math.floor(elapsedTime / 60)).padStart(2, '0');
   const seconds = String(elapsedTime % 60).padStart(2, '0');
   const showPause = status === 'playing' || status === 'paused';
@@ -18,18 +20,25 @@ export default function Header({ elapsedTime, status, onTogglePause }: Props) {
         <span className="material-symbols-outlined" style={{ color: 'var(--color-primary)', fontSize: '1.5rem' }}>pets</span>
         <h1 className={styles.title}>Cat Tetris</h1>
       </div>
-      {showPause ? (
-        <button className={styles.timerBtn} onClick={onTogglePause}>
-          <span className={styles.timerText}>{minutes}:{seconds}</span>
+      <div className={styles.controlsGroup}>
+        <button className={styles.iconBtn} onClick={onToggleGhost} aria-label="Toggle Preview Shadow">
           <span className="material-symbols-outlined" style={{ fontSize: '1.25rem' }}>
-            {status === 'paused' ? 'play_arrow' : 'pause'}
+            {showGhost ? 'visibility' : 'visibility_off'}
           </span>
         </button>
-      ) : (
-        <div className={styles.timer}>
-          {minutes}:{seconds}
-        </div>
-      )}
+        {showPause ? (
+          <button className={styles.timerBtn} onClick={onTogglePause}>
+            <span className={styles.timerText}>{minutes}:{seconds}</span>
+            <span className="material-symbols-outlined" style={{ fontSize: '1.25rem' }}>
+              {status === 'paused' ? 'play_arrow' : 'pause'}
+            </span>
+          </button>
+        ) : (
+          <div className={styles.timer}>
+            {minutes}:{seconds}
+          </div>
+        )}
+      </div>
     </header>
   );
 }

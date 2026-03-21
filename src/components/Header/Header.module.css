@@ -63,3 +63,28 @@
 .timerText {
   font-variant-numeric: tabular-nums;
 }
+
+.controlsGroup {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.iconBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-primary);
+  background-color: var(--color-surface-container-high);
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform 75ms, background-color 0.2s;
+}
+
+.iconBtn:active {
+  transform: scale(0.95);
+}

@@ -8,10 +8,11 @@
 }
 
 .ghost {
-  border: 2px dashed rgba(255,255,255,0.4) !important;
-  opacity: 0.4;
-  background: transparent !important;
-  box-shadow: none !important;
+  background-image: none !important;
+  background-color: transparent !important;
+  box-shadow: inset 0 0 0 3px rgba(0, 0, 0, 0.35) !important;
+  opacity: 1 !important;
+  border-radius: 0.35rem !important;
 }
 
 /* --- Ears --- */
