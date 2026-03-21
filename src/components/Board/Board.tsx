@@ -9,6 +9,17 @@ interface Props {
   ghostPiece: ActivePiece | null;
 }
 
+function findFaceCell(piece: ActivePiece): { fx: number; fy: number } | null {
+  for (let row = 0; row < piece.shape.length; row++) {
+    for (let col = 0; col < piece.shape[row].length; col++) {
+      if (piece.shape[row][col]) {
+        return { fx: piece.position.x + col, fy: piece.position.y + row };
+      }
+    }
+  }
+  return null;
+}
+
 export default function Board({ board, currentPiece, ghostPiece }: Props) {
   const renderBoard = board.map(row => [...row]);
 
@@ -42,6 +53,8 @@ export default function Board({ board, currentPiece, ghostPiece }: Props) {
     }
   }
 
+  const faceCell = currentPiece ? findFaceCell(currentPiece) : null;
+
   return (
     <div className={styles.wrapper}>
       <div className={styles.shelfTop} />
@@ -51,9 +64,7 @@ export default function Board({ board, currentPiece, ghostPiece }: Props) {
           row.map((cell, x) => {
             const isGhost = typeof cell === 'string' && cell.startsWith('ghost_');
             const catType = isGhost ? cell.replace('ghost_', '') : cell;
-            const isFirstOfPiece = currentPiece &&
-              y === currentPiece.position.y &&
-              x === currentPiece.position.x;
+            const hasFace = faceCell && x === faceCell.fx && y === faceCell.fy;
 
             return (
               <div key={`${y}-${x}`} className={styles.cell}>
@@ -61,7 +72,7 @@ export default function Board({ board, currentPiece, ghostPiece }: Props) {
                   <CatBlock
                     catType={catType as any}
                     ghost={isGhost}
-                    showFace={!!isFirstOfPiece}
+                    showFace={!!hasFace}
                   />
                 ) : null}
               </div>

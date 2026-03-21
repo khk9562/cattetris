@@ -9,6 +9,14 @@ interface Props {
 export default function NextPreview({ piece }: Props) {
   const shape = piece.shapes[0];
 
+  // Find first filled cell for face
+  let faceY = -1, faceX = -1;
+  outer: for (let r = 0; r < shape.length; r++) {
+    for (let c = 0; c < shape[r].length; c++) {
+      if (shape[r][c]) { faceY = r; faceX = c; break outer; }
+    }
+  }
+
   return (
     <div className={styles.container}>
       <p className={styles.label}>Next</p>
@@ -22,7 +30,7 @@ export default function NextPreview({ piece }: Props) {
         {shape.map((row, y) =>
           row.map((cell, x) => (
             <div key={`${y}-${x}`} className={styles.cell}>
-              {cell ? <CatBlock catType={piece.catType} showFace={y === 0 && x === 0} /> : null}
+              {cell ? <CatBlock catType={piece.catType} showFace={y === faceY && x === faceX} /> : null}
             </div>
           ))
         )}
