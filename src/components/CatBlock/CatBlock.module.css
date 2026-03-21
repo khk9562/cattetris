@@ -12,74 +12,66 @@
   background-color: transparent !important;
 }
 
-/* --- Ears --- */
+/* --- Ears: clip-path triangle (% works here) --- */
 .ears {
   position: absolute;
-  top: -30%;
+  top: -45%;
   left: 50%;
   transform: translateX(-50%);
   display: flex;
-  gap: 10%;
+  gap: 15%;
   z-index: 3;
   pointer-events: none;
 }
 
 .ear {
-  width: 0;
-  height: 0;
-  border-left: 20% solid transparent;
-  border-right: 20% solid transparent;
-  border-bottom: 30% solid;
-  /* fallback fixed sizes for border trick */
-  border-left-width: 3px;
-  border-right-width: 3px;
-  border-bottom-width: 4px;
+  width: 35%;
+  aspect-ratio: 1;
+  clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
 }
 
-/* --- Face --- */
+/* --- Face: fills most of the cell --- */
 .face {
   position: absolute;
-  inset: 5%;
+  inset: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 5%;
+  gap: 6%;
   z-index: 2;
   pointer-events: none;
 }
 
 .eyes {
   display: flex;
-  gap: 25%;
+  gap: 30%;
 }
 
 .eye {
-  width: 18%;
+  width: 22%;
   aspect-ratio: 1;
   border-radius: 50%;
   background-color: #322f22;
-  /* min visible size */
   min-width: 2px;
   min-height: 2px;
 }
 
-/* Mouth: two small arcs = ω shape */
+/* Mouth: two arcs = ω shape */
 .mouth {
   display: flex;
-  margin-top: -2%;
 }
 
 .mouthArc {
-  width: 20%;
-  aspect-ratio: 5 / 3;
+  width: 22%;
+  aspect-ratio: 4 / 3;
   border-bottom: 1px solid #322f22;
   border-left: 1px solid #322f22;
   border-right: 1px solid #322f22;
   border-top: none;
   border-radius: 0 0 50% 50%;
-  min-width: 2px;
-  min-height: 1.5px;
+  min-width: 3px;
+  min-height: 2px;
 }
 
 .light {
@@ -91,18 +83,18 @@
   background-color: #d0d0d0;
 }
 
-/* --- Tail --- */
+/* --- Tail: thick curved line --- */
 .tail {
   position: absolute;
-  bottom: 5%;
-  right: -35%;
-  width: 35%;
-  height: 55%;
-  border-right: 2.5px solid;
-  border-top: 2.5px solid;
+  bottom: 0;
+  right: -50%;
+  width: 50%;
+  height: 70%;
+  border-right: 3px solid;
+  border-top: 3px solid;
   border-bottom: none;
   border-left: none;
-  border-radius: 0 40% 0 0;
+  border-radius: 0 70% 0 0;
   z-index: 3;
   pointer-events: none;
   background: transparent;
