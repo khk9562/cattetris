@@ -3,7 +3,10 @@
     "allow": [
       "Bash(npm create:*)",
       "Bash(npm install:*)",
-      "Bash(npm run:*)"
+      "Bash(npm run:*)",
+      "WebFetch(domain:cattetris.vercel.app)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)"
     ]
   }
 }
