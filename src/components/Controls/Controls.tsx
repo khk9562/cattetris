@@ -6,10 +6,9 @@ interface Props {
   onRight: () => void;
   onRotate: () => void;
   onSoftDrop: () => void;
-  onHardDrop: () => void;
 }
 
-export default function Controls({ onLeft, onRight, onRotate, onSoftDrop, onHardDrop }: Props) {
+export default function Controls({ onLeft, onRight, onRotate, onSoftDrop }: Props) {
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const startRepeat = useCallback((action: () => void) => {
@@ -24,21 +23,6 @@ export default function Controls({ onLeft, onRight, onRotate, onSoftDrop, onHard
     }
   }, []);
 
-  const touchStartY = useRef<number | null>(null);
-
-  const handleTouchStart = useCallback((e: React.TouchEvent) => {
-    touchStartY.current = e.touches[0].clientY;
-  }, []);
-
-  const handleTouchEnd = useCallback((e: React.TouchEvent) => {
-    if (touchStartY.current !== null) {
-      const dy = e.changedTouches[0].clientY - touchStartY.current;
-      if (dy > 50) {
-        onHardDrop();
-      }
-      touchStartY.current = null;
-    }
-  }, [onHardDrop]);
 
   return (
     <footer className={styles.footer}>

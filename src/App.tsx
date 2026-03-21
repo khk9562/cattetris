@@ -67,7 +67,6 @@ export default function App() {
           onRight={game.moveRight}
           onRotate={game.rotate}
           onSoftDrop={game.moveDown}
-          onHardDrop={game.hardDrop}
         />
       )}
     </div>
