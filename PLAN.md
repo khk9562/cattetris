@@ -132,7 +132,7 @@ cattetris/
 - [x] **StatsHUD** - Combo, Score 표시 (High Score는 시작/게임오버 화면으로 이동)
 - [x] **NextPreview** - 다음 블록 미리보기 (글라스모피즘 패널)
 - [x] **Board** - 10x20 CSS Grid, 현재 블록 + 고정 블록 렌더링
-- [x] **CatBlock** - 3D box-shadow + 고양이 얼굴 (회전 시에도 유지)
+- [x] **CatBlock** - 연결 블록 렌더링 + 귀/얼굴(ω입)/꼬리 상시 표시 (쌓인 후에도 유지, 회전 무관)
 - [x] **Controls** - 하단 고정 (좌/회전/우/소프트드롭 버튼, 언마운트 시 interval 정리)
 - [x] ~~**PauseButton**~~ → Header에 통합 완료
 
