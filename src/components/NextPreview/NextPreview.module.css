@@ -30,8 +30,11 @@
   gap: 1px;
   width: 100%;
   flex: 1;
+  overflow: visible;
 }
 
 .cell {
   aspect-ratio: 1;
+  position: relative;
+  overflow: visible;
 }

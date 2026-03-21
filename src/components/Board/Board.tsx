@@ -9,21 +9,17 @@ interface Props {
   ghostPiece: ActivePiece | null;
 }
 
-function findFaceCell(piece: ActivePiece): { fx: number; fy: number } | null {
-  for (let row = 0; row < piece.shape.length; row++) {
-    for (let col = 0; col < piece.shape[row].length; col++) {
-      if (piece.shape[row][col]) {
-        return { fx: piece.position.x + col, fy: piece.position.y + row };
-      }
-    }
-  }
-  return null;
+function getCatType(board: (string | null)[][], x: number, y: number): string | null {
+  if (y < 0 || y >= 20 || x < 0 || x >= 10) return null;
+  const cell = board[y][x];
+  if (!cell) return null;
+  if (typeof cell === 'string' && cell.startsWith('ghost_')) return null;
+  return cell;
 }
 
 export default function Board({ board, currentPiece, ghostPiece }: Props) {
   const renderBoard = board.map(row => [...row]);
 
-  // Overlay ghost piece
   if (ghostPiece) {
     for (let row = 0; row < ghostPiece.shape.length; row++) {
       for (let col = 0; col < ghostPiece.shape[row].length; col++) {
@@ -38,7 +34,6 @@ export default function Board({ board, currentPiece, ghostPiece }: Props) {
     }
   }
 
-  // Overlay current piece
   if (currentPiece) {
     for (let row = 0; row < currentPiece.shape.length; row++) {
       for (let col = 0; col < currentPiece.shape[row].length; col++) {
@@ -53,8 +48,6 @@ export default function Board({ board, currentPiece, ghostPiece }: Props) {
     }
   }
 
-  const faceCell = currentPiece ? findFaceCell(currentPiece) : null;
-
   return (
     <div className={styles.wrapper}>
       <div className={styles.shelfTop} />
@@ -62,19 +55,34 @@ export default function Board({ board, currentPiece, ghostPiece }: Props) {
       <div className={styles.grid}>
         {renderBoard.map((row, y) =>
           row.map((cell, x) => {
+            if (!cell) {
+              return <div key={`${y}-${x}`} className={styles.cell} />;
+            }
+
             const isGhost = typeof cell === 'string' && cell.startsWith('ghost_');
             const catType = isGhost ? cell.replace('ghost_', '') : cell;
-            const hasFace = faceCell && x === faceCell.fx && y === faceCell.fy;
+            const t = isGhost ? null : (catType as string);
+
+            const connTop = t ? getCatType(renderBoard, x, y - 1) === t : false;
+            const connRight = t ? getCatType(renderBoard, x + 1, y) === t : false;
+            const connBottom = t ? getCatType(renderBoard, x, y + 1) === t : false;
+            const connLeft = t ? getCatType(renderBoard, x - 1, y) === t : false;
+
+            const showFace = !isGhost && !connTop && !connLeft;
+            const showEars = showFace;
+            const hasConn = connTop || connRight || connBottom || connLeft;
+            const showTail = !isGhost && !connBottom && !connRight && hasConn;
 
             return (
               <div key={`${y}-${x}`} className={styles.cell}>
-                {catType ? (
-                  <CatBlock
-                    catType={catType as any}
-                    ghost={isGhost}
-                    showFace={!!hasFace}
-                  />
-                ) : null}
+                <CatBlock
+                  catType={catType as any}
+                  ghost={isGhost}
+                  conn={{ top: connTop, right: connRight, bottom: connBottom, left: connLeft }}
+                  showFace={showFace}
+                  showEars={showEars}
+                  showTail={showTail}
+                />
               </div>
             );
           })

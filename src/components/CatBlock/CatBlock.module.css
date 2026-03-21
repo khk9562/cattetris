@@ -1,47 +1,100 @@
 .block {
   width: 100%;
   height: 100%;
-  border-radius: 0.25rem;
-  box-shadow: inset 0.125rem 0.125rem 0.25rem rgba(255, 255, 255, 0.4), inset -0.125rem -0.125rem 0.25rem rgba(0, 0, 0, 0.1);
   position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  overflow: visible;
+  z-index: 0;
 }
 
 .ghost {
-  box-shadow: none;
   border: 1px dashed;
   opacity: 0.3;
   background-color: transparent !important;
 }
 
-.face {
+/* --- Ears --- */
+.ears {
+  position: absolute;
+  top: -4px;
+  left: 50%;
+  transform: translateX(-50%);
   display: flex;
-  flex-wrap: wrap;
+  gap: 2px;
+  z-index: 3;
+  pointer-events: none;
+}
+
+.ear {
+  width: 0;
+  height: 0;
+  border-left: 3px solid transparent;
+  border-right: 3px solid transparent;
+  border-bottom: 4px solid;
+}
+
+/* --- Face --- */
+.face {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 0.125rem;
-  width: 100%;
-  height: 100%;
-  padding: 0.125rem;
+  gap: 1px;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.eyes {
+  display: flex;
+  gap: 3px;
 }
 
 .eye {
-  width: 0.1875rem;
-  height: 0.1875rem;
+  width: 2px;
+  height: 2px;
   border-radius: 50%;
   background-color: #322f22;
 }
 
-.lightEye {
-  background-color: #e0e0e0;
+/* Mouth: two small arcs side by side = ω shape */
+.mouth {
+  display: flex;
+  margin-top: -0.5px;
 }
 
-.nose {
-  width: 0.25rem;
-  height: 0.1875rem;
-  border-radius: 50%;
-  background-color: #ffaeb7;
-  margin-top: -0.125rem;
+.mouthArc {
+  width: 2.5px;
+  height: 1.5px;
+  border-bottom: 0.8px solid #322f22;
+  border-left: 0.5px solid #322f22;
+  border-right: 0.5px solid #322f22;
+  border-top: none;
+  border-radius: 0 0 50% 50%;
+}
+
+.light {
+  background-color: transparent;
+  border-color: #d0d0d0 !important;
+}
+
+.eye.light {
+  background-color: #d0d0d0;
+}
+
+/* --- Tail --- */
+.tail {
+  position: absolute;
+  bottom: 1px;
+  right: -5px;
+  width: 5px;
+  height: 8px;
+  border-right: 1.5px solid;
+  border-top: 1.5px solid;
+  border-bottom: none;
+  border-left: none;
+  border-radius: 0 5px 0 0;
+  z-index: 3;
+  pointer-events: none;
+  background: transparent;
 }
