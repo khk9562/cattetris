@@ -1,6 +1,6 @@
 export type GameStatus = 'ready' | 'playing' | 'paused' | 'gameover';
 
-export type CatType = 'ginger' | 'tuxedo' | 'russianBlue' | 'calico' | 'siamese' | 'black' | 'tabby';
+export type CatType = 'ginger' | 'tuxedo' | 'russianBlue' | 'calico' | 'siamese' | 'black' | 'tabby' | 'darkTabby';
 
 export interface Position {
   x: number;

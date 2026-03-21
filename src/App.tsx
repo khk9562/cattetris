@@ -23,6 +23,7 @@ export default function App() {
         onTogglePause={game.togglePause} 
         showGhost={showGhost}
         onToggleGhost={() => setShowGhost(!showGhost)}
+        onGoHome={game.goHome}
       />
 
       <main className={styles.main}>
@@ -32,10 +33,11 @@ export default function App() {
           highScore={game.highScore}
           startGame={game.startGame}
           togglePause={game.togglePause}
+          goHome={game.goHome}
         />
 
         <div className={styles.hudRow}>
-          <StatsHUD score={game.score} combo={game.combo} />
+          <StatsHUD score={game.score} combo={game.combo} highScore={game.highScore} />
           <NextPreview piece={game.nextPiece} />
         </div>
 

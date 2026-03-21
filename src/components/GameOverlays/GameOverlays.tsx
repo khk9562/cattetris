@@ -7,9 +7,10 @@ interface Props {
   highScore: number;
   startGame: () => void;
   togglePause: () => void;
+  goHome: () => void;
 }
 
-export default function GameOverlays({ status, score, highScore, startGame, togglePause }: Props) {
+export default function GameOverlays({ status, score, highScore, startGame, togglePause, goHome }: Props) {
   if (status === 'playing') return null;
 
   return (
@@ -19,12 +20,8 @@ export default function GameOverlays({ status, score, highScore, startGame, togg
           <div className={styles.overlayContent}>
             <span className="material-symbols-outlined" style={{ fontSize: '4rem', color: 'var(--color-primary)' }}>pets</span>
             <h2 className={styles.overlayTitle}>Cat Tetris</h2>
-            {highScore > 0 && (
-              <>
-                <p className={styles.highScoreLabel}>High Score</p>
-                <p className={styles.highScoreValue}>{highScore.toLocaleString()}</p>
-              </>
-            )}
+            <p className={styles.highScoreLabel}>High Score</p>
+            <p className={styles.highScoreValue}>{highScore.toLocaleString()}</p>
             <button className={styles.startBtn} onClick={startGame}>
               Start Game
             </button>
@@ -47,6 +44,9 @@ export default function GameOverlays({ status, score, highScore, startGame, togg
             <button className={styles.startBtn} onClick={startGame}>
               Play Again
             </button>
+            <button className={styles.startBtn} onClick={goHome} style={{ background: 'var(--color-surface-container-highest)', color: 'var(--color-primary)' }}>
+              Main Menu
+            </button>
           </div>
         </div>
       )}
@@ -57,6 +57,9 @@ export default function GameOverlays({ status, score, highScore, startGame, togg
             <h2 className={styles.overlayTitle}>Paused</h2>
             <button className={styles.startBtn} onClick={togglePause}>
               Resume
+            </button>
+            <button className={styles.startBtn} onClick={goHome} style={{ background: 'var(--color-surface-container-highest)', color: 'var(--color-primary)' }}>
+              Main Menu
             </button>
           </div>
         </div>

@@ -7,9 +7,10 @@ interface Props {
   onTogglePause: () => void;
   showGhost: boolean;
   onToggleGhost: () => void;
+  onGoHome: () => void;
 }
 
-export default function Header({ elapsedTime, status, onTogglePause, showGhost, onToggleGhost }: Props) {
+export default function Header({ elapsedTime, status, onTogglePause, showGhost, onToggleGhost, onGoHome }: Props) {
   const minutes = String(Math.floor(elapsedTime / 60)).padStart(2, '0');
   const seconds = String(elapsedTime % 60).padStart(2, '0');
   const showPause = status === 'playing' || status === 'paused';
@@ -21,6 +22,9 @@ export default function Header({ elapsedTime, status, onTogglePause, showGhost, 
         <h1 className={styles.title}>Cat Tetris</h1>
       </div>
       <div className={styles.controlsGroup}>
+        <button className={styles.iconBtn} onClick={onGoHome} aria-label="Go to Home">
+          <span className="material-symbols-outlined" style={{ fontSize: '1.25rem' }}>home</span>
+        </button>
         <button className={styles.iconBtn} onClick={onToggleGhost} aria-label="Toggle Preview Shadow">
           <span className="material-symbols-outlined" style={{ fontSize: '1.25rem' }}>
             {showGhost ? 'visibility' : 'visibility_off'}

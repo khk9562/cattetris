@@ -78,11 +78,17 @@ const PIECES: PieceDefinition[] = [
   },
 ];
 
+const ALL_CAT_TYPES: CatType[] = [
+  'ginger', 'tuxedo', 'russianBlue', 'calico', 
+  'siamese', 'black', 'tabby', 'darkTabby'
+];
+
 export function getRandomPiece() {
   const def = PIECES[Math.floor(Math.random() * PIECES.length)];
+  const randomCat = ALL_CAT_TYPES[Math.floor(Math.random() * ALL_CAT_TYPES.length)];
   return {
     shapes: def.shapes,
-    catType: def.catType,
+    catType: randomCat,
   };
 }
 

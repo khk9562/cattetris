@@ -132,7 +132,7 @@
 
 /* 2. Tuxedo (턱시도고양이) */
 .tuxedo {
-  background-color: #2b2b2b;
+  background-color: #1a1a1a;
 }
 .tuxedo .face::before {
   content: "";
@@ -144,7 +144,7 @@
   border-radius: 50% 50% 10% 10%;
   z-index: 1;
 }
-.tuxedo .earLeft, .tuxedo .earRight { background-color: #2b2b2b; }
+.tuxedo .earLeft, .tuxedo .earRight { background-color: #1a1a1a; }
 .tuxedo .tail { border-color: white; }
 .tuxedo .mouthArc { z-index: 3; }
 
@@ -167,23 +167,39 @@
 .tabby {
   background-color: #c8956c;
   background-image: repeating-linear-gradient(
-    -45deg,
+    90deg,
     transparent,
-    transparent 15px,
-    #7a5230 15px,
-    #7a5230 25px
+    transparent 10px,
+    #7a5230 10px,
+    #7a5230 16px
   );
   background-attachment: fixed;
 }
 .tabby .earLeft, .tabby .earRight { background-color: #c8956c; }
 .tabby .tail { border-color: #7a5230; }
 
+/* 4b. Dark Tabby (검은색 얼룩 고양이) */
+.darkTabby {
+  background-color: #5c626b; /* Blueish dark grey base */
+  background-image: repeating-linear-gradient(
+    -45deg,
+    transparent,
+    transparent 15px,
+    #2a2d34 15px, /* Darker charcoal stripes */
+    #2a2d34 25px
+  );
+  background-attachment: fixed;
+}
+.darkTabby .earLeft, .darkTabby .earRight { background-color: #5c626b; }
+.darkTabby .tail { border-color: #2a2d34; }
+.darkTabby .eye { background-color: #ffd700 !important; /* Golden eyes */ }
+
 /* 5. Black (까만고양이) */
 .black {
-  background-color: #242424;
+  background-color: #3b3b45; /* Distinct deep twilight/purple-black to stand out */
 }
-.black .earLeft, .black .earRight { background-color: #242424; }
-.black .tail { border-color: #242424; }
+.black .earLeft, .black .earRight { background-color: #3b3b45; }
+.black .tail { border-color: #3b3b45; }
 /* .lightEye / .lightMouth handles the bright eyes for black cat automatically in CatBlock.tsx */
 
 /* 6. Siamese (샴고양이) */

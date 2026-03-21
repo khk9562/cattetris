@@ -5,12 +5,13 @@ export const BOARD_HEIGHT = 20;
 
 export const CAT_COLORS: Record<CatType, string> = {
   ginger: '#feb246',
-  tuxedo: '#7fe0f3',
+  tuxedo: '#1a1a1a',
   russianBlue: '#70d1e4',
-  calico: '#ffaeb7',
+  calico: '#ffffff',
   siamese: '#f5e6d0',
-  black: '#4a4a4a',
+  black: '#3b3b45',
   tabby: '#c8956c',
+  darkTabby: '#5c626b',
 };
 
 export const SCORE_TABLE: Record<number, number> = {

@@ -218,6 +218,10 @@ export function useGame() {
     setStatus(s => s === 'playing' ? 'paused' : s === 'paused' ? 'playing' : s);
   }, []);
 
+  const goHome = useCallback(() => {
+    setStatus('ready');
+  }, []);
+
   const ghostPiece = currentPiece ? getGhostPosition(board, currentPiece) : null;
 
   return {
@@ -239,5 +243,6 @@ export function useGame() {
     hardDrop,
     startGame,
     togglePause,
+    goHome,
   };
 }
