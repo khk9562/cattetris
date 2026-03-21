@@ -23,13 +23,13 @@ export default function Header({ elapsedTime, status, onTogglePause, showGhost, 
         <h1 className={styles.title}>Cat Tetris</h1>
       </div>
       <div className={styles.controlsGroup}>
-        <button className={styles.iconBtn} onClick={onOpenCollection} aria-label="Open Encyclopedia">
+        <button className={styles.iconBtn} onClick={onOpenCollection} aria-label="도감 열기">
           <span className="material-symbols-outlined" style={{ fontSize: '1.25rem' }}>menu_book</span>
         </button>
-        <button className={styles.iconBtn} onClick={onGoHome} aria-label="Go to Home">
+        <button className={styles.iconBtn} onClick={onGoHome} aria-label="메인 메뉴">
           <span className="material-symbols-outlined" style={{ fontSize: '1.25rem' }}>home</span>
         </button>
-        <button className={styles.iconBtn} onClick={onToggleGhost} aria-label="Toggle Preview Shadow">
+        <button className={styles.iconBtn} onClick={onToggleGhost} aria-label="고스트 미리보기 전환">
           <span className="material-symbols-outlined" style={{ fontSize: '1.25rem' }}>
             {showGhost ? 'visibility' : 'visibility_off'}
           </span>

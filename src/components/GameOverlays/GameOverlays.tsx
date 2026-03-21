@@ -21,13 +21,13 @@ export default function GameOverlays({ status, score, highScore, startGame, togg
           <div className={styles.overlayContent}>
             <span className="material-symbols-outlined" style={{ fontSize: '4rem', color: 'var(--color-primary)' }}>pets</span>
             <h2 className={styles.overlayTitle}>Cat Tetris</h2>
-            <p className={styles.highScoreLabel}>High Score</p>
+            <p className={styles.highScoreLabel}>최고 기록</p>
             <p className={styles.highScoreValue}>{highScore.toLocaleString()}</p>
             <button className={styles.startBtn} onClick={startGame}>
-              Start Game
+              게임 시작
             </button>
             <button className={styles.startBtn} onClick={onOpenCollection} style={{ background: 'var(--color-surface-container-highest)', color: 'var(--color-primary)' }}>
-              Encyclopedia
+              도감
             </button>
           </div>
         </div>
@@ -36,23 +36,23 @@ export default function GameOverlays({ status, score, highScore, startGame, togg
       {status === 'gameover' && (
         <div className={styles.overlay}>
           <div className={styles.overlayContent}>
-            <h2 className={styles.overlayTitle}>Game Over</h2>
+            <h2 className={styles.overlayTitle}>게임 오버!</h2>
             <p className={styles.finalScore}>{score.toLocaleString()}</p>
-            <p className={styles.finalLabel}>points</p>
+            <p className={styles.finalLabel}>점수</p>
             {highScore > 0 && (
               <>
-                <p className={styles.highScoreLabel}>High Score</p>
+                <p className={styles.highScoreLabel}>최고 기록</p>
                 <p className={styles.highScoreValue}>{highScore.toLocaleString()}</p>
               </>
             )}
             <button className={styles.startBtn} onClick={startGame}>
-              Play Again
+              다시 하기
             </button>
             <button className={styles.startBtn} onClick={onOpenCollection} style={{ background: 'var(--color-surface-container-highest)', color: 'var(--color-primary)' }}>
-              Encyclopedia
+              도감
             </button>
             <button className={styles.startBtn} onClick={goHome} style={{ background: 'var(--color-surface-container-highest)', color: 'var(--color-primary)' }}>
-              Main Menu
+              메인 메뉴
             </button>
           </div>
         </div>
@@ -61,15 +61,15 @@ export default function GameOverlays({ status, score, highScore, startGame, togg
       {status === 'paused' && (
         <div className={styles.overlay}>
           <div className={styles.overlayContent}>
-            <h2 className={styles.overlayTitle}>Paused</h2>
+            <h2 className={styles.overlayTitle}>일시 정지</h2>
             <button className={styles.startBtn} onClick={togglePause}>
-              Resume
+              이어하기
             </button>
             <button className={styles.startBtn} onClick={onOpenCollection} style={{ background: 'var(--color-surface-container-highest)', color: 'var(--color-primary)' }}>
-              Encyclopedia
+              도감
             </button>
             <button className={styles.startBtn} onClick={goHome} style={{ background: 'var(--color-surface-container-highest)', color: 'var(--color-primary)' }}>
-              Main Menu
+              메인 메뉴
             </button>
           </div>
         </div>

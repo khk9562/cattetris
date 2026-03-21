@@ -57,7 +57,7 @@ export default function NextPreview({ piece }: Props) {
 
   return (
     <div className={styles.container}>
-      <p className={styles.label}>Next</p>
+      <p className={styles.label}>다음 블록</p>
       <div className={styles.grid}>
         {grid.map((row, y) =>
           row.map((cell, x) => {

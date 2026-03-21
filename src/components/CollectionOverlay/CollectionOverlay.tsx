@@ -27,8 +27,8 @@ export default function CollectionOverlay({ stats, onClose }: Props) {
     <div className={styles.overlay}>
       <div className={styles.container}>
         <div className={styles.header}>
-          <h2 className={styles.title}>Cat Encyclopedia</h2>
-          <button className={styles.closeBtn} onClick={onClose} aria-label="Close Encyclopedia">
+          <h2 className={styles.title}>고양이 도감</h2>
+          <button className={styles.closeBtn} onClick={onClose} aria-label="도감 닫기">
             <span className="material-symbols-outlined">close</span>
           </button>
         </div>
@@ -50,13 +50,13 @@ export default function CollectionOverlay({ stats, onClose }: Props) {
                 {isUnlocked ? (
                   <div className={styles.info}>
                     <p className={styles.name}>{CAT_NAMES[cat]}</p>
-                    <p className={styles.count}>{count.toLocaleString()} Destroyed</p>
+                    <p className={styles.count}>누적 제거: {count.toLocaleString()}개</p>
                   </div>
                 ) : (
                   <div className={styles.info}>
                     <p className={styles.name}>???</p>
                     <p className={styles.count}>
-                      Locked (<span className={styles.progressText}>{count.toLocaleString()} / {UNLOCK_THRESHOLD.toLocaleString()}</span>)
+                      미등록 (<span className={styles.progressText}>{count.toLocaleString()} / {UNLOCK_THRESHOLD.toLocaleString()}</span>)
                     </p>
                   </div>
                 )}

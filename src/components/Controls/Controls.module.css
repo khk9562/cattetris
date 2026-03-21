@@ -35,7 +35,9 @@
   cursor: pointer;
   transition: transform 75ms ease-in-out;
   -webkit-tap-highlight-color: transparent;
-  touch-action: manipulation;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
 }
 
 .btn:active {
