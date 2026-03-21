@@ -1,0 +1,111 @@
+.overlay {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0, 0, 0, 0.85);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  padding: 1rem;
+}
+
+.container {
+  background: var(--color-surface);
+  border: 2px solid var(--color-surface-container-highest);
+  border-radius: 1rem;
+  width: 100%;
+  max-width: 600px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  background: var(--color-surface-container);
+  border-bottom: 2px solid var(--color-surface-container-highest);
+}
+
+.title {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--color-primary);
+}
+
+.closeBtn {
+  background: transparent;
+  border: none;
+  color: var(--color-on-surface);
+  cursor: pointer;
+  padding: 0.5rem;
+  display: flex;
+  border-radius: 50%;
+  transition: background 0.2s;
+}
+
+.closeBtn:hover {
+  background: rgba(255,255,255,0.1);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1rem;
+  padding: 1.5rem;
+  overflow-y: auto;
+}
+
+.card {
+  background: var(--color-surface-container);
+  border: 2px solid var(--color-surface-container-highest);
+  border-radius: 1rem;
+  padding: 1.5rem 1rem;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.catImageWrapper {
+  width: 80px;
+  height: 80px;
+  margin-bottom: 1rem;
+  position: relative;
+}
+
+/* Grayscale + Blur for the locked silhouette effect */
+.locked .catImageWrapper {
+  filter: grayscale(100%) blur(4px) brightness(0.5);
+  transition: filter 0.3s ease;
+}
+
+.info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.name {
+  margin: 0;
+  font-weight: 700;
+  font-size: 1rem;
+  color: var(--color-on-surface);
+}
+
+.count {
+  margin: 0;
+  font-size: 0.85rem;
+  color: rgba(255,255,255,0.6);
+  font-variant-numeric: tabular-nums;
+}
+
+.progressText {
+  color: #ffb03a;
+  font-weight: 600;
+}

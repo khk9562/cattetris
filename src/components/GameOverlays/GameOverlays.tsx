@@ -8,9 +8,10 @@ interface Props {
   startGame: () => void;
   togglePause: () => void;
   goHome: () => void;
+  onOpenCollection: () => void;
 }
 
-export default function GameOverlays({ status, score, highScore, startGame, togglePause, goHome }: Props) {
+export default function GameOverlays({ status, score, highScore, startGame, togglePause, goHome, onOpenCollection }: Props) {
   if (status === 'playing') return null;
 
   return (
@@ -24,6 +25,9 @@ export default function GameOverlays({ status, score, highScore, startGame, togg
             <p className={styles.highScoreValue}>{highScore.toLocaleString()}</p>
             <button className={styles.startBtn} onClick={startGame}>
               Start Game
+            </button>
+            <button className={styles.startBtn} onClick={onOpenCollection} style={{ background: 'var(--color-surface-container-highest)', color: 'var(--color-primary)' }}>
+              Encyclopedia
             </button>
           </div>
         </div>
@@ -44,6 +48,9 @@ export default function GameOverlays({ status, score, highScore, startGame, togg
             <button className={styles.startBtn} onClick={startGame}>
               Play Again
             </button>
+            <button className={styles.startBtn} onClick={onOpenCollection} style={{ background: 'var(--color-surface-container-highest)', color: 'var(--color-primary)' }}>
+              Encyclopedia
+            </button>
             <button className={styles.startBtn} onClick={goHome} style={{ background: 'var(--color-surface-container-highest)', color: 'var(--color-primary)' }}>
               Main Menu
             </button>
@@ -57,6 +64,9 @@ export default function GameOverlays({ status, score, highScore, startGame, togg
             <h2 className={styles.overlayTitle}>Paused</h2>
             <button className={styles.startBtn} onClick={togglePause}>
               Resume
+            </button>
+            <button className={styles.startBtn} onClick={onOpenCollection} style={{ background: 'var(--color-surface-container-highest)', color: 'var(--color-primary)' }}>
+              Encyclopedia
             </button>
             <button className={styles.startBtn} onClick={goHome} style={{ background: 'var(--color-surface-container-highest)', color: 'var(--color-primary)' }}>
               Main Menu

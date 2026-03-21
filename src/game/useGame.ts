@@ -4,11 +4,22 @@ import { createPiece, rotatePiece, type ActivePiece } from './pieces';
 import { SCORE_TABLE, SPEED_TABLE, LINES_PER_LEVEL, HIGH_SCORE_KEY } from './constants';
 import type { Board, GameStatus } from './types';
 
+const STATS_KEY = 'cattetris_stats';
+
 function getStoredHighScore(): number {
   try {
     return parseInt(localStorage.getItem(HIGH_SCORE_KEY) || '0', 10);
   } catch {
     return 0;
+  }
+}
+
+export function getStoredStats(): Record<string, number> {
+  try {
+    const data = localStorage.getItem(STATS_KEY);
+    return data ? JSON.parse(data) : {};
+  } catch {
+    return {};
   }
 }
 
@@ -23,6 +34,7 @@ export function useGame() {
   const [linesCleared, setLinesCleared] = useState(0);
   const [status, setStatus] = useState<GameStatus>('ready');
   const [elapsedTime, setElapsedTime] = useState(0);
+  const [destroyedStats, setDestroyedStats] = useState<Record<string, number>>(getStoredStats);
 
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const dropRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -34,6 +46,8 @@ export function useGame() {
   comboRef.current = combo;
   const statusRef = useRef(status);
   statusRef.current = status;
+  const destroyedStatsRef = useRef(destroyedStats);
+  destroyedStatsRef.current = destroyedStats;
 
   const spawnPiece = useCallback(() => {
     const piece = nextPiece;
@@ -45,6 +59,7 @@ export function useGame() {
         localStorage.setItem(HIGH_SCORE_KEY, String(finalScore));
         setHighScore(finalScore);
       }
+      localStorage.setItem(STATS_KEY, JSON.stringify(destroyedStatsRef.current));
       return;
     }
     setCurrentPiece(piece);
@@ -67,6 +82,21 @@ export function useGame() {
       // 1. Process matches (15+)
       const matches = findMatches(newBoard, 15);
       if (matches.length > 0) {
+        const typeCounts: Record<string, number> = {};
+        for (const m of matches) {
+          const type = newBoard[m.y][m.x];
+          if (type && typeof type === 'string') {
+            typeCounts[type] = (typeCounts[type] || 0) + 1;
+          }
+        }
+        setDestroyedStats(prev => {
+          const next = { ...prev };
+          for (const [t, count] of Object.entries(typeCounts)) {
+            next[t] = (next[t] || 0) + count;
+          }
+          return next;
+        });
+
         newBoard = clearMatches(newBoard, matches);
         totalScoreToAdd += matches.length * 20 * (1 + localCombo * 0.5);
         didClearSomething = true;
@@ -76,6 +106,23 @@ export function useGame() {
       // 2. Process Line Clears
       const completed = getCompletedRows(newBoard);
       if (completed.length > 0) {
+        const typeCounts: Record<string, number> = {};
+        for (const r of completed) {
+          for (let c = 0; c < 10; c++) {
+            const type = newBoard[r][c];
+            if (type && typeof type === 'string') {
+              typeCounts[type] = (typeCounts[type] || 0) + 1;
+            }
+          }
+        }
+        setDestroyedStats(prev => {
+          const next = { ...prev };
+          for (const [t, count] of Object.entries(typeCounts)) {
+            next[t] = (next[t] || 0) + count;
+          }
+          return next;
+        });
+
         newBoard = clearRows(newBoard, completed);
         totalScoreToAdd += (SCORE_TABLE[completed.length] || 0) * (1 + localCombo * 0.5);
         didClearSomething = true;
@@ -244,5 +291,6 @@ export function useGame() {
     startGame,
     togglePause,
     goHome,
+    destroyedStats,
   };
 }

@@ -8,9 +8,10 @@ interface Props {
   showGhost: boolean;
   onToggleGhost: () => void;
   onGoHome: () => void;
+  onOpenCollection: () => void;
 }
 
-export default function Header({ elapsedTime, status, onTogglePause, showGhost, onToggleGhost, onGoHome }: Props) {
+export default function Header({ elapsedTime, status, onTogglePause, showGhost, onToggleGhost, onGoHome, onOpenCollection }: Props) {
   const minutes = String(Math.floor(elapsedTime / 60)).padStart(2, '0');
   const seconds = String(elapsedTime % 60).padStart(2, '0');
   const showPause = status === 'playing' || status === 'paused';
@@ -19,9 +20,12 @@ export default function Header({ elapsedTime, status, onTogglePause, showGhost, 
     <header className={styles.header}>
       <div className={styles.titleGroup}>
         <span className="material-symbols-outlined" style={{ color: 'var(--color-primary)', fontSize: '1.5rem' }}>pets</span>
-        <h1 className={styles.title}>CAT TETRIS</h1>
+        <h1 className={styles.title}>Cat Tetris</h1>
       </div>
       <div className={styles.controlsGroup}>
+        <button className={styles.iconBtn} onClick={onOpenCollection} aria-label="Open Encyclopedia">
+          <span className="material-symbols-outlined" style={{ fontSize: '1.25rem' }}>menu_book</span>
+        </button>
         <button className={styles.iconBtn} onClick={onGoHome} aria-label="Go to Home">
           <span className="material-symbols-outlined" style={{ fontSize: '1.25rem' }}>home</span>
         </button>
