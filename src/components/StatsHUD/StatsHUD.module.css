@@ -1,19 +1,19 @@
 .container {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 0.5rem;
   flex: 1;
 }
 
 .highScore {
   background-color: var(--color-surface-container-low);
-  padding: 12px;
-  border-radius: 16px;
+  padding: 0.625rem;
+  border-radius: 1rem;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
 .label {
-  font-size: 10px;
+  font-size: 0.5625rem;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.1em;
@@ -23,15 +23,15 @@
 
 .highScoreValue {
   font-family: var(--font-headline);
-  font-size: 20px;
+  font-size: 1.125rem;
   font-weight: 800;
   color: var(--color-primary);
 }
 
 .row {
   background-color: var(--color-surface-container-high);
-  padding: 12px;
-  border-radius: 16px;
+  padding: 0.625rem;
+  border-radius: 1rem;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
   display: flex;
   justify-content: space-between;
@@ -40,7 +40,7 @@
 
 .comboValue {
   font-family: var(--font-headline);
-  font-size: 18px;
+  font-size: 1rem;
   font-weight: 700;
   color: var(--color-secondary);
 }
@@ -51,7 +51,7 @@
 
 .scoreValue {
   font-family: var(--font-headline);
-  font-size: 18px;
+  font-size: 1rem;
   font-weight: 700;
   color: var(--color-on-background);
 }

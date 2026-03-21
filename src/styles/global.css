@@ -24,6 +24,10 @@
 
   --font-headline: 'Plus Jakarta Sans', sans-serif;
   --font-body: 'Be Vietnam Pro', sans-serif;
+
+  --header-height: 3.5rem;
+  --controls-height: 5.5rem;
+  --controls-padding-bottom: env(safe-area-inset-bottom, 1rem);
 }
 
 *,

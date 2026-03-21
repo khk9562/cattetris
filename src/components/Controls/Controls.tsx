@@ -35,41 +35,40 @@ export default function Controls({ onLeft, onRight, onRotate, onSoftDrop }: Prop
     <footer className={styles.footer}>
       <div className={styles.row}>
         <button
-          className={styles.arrowBtn}
+          className={styles.btn}
           onTouchStart={() => startRepeat(onLeft)}
           onTouchEnd={stopRepeat}
           onMouseDown={() => startRepeat(onLeft)}
           onMouseUp={stopRepeat}
           onMouseLeave={stopRepeat}
         >
-          <span className="material-symbols-outlined" style={{ fontSize: 28 }}>arrow_back_ios</span>
+          <span className="material-symbols-outlined" style={{ fontSize: '1.5rem' }}>arrow_back_ios</span>
         </button>
 
-        <div className={styles.centerGroup}>
-          <button className={styles.rotateBtn} onClick={onRotate}>
-            <span className="material-symbols-outlined" style={{ fontSize: 36 }}>refresh</span>
-          </button>
-          <button
-            className={styles.dropBtn}
-            onTouchStart={() => startRepeat(onSoftDrop)}
-            onTouchEnd={stopRepeat}
-            onMouseDown={() => startRepeat(onSoftDrop)}
-            onMouseUp={stopRepeat}
-            onMouseLeave={stopRepeat}
-          >
-            <span className="material-symbols-outlined" style={{ fontSize: 24 }}>keyboard_double_arrow_down</span>
-          </button>
-        </div>
+        <button className={styles.btn} onClick={onRotate}>
+          <span className="material-symbols-outlined" style={{ fontSize: '1.5rem' }}>refresh</span>
+        </button>
 
         <button
-          className={styles.arrowBtn}
+          className={styles.btn}
+          onTouchStart={() => startRepeat(onSoftDrop)}
+          onTouchEnd={stopRepeat}
+          onMouseDown={() => startRepeat(onSoftDrop)}
+          onMouseUp={stopRepeat}
+          onMouseLeave={stopRepeat}
+        >
+          <span className="material-symbols-outlined" style={{ fontSize: '1.5rem' }}>keyboard_double_arrow_down</span>
+        </button>
+
+        <button
+          className={styles.btn}
           onTouchStart={() => startRepeat(onRight)}
           onTouchEnd={stopRepeat}
           onMouseDown={() => startRepeat(onRight)}
           onMouseUp={stopRepeat}
           onMouseLeave={stopRepeat}
         >
-          <span className="material-symbols-outlined" style={{ fontSize: 28 }}>arrow_forward_ios</span>
+          <span className="material-symbols-outlined" style={{ fontSize: '1.5rem' }}>arrow_forward_ios</span>
         </button>
       </div>
     </footer>
