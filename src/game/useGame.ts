@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { createBoard, isValidPosition, placePiece, getCompletedRows, clearRows, getGhostPosition } from './board';
+import { createBoard, isValidPosition, placePiece, getCompletedRows, clearRows, getGhostPosition, findMatches, clearMatches, applyGravity } from './board';
 import { createPiece, rotatePiece, type ActivePiece } from './pieces';
 import { SCORE_TABLE, SPEED_TABLE, LINES_PER_LEVEL, HIGH_SCORE_KEY } from './constants';
 import type { Board, GameStatus } from './types';
@@ -54,25 +54,60 @@ export function useGame() {
   const lockPiece = useCallback(() => {
     const piece = currentPieceRef.current;
     if (!piece) return;
-    const b = boardRef.current;
-    const newBoard = placePiece(b, piece);
-    const completed = getCompletedRows(newBoard);
-    if (completed.length > 0) {
-      const cleared = clearRows(newBoard, completed);
-      const lineScore = (SCORE_TABLE[completed.length] || 0) * (1 + comboRef.current * 0.5);
-      setBoard(cleared);
-      setScore(s => s + Math.floor(lineScore));
-      setCombo(c => c + 1);
-      setLinesCleared(l => {
-        const newTotal = l + completed.length;
-        const newLevel = Math.floor(newTotal / LINES_PER_LEVEL) + 1;
-        setLevel(newLevel);
-        return newTotal;
-      });
+    let newBoard = placePiece(boardRef.current, piece);
+    let totalScoreToAdd = 0;
+    let didClearSomething = false;
+
+    let settling = true;
+    let localCombo = comboRef.current;
+
+    while (settling) {
+      settling = false;
+
+      // 1. Process matches (15+)
+      const matches = findMatches(newBoard, 15);
+      if (matches.length > 0) {
+        newBoard = clearMatches(newBoard, matches);
+        totalScoreToAdd += matches.length * 20 * (1 + localCombo * 0.5);
+        didClearSomething = true;
+        settling = true;
+      }
+
+      // 2. Process Line Clears
+      const completed = getCompletedRows(newBoard);
+      if (completed.length > 0) {
+        newBoard = clearRows(newBoard, completed);
+        totalScoreToAdd += (SCORE_TABLE[completed.length] || 0) * (1 + localCombo * 0.5);
+        didClearSomething = true;
+        settling = true;
+        
+        setLinesCleared(l => {
+          const newTotal = l + completed.length;
+          const newLevel = Math.floor(newTotal / LINES_PER_LEVEL) + 1;
+          setLevel(newLevel);
+          return newTotal;
+        });
+      }
+
+      // 3. Apply gravity if any clears occurred
+      if (settling) {
+        const gravityResult = applyGravity(newBoard);
+        if (gravityResult.changed) {
+          newBoard = gravityResult.newBoard;
+          localCombo += 1; // Increase combo for consecutive chains!
+        }
+      }
+    }
+
+    setBoard(newBoard);
+
+    if (didClearSomething) {
+      setScore(s => s + Math.floor(totalScoreToAdd));
+      setCombo(localCombo + 1);
     } else {
-      setBoard(newBoard);
       setCombo(0);
     }
+    
     setCurrentPiece(null);
   }, []);
 
