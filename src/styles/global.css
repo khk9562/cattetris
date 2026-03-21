@@ -1,0 +1,57 @@
+:root {
+  --color-primary: #805100;
+  --color-secondary: #983d4d;
+  --color-tertiary: #006573;
+  --color-surface: #fdf6e3;
+  --color-background: #fdf6e3;
+  --color-on-background: #322f22;
+  --color-on-primary: #fff0e3;
+  --color-on-surface: #322f22;
+  --color-primary-container: #feb246;
+  --color-secondary-container: #ffc2c8;
+  --color-secondary-fixed-dim: #ffaeb7;
+  --color-tertiary-fixed: #7fe0f3;
+  --color-tertiary-fixed-dim: #70d1e4;
+  --color-surface-bright: #fdf6e3;
+  --color-surface-dim: #dcd4bb;
+  --color-surface-container: #efe8d2;
+  --color-surface-container-low: #f8f0dc;
+  --color-surface-container-high: #eae2cb;
+  --color-surface-container-highest: #e4ddc5;
+  --color-outline: #7b7767;
+  --color-outline-variant: #b2ad9c;
+  --color-error: #b02500;
+
+  --font-headline: 'Plus Jakarta Sans', sans-serif;
+  --font-body: 'Be Vietnam Pro', sans-serif;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  height: 100dvh;
+  overflow: hidden;
+}
+
+body {
+  font-family: var(--font-body);
+  background-color: var(--color-background);
+  color: var(--color-on-background);
+  -webkit-user-select: none;
+  user-select: none;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+#root {
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}

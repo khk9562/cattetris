@@ -1,0 +1,26 @@
+.container {
+  position: fixed;
+  bottom: 144px;
+  right: 24px;
+  z-index: 50;
+}
+
+.button {
+  width: 56px;
+  height: 56px;
+  border-radius: 16px;
+  border: none;
+  background-color: var(--color-surface-container-highest);
+  color: var(--color-primary);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 100ms;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.button:active {
+  transform: scale(0.95);
+}

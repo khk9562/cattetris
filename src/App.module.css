@@ -1,0 +1,88 @@
+.app {
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative;
+}
+
+.main {
+  flex: 1;
+  margin-top: 72px;
+  margin-bottom: 140px;
+  padding: 0 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.hudRow {
+  width: 100%;
+  max-width: 300px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 16px;
+  gap: 16px;
+}
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: rgba(253, 246, 227, 0.92);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.overlayContent {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.overlayTitle {
+  font-family: var(--font-headline);
+  font-size: 32px;
+  font-weight: 800;
+  font-style: italic;
+  color: var(--color-primary);
+}
+
+.finalScore {
+  font-family: var(--font-headline);
+  font-size: 48px;
+  font-weight: 800;
+  color: var(--color-secondary);
+}
+
+.finalLabel {
+  font-size: 14px;
+  color: var(--color-outline);
+  margin-top: -12px;
+}
+
+.startBtn {
+  font-family: var(--font-headline);
+  font-size: 16px;
+  font-weight: 700;
+  color: white;
+  background: linear-gradient(to right, var(--color-primary), var(--color-secondary));
+  border: none;
+  border-radius: 9999px;
+  padding: 14px 40px;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  transition: transform 100ms;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.startBtn:active {
+  transform: scale(0.95);
+}
