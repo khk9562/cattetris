@@ -11,10 +11,7 @@ interface Props {
 
 function getCatType(board: (string | null)[][], x: number, y: number): string | null {
   if (y < 0 || y >= 20 || x < 0 || x >= 10) return null;
-  const cell = board[y][x];
-  if (!cell) return null;
-  if (typeof cell === 'string' && cell.startsWith('ghost_')) return null;
-  return cell;
+  return board[y][x];
 }
 
 // Flood-fill to find connected groups and assign face/tail per group
@@ -109,7 +106,7 @@ export default function Board({ board, currentPiece, ghostPiece }: Props) {
 
             const isGhost = typeof cell === 'string' && cell.startsWith('ghost_');
             const catType = isGhost ? cell.replace('ghost_', '') : cell;
-            const t = isGhost ? null : (catType as string);
+            const t = cell;
 
             const connTop = t ? getCatType(renderBoard, x, y - 1) === t : false;
             const connRight = t ? getCatType(renderBoard, x + 1, y) === t : false;

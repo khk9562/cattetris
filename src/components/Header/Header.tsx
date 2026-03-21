@@ -19,7 +19,7 @@ export default function Header({ elapsedTime, status, onTogglePause, showGhost, 
     <header className={styles.header}>
       <div className={styles.titleGroup}>
         <span className="material-symbols-outlined" style={{ color: 'var(--color-primary)', fontSize: '1.5rem' }}>pets</span>
-        <h1 className={styles.title}>Cat Tetris</h1>
+        <h1 className={styles.title}>CAT TETRIS</h1>
       </div>
       <div className={styles.controlsGroup}>
         <button className={styles.iconBtn} onClick={onGoHome} aria-label="Go to Home">
