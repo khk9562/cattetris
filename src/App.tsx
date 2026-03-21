@@ -4,7 +4,6 @@ import StatsHUD from './components/StatsHUD/StatsHUD';
 import NextPreview from './components/NextPreview/NextPreview';
 import Board from './components/Board/Board';
 import Controls from './components/Controls/Controls';
-import PauseButton from './components/PauseButton/PauseButton';
 import styles from './App.module.css';
 
 export default function App() {
@@ -12,7 +11,7 @@ export default function App() {
 
   return (
     <div className={styles.app}>
-      <Header elapsedTime={game.elapsedTime} />
+      <Header elapsedTime={game.elapsedTime} status={game.status} onTogglePause={game.togglePause} />
 
       <main className={styles.main}>
         {game.status === 'ready' && (
@@ -58,8 +57,6 @@ export default function App() {
 
         <Board board={game.board} currentPiece={game.currentPiece} ghostPiece={game.ghostPiece} />
       </main>
-
-      <PauseButton status={game.status} onToggle={game.togglePause} />
 
       {(game.status === 'playing' || game.status === 'paused') && (
         <Controls
