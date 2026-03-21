@@ -129,7 +129,7 @@ cattetris/
 
 ### Step 3: UI 컴포넌트
 - [x] **Header** - 상단 고정바 (타이틀 + 타이머 + 일시정지 버튼 통합)
-- [x] **StatsHUD** - High Score, Combo, Score 표시
+- [x] **StatsHUD** - Combo, Score 표시 (High Score는 시작/게임오버 화면으로 이동)
 - [x] **NextPreview** - 다음 블록 미리보기 (글라스모피즘 패널)
 - [x] **Board** - 10x20 CSS Grid, 현재 블록 + 고정 블록 렌더링
 - [x] **CatBlock** - 3D box-shadow + 고양이 얼굴 (회전 시에도 유지)
@@ -145,6 +145,7 @@ cattetris/
 - [x] 컨트롤 버튼 4개(좌/회전/드롭/우) 일렬 동일 크기 정렬
 - [x] safe-area-inset-bottom 적용
 - [x] 보드와 컨트롤 영역 겹침 방지 (CSS 변수로 영역 분리)
+- [x] 보드 높이를 가용 공간에 맞춰 동적 조절 (aspect-ratio + flex)
 
 ### Step 5: 게임 오버 & 재시작
 - [x] 게임 오버 판정 (블록 스폰 불가 시)
