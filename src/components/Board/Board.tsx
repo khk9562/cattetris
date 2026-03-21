@@ -17,6 +17,52 @@ function getCatType(board: (string | null)[][], x: number, y: number): string | 
   return cell;
 }
 
+// Flood-fill to find connected groups and assign face/tail per group
+function computeFeatures(board: (string | null)[][]) {
+  const visited = Array.from({ length: 20 }, () => Array(10).fill(false));
+  const faceMap = Array.from({ length: 20 }, () => Array(10).fill(false));
+  const tailMap = Array.from({ length: 20 }, () => Array(10).fill(false));
+
+  for (let y = 0; y < 20; y++) {
+    for (let x = 0; x < 10; x++) {
+      const t = getCatType(board, x, y);
+      if (!t || visited[y][x]) continue;
+
+      // BFS to collect connected group
+      const group: { x: number; y: number }[] = [];
+      const queue: { x: number; y: number }[] = [{ x, y }];
+      visited[y][x] = true;
+
+      while (queue.length > 0) {
+        const cur = queue.shift()!;
+        group.push(cur);
+        for (const [dx, dy] of [[0, -1], [1, 0], [0, 1], [-1, 0]]) {
+          const nx = cur.x + dx;
+          const ny = cur.y + dy;
+          if (ny >= 0 && ny < 20 && nx >= 0 && nx < 10 && !visited[ny][nx] && getCatType(board, nx, ny) === t) {
+            visited[ny][nx] = true;
+            queue.push({ x: nx, y: ny });
+          }
+        }
+      }
+
+      // Face: topmost row, then leftmost in that row
+      group.sort((a, b) => a.y !== b.y ? a.y - b.y : a.x - b.x);
+      const face = group[0];
+      faceMap[face.y][face.x] = true;
+
+      // Tail: bottommost row, then rightmost in that row
+      group.sort((a, b) => a.y !== b.y ? b.y - a.y : b.x - a.x);
+      const tail = group[0];
+      if (group.length > 1) {
+        tailMap[tail.y][tail.x] = true;
+      }
+    }
+  }
+
+  return { faceMap, tailMap };
+}
+
 export default function Board({ board, currentPiece, ghostPiece }: Props) {
   const renderBoard = board.map(row => [...row]);
 
@@ -48,6 +94,8 @@ export default function Board({ board, currentPiece, ghostPiece }: Props) {
     }
   }
 
+  const { faceMap, tailMap } = computeFeatures(renderBoard);
+
   return (
     <div className={styles.wrapper}>
       <div className={styles.shelfTop} />
@@ -68,10 +116,9 @@ export default function Board({ board, currentPiece, ghostPiece }: Props) {
             const connBottom = t ? getCatType(renderBoard, x, y + 1) === t : false;
             const connLeft = t ? getCatType(renderBoard, x - 1, y) === t : false;
 
-            const showFace = !isGhost && !connTop && !connLeft;
+            const showFace = !isGhost && faceMap[y][x];
             const showEars = showFace;
-            const hasConn = connTop || connRight || connBottom || connLeft;
-            const showTail = !isGhost && !connBottom && !connRight && hasConn;
+            const showTail = !isGhost && tailMap[y][x];
 
             return (
               <div key={`${y}-${x}`} className={styles.cell}>

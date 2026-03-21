@@ -15,11 +15,11 @@
 /* --- Ears --- */
 .ears {
   position: absolute;
-  top: -4px;
+  top: -30%;
   left: 50%;
   transform: translateX(-50%);
   display: flex;
-  gap: 2px;
+  gap: 10%;
   z-index: 3;
   pointer-events: none;
 }
@@ -27,50 +27,59 @@
 .ear {
   width: 0;
   height: 0;
-  border-left: 3px solid transparent;
-  border-right: 3px solid transparent;
-  border-bottom: 4px solid;
+  border-left: 20% solid transparent;
+  border-right: 20% solid transparent;
+  border-bottom: 30% solid;
+  /* fallback fixed sizes for border trick */
+  border-left-width: 3px;
+  border-right-width: 3px;
+  border-bottom-width: 4px;
 }
 
 /* --- Face --- */
 .face {
   position: absolute;
-  inset: 0;
+  inset: 5%;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 1px;
+  gap: 5%;
   z-index: 2;
   pointer-events: none;
 }
 
 .eyes {
   display: flex;
-  gap: 3px;
+  gap: 25%;
 }
 
 .eye {
-  width: 2px;
-  height: 2px;
+  width: 18%;
+  aspect-ratio: 1;
   border-radius: 50%;
   background-color: #322f22;
+  /* min visible size */
+  min-width: 2px;
+  min-height: 2px;
 }
 
-/* Mouth: two small arcs side by side = ω shape */
+/* Mouth: two small arcs = ω shape */
 .mouth {
   display: flex;
-  margin-top: -0.5px;
+  margin-top: -2%;
 }
 
 .mouthArc {
-  width: 2.5px;
-  height: 1.5px;
-  border-bottom: 0.8px solid #322f22;
-  border-left: 0.5px solid #322f22;
-  border-right: 0.5px solid #322f22;
+  width: 20%;
+  aspect-ratio: 5 / 3;
+  border-bottom: 1px solid #322f22;
+  border-left: 1px solid #322f22;
+  border-right: 1px solid #322f22;
   border-top: none;
   border-radius: 0 0 50% 50%;
+  min-width: 2px;
+  min-height: 1.5px;
 }
 
 .light {
@@ -85,15 +94,15 @@
 /* --- Tail --- */
 .tail {
   position: absolute;
-  bottom: 1px;
-  right: -5px;
-  width: 5px;
-  height: 8px;
-  border-right: 1.5px solid;
-  border-top: 1.5px solid;
+  bottom: 5%;
+  right: -35%;
+  width: 35%;
+  height: 55%;
+  border-right: 2.5px solid;
+  border-top: 2.5px solid;
   border-bottom: none;
   border-left: none;
-  border-radius: 0 5px 0 0;
+  border-radius: 0 40% 0 0;
   z-index: 3;
   pointer-events: none;
   background: transparent;

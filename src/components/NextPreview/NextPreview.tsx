@@ -40,6 +40,21 @@ function normalizeShape(shape: number[][]): number[][] {
 export default function NextPreview({ piece }: Props) {
   const grid = normalizeShape(piece.shapes[0]);
 
+  // Find face cell (topmost-leftmost) and tail cell (bottommost-rightmost)
+  let faceY = -1, faceX = -1, tailY = -1, tailX = -1;
+  const filled: { x: number; y: number }[] = [];
+  for (let r = 0; r < 4; r++) {
+    for (let c = 0; c < 4; c++) {
+      if (grid[r][c]) filled.push({ x: c, y: r });
+    }
+  }
+  if (filled.length > 0) {
+    filled.sort((a, b) => a.y !== b.y ? a.y - b.y : a.x - b.x);
+    faceY = filled[0].y; faceX = filled[0].x;
+    filled.sort((a, b) => a.y !== b.y ? b.y - a.y : b.x - a.x);
+    tailY = filled[0].y; tailX = filled[0].x;
+  }
+
   return (
     <div className={styles.container}>
       <p className={styles.label}>Next</p>
@@ -55,19 +70,17 @@ export default function NextPreview({ piece }: Props) {
             const connBottom = y < 3 && grid[y + 1]?.[x] === 1;
             const connLeft = x > 0 && grid[y][x - 1] === 1;
 
-            const showFace = !connTop && !connLeft;
-            const showEars = showFace;
-            const hasConn = connTop || connRight || connBottom || connLeft;
-            const showTail = !connBottom && !connRight && hasConn;
+            const isFace = y === faceY && x === faceX;
+            const isTail = y === tailY && x === tailX && filled.length > 1;
 
             return (
               <div key={`${y}-${x}`} className={styles.cell}>
                 <CatBlock
                   catType={piece.catType}
                   conn={{ top: connTop, right: connRight, bottom: connBottom, left: connLeft }}
-                  showFace={showFace}
-                  showEars={showEars}
-                  showTail={showTail}
+                  showFace={isFace}
+                  showEars={isFace}
+                  showTail={isTail}
                 />
               </div>
             );
