@@ -25,7 +25,7 @@
   width: 100%;
   display: flex;
   justify-content: center;
-  align-items: flex-start;
+  align-items: stretch;
   gap: 0.5rem;
   flex-shrink: 0;
 }
@@ -114,4 +114,34 @@
 
 .startBtn:active {
   transform: scale(0.95);
+}
+
+.themeSelector {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-top: -0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.themeIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 0.75rem;
+  border: 2px solid transparent;
+  background-color: var(--color-surface-container-high);
+  color: var(--color-primary);
+  cursor: pointer;
+  transition: all 0.2s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.themeActive {
+  border-color: var(--color-primary);
+  background-color: var(--color-surface-container-highest);
+  transform: scale(1.1);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }

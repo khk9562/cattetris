@@ -84,7 +84,7 @@ export default function Controls({ onLeft, onRight, onRotate, onSoftDrop, onHard
           onPointerCancel={handleMovePointerUp}
           onContextMenu={(e) => e.preventDefault()}
         >
-          <span className="material-symbols-outlined" style={{ fontSize: '1.75rem' }}>keyboard_arrow_left</span>
+          <span className="material-symbols-outlined" style={{ fontSize: '2.25rem' }}>keyboard_arrow_left</span>
         </button>
 
         <button
@@ -94,7 +94,7 @@ export default function Controls({ onLeft, onRight, onRotate, onSoftDrop, onHard
           onPointerCancel={handleDropPointerUp}
           onContextMenu={(e) => e.preventDefault()}
         >
-          <span className="material-symbols-outlined" style={{ fontSize: '1.75rem' }}>keyboard_arrow_down</span>
+          <span className="material-symbols-outlined" style={{ fontSize: '2.25rem' }}>keyboard_arrow_down</span>
         </button>
 
         <button
@@ -104,7 +104,7 @@ export default function Controls({ onLeft, onRight, onRotate, onSoftDrop, onHard
           onPointerCancel={handleMovePointerUp}
           onContextMenu={(e) => e.preventDefault()}
         >
-          <span className="material-symbols-outlined" style={{ fontSize: '1.75rem' }}>keyboard_arrow_right</span>
+          <span className="material-symbols-outlined" style={{ fontSize: '2.25rem' }}>keyboard_arrow_right</span>
         </button>
         
         <button 
@@ -114,7 +114,7 @@ export default function Controls({ onLeft, onRight, onRotate, onSoftDrop, onHard
           onPointerCancel={handleRotatePointerUp}
           onContextMenu={(e) => e.preventDefault()}
         >
-          <span className="material-symbols-outlined" style={{ fontSize: '1.75rem' }}>rotate_right</span>
+          <span className="material-symbols-outlined" style={{ fontSize: '2.25rem' }}>rotate_right</span>
         </button>
       </div>
     </footer>

@@ -31,6 +31,7 @@
   border-radius: 50%;
   border: none;
   background-color: var(--color-surface-container-high);
+  background-image: var(--ui-bg, none);
   color: var(--color-primary);
   cursor: pointer;
   transition: transform 75ms ease-in-out;

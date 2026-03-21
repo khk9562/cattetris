@@ -13,15 +13,15 @@ function formatNumber(n: number): string {
 export default function StatsHUD({ score, combo, highScore }: Props) {
   return (
     <div className={styles.container}>
-      <div>
+      <div className={styles.statBlock}>
         <p className={styles.label}>최고 기록</p>
         <p className={styles.comboValue}>{formatNumber(highScore)}</p>
       </div>
-      <div>
+      <div className={styles.statBlock}>
         <p className={styles.label}>콤보</p>
         <p className={styles.comboValue}>x{combo}</p>
       </div>
-      <div className={styles.scoreBlock}>
+      <div className={styles.statBlock}>
         <p className={styles.label}>점수</p>
         <p className={styles.scoreValue}>{formatNumber(score)}</p>
       </div>

@@ -8,10 +8,12 @@ import Board from './components/Board/Board';
 import Controls from './components/Controls/Controls';
 import GameOverlays from './components/GameOverlays/GameOverlays';
 import CollectionOverlay from './components/CollectionOverlay/CollectionOverlay';
+import { useTheme, type Theme } from './hooks/useTheme';
 import styles from './App.module.css';
 
 export default function App() {
   const game = useGame();
+  const { theme, setTheme } = useTheme();
   const [showGhost, setShowGhost] = useState(true);
   const [showCollection, setShowCollection] = useState(false);
 
@@ -38,6 +40,8 @@ export default function App() {
           togglePause={game.togglePause}
           goHome={game.goHome}
           onOpenCollection={() => setShowCollection(true)}
+          theme={theme}
+          setTheme={(t) => setTheme(t as Theme)}
         />
 
         <div className={styles.hudRow}>
