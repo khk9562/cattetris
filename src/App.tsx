@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { useGame } from './game/useGame';
 import Header from './components/Header/Header';
 import StatsHUD from './components/StatsHUD/StatsHUD';
@@ -8,6 +9,39 @@ import styles from './App.module.css';
 
 export default function App() {
   const game = useGame();
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (game.status !== 'playing') return;
+
+      switch (e.code) {
+        case 'ArrowLeft':
+          e.preventDefault();
+          game.moveLeft();
+          break;
+        case 'ArrowRight':
+          e.preventDefault();
+          game.moveRight();
+          break;
+        case 'ArrowDown':
+          e.preventDefault();
+          game.moveDown();
+          break;
+        case 'Enter':
+        case 'ArrowUp':
+          e.preventDefault();
+          game.rotate();
+          break;
+        case 'Space':
+          e.preventDefault();
+          game.hardDrop();
+          break;
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [game.status, game.moveLeft, game.moveRight, game.moveDown, game.rotate, game.hardDrop]);
 
   return (
     <div className={styles.app}>
