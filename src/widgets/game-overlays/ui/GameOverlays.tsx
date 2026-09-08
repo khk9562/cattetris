@@ -2,7 +2,7 @@ import { memo } from 'react';
 import { CatBlock, type CatType } from '@/entities/cat';
 import { DIFFICULTY_ORDER, DIFFICULTY_PRESETS, type DifficultyId } from '@/entities/difficulty';
 import type { GameStatus, SessionStats } from '@/features/game-session';
-import type { Theme } from '@/features/theme';
+import type { ThemeId } from '@/shared/config';
 import { Icon } from '@/shared/ui';
 import styles from './GameOverlays.module.css';
 
@@ -19,8 +19,8 @@ interface Props {
   togglePause: () => void;
   goHome: () => void;
   onOpenCollection: () => void;
-  theme: Theme;
-  setTheme: (t: Theme) => void;
+  theme: ThemeId;
+  setTheme: (t: ThemeId) => void;
 }
 
 const PARADE: CatType[] = ['ginger', 'tuxedo', 'calico', 'siamese', 'bengal', 'white'];

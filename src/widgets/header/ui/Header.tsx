@@ -7,13 +7,12 @@ interface Props {
   elapsedSeconds: number;
   status: GameStatus;
   onTogglePause: () => void;
-  showGhost: boolean;
-  onToggleGhost: () => void;
+  onOpenSettings: () => void;
   onGoHome: () => void;
   onOpenCollection: () => void;
 }
 
-function Header({ elapsedSeconds, status, onTogglePause, showGhost, onToggleGhost, onGoHome, onOpenCollection }: Props) {
+function Header({ elapsedSeconds, status, onTogglePause, onOpenSettings, onGoHome, onOpenCollection }: Props) {
   const minutes = String(Math.floor(elapsedSeconds / 60)).padStart(2, '0');
   const seconds = String(elapsedSeconds % 60).padStart(2, '0');
   const showPause = status === 'playing' || status === 'paused';
@@ -33,8 +32,8 @@ function Header({ elapsedSeconds, status, onTogglePause, showGhost, onToggleGhos
         <button className={styles.iconBtn} onClick={onGoHome} aria-label="메인 메뉴">
           <Icon name="home" />
         </button>
-        <button className={styles.iconBtn} onClick={onToggleGhost} aria-label="고스트 미리보기 전환">
-          <Icon name={showGhost ? 'eye' : 'eyeOff'} />
+        <button className={styles.iconBtn} onClick={onOpenSettings} aria-label="설정">
+          <Icon name="gear" />
         </button>
         {showPause ? (
           <button className={styles.timerBtn} onClick={onTogglePause} aria-label={status === 'paused' ? '이어하기' : '일시 정지'}>

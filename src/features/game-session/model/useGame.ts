@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from 'react';
 import { ALL_CAT_TYPES, type CatType } from '@/entities/cat';
-import { DIFFICULTY_PRESETS, isDifficultyId, type DifficultyId } from '@/entities/difficulty';
-import { DIFFICULTY_KEY, HIGH_SCORE_KEY, STATS_KEY } from '@/shared/config';
-import { randomSeed, readJson, readNumber, readString, writeJson, writeNumber, writeString } from '@/shared/lib';
+import { DIFFICULTY_PRESETS, type DifficultyId } from '@/entities/difficulty';
+import { HIGH_SCORE_KEY, STATS_KEY } from '@/shared/config';
+import { randomSeed, readJson, readNumber, writeJson, writeNumber } from '@/shared/lib';
 import { createInitialState, engineReducer, selectGhost } from './engine';
 import type { EngineState, FeedbackKind } from './types';
 
@@ -21,11 +21,6 @@ function loadHighScores(): HighScores {
     normal: Math.max(readNumber(highScoreKey('normal'), 0), legacy),
     hard: readNumber(highScoreKey('hard'), 0),
   };
-}
-
-function loadDifficulty(): DifficultyId {
-  const stored = readString(DIFFICULTY_KEY, 'normal');
-  return isDifficultyId(stored) ? stored : 'normal';
 }
 
 const VIBRATION: Partial<Record<FeedbackKind, number | number[]>> = {
@@ -51,8 +46,12 @@ function vibrate(kind: FeedbackKind) {
 /** 탭 전환 등으로 프레임이 크게 밀렸을 때 한 번에 처리할 최대 시간 */
 const MAX_FRAME_MS = 50;
 
-export function useGame() {
-  const [difficulty, setDifficultyState] = useState<DifficultyId>(loadDifficulty);
+export interface UseGameOptions {
+  difficulty: DifficultyId;
+  vibration: boolean;
+}
+
+export function useGame({ difficulty, vibration }: UseGameOptions) {
   const [highScores, setHighScores] = useState<HighScores>(loadHighScores);
   const [stats, setStats] = useState<Stats>(() => readJson<Stats>(STATS_KEY, {}));
   const [state, dispatch] = useReducer(engineReducer, DIFFICULTY_PRESETS[difficulty], createInitialState);
@@ -90,8 +89,8 @@ export function useGame() {
     const fb = state.feedback;
     if (!fb || fb.seq === lastFeedbackSeq.current) return;
     lastFeedbackSeq.current = fb.seq;
-    vibrate(fb.kind);
-  }, [state.feedback]);
+    if (vibration) vibrate(fb.kind);
+  }, [state.feedback, vibration]);
 
   // ---- 도감 통계: 세션 증가분을 누적 저장 ----
   const prevDestroyed = useRef<Stats>(state.destroyed);
@@ -129,11 +128,6 @@ export function useGame() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state.status]);
 
-  const setDifficulty = useCallback((id: DifficultyId) => {
-    setDifficultyState(id);
-    writeString(DIFFICULTY_KEY, id);
-  }, []);
-
   const start = useCallback(() => {
     setIsNewHighScore(false);
     dispatch({ type: 'start', preset: DIFFICULTY_PRESETS[difficulty], breeds: ALL_CAT_TYPES, seed: randomSeed() });
@@ -170,7 +164,6 @@ export function useGame() {
     ghost,
     actions,
     difficulty,
-    setDifficulty,
     highScore: highScores[difficulty],
     highScores,
     isNewHighScore,

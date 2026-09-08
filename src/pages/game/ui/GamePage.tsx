@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useGame } from '@/features/game-session';
 import { useKeyboardControls } from '@/features/keyboard-controls';
-import { useTheme } from '@/features/theme';
+import { useSettings } from '@/features/settings';
 import { useBoardGestures } from '@/features/touch-gestures';
 import { Header } from '@/widgets/header';
 import { StatsHUD } from '@/widgets/stats-hud';
@@ -11,17 +11,18 @@ import { Board } from '@/widgets/board';
 import { Controls } from '@/widgets/controls';
 import { GameOverlays } from '@/widgets/game-overlays';
 import { CollectionOverlay } from '@/widgets/collection';
+import { SettingsOverlay } from '@/widgets/settings-overlay';
 import styles from './GamePage.module.css';
 
 export default function GamePage() {
-  const game = useGame();
+  const { settings, update } = useSettings();
+  const game = useGame({ difficulty: settings.difficulty, vibration: settings.vibration });
   const { state, actions } = game;
-  const { theme, setTheme } = useTheme();
-  const [showGhost, setShowGhost] = useState(true);
   const [showCollection, setShowCollection] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
 
   useKeyboardControls(state.status, actions);
-  const gestures = useBoardGestures(actions, state.status === 'playing');
+  const gestures = useBoardGestures(actions, state.status === 'playing' && settings.gestures);
 
   const inGame = state.status === 'playing' || state.status === 'paused';
 
@@ -31,8 +32,7 @@ export default function GamePage() {
         elapsedSeconds={Math.floor(state.elapsedMs / 1000)}
         status={state.status}
         onTogglePause={actions.togglePause}
-        showGhost={showGhost}
-        onToggleGhost={() => setShowGhost(g => !g)}
+        onOpenSettings={() => setShowSettings(true)}
         onGoHome={state.status === 'playing' ? actions.pause : actions.home}
         onOpenCollection={() => setShowCollection(true)}
       />
@@ -45,14 +45,14 @@ export default function GamePage() {
           highScore={game.highScore}
           isNewHighScore={game.isNewHighScore}
           stats={state.stats}
-          difficulty={game.difficulty}
-          onSelectDifficulty={game.setDifficulty}
+          difficulty={settings.difficulty}
+          onSelectDifficulty={id => update('difficulty', id)}
           startGame={actions.start}
           togglePause={actions.togglePause}
           goHome={actions.home}
           onOpenCollection={() => setShowCollection(true)}
-          theme={theme}
-          setTheme={setTheme}
+          theme={settings.theme}
+          setTheme={t => update('theme', t)}
         />
 
         <StatsHUD
@@ -71,7 +71,7 @@ export default function GamePage() {
           <Board
             board={state.board}
             currentPiece={state.current}
-            ghostPiece={showGhost ? game.ghost : null}
+            ghostPiece={settings.ghost ? game.ghost : null}
             clearing={state.clearing}
             popups={state.popups}
           />
@@ -81,6 +81,7 @@ export default function GamePage() {
       {inGame && <Controls actions={actions} />}
 
       {showCollection && <CollectionOverlay stats={game.stats} onClose={() => setShowCollection(false)} />}
+      {showSettings && <SettingsOverlay settings={settings} onChange={update} onClose={() => setShowSettings(false)} />}
     </div>
   );
 }

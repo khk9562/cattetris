@@ -31,3 +31,4 @@ export const HIGH_SCORE_KEY = 'cattetris_highscore';
 export const STATS_KEY = 'cattetris_stats';
 export const THEME_KEY = 'cattetris_theme';
 export const DIFFICULTY_KEY = 'cattetris_difficulty';
+export const SETTINGS_KEY = 'cattetris_settings';
