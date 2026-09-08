@@ -15,6 +15,23 @@
   background-repeat: repeat;
 }
 
+/* ---------- 착지 스쿼시 ---------- */
+.landing {
+  animation: land 0.42s cubic-bezier(0.22, 1, 0.36, 1);
+  transform-origin: center bottom;
+}
+
+@keyframes land {
+  0% { transform: scale(1.1, 0.78); }
+  40% { transform: scale(0.95, 1.08); }
+  70% { transform: scale(1.03, 0.97); }
+  100% { transform: scale(1, 1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .landing { animation: none; }
+}
+
 /* ---------- 제거 연출 ---------- */
 .fx_line {
   animation: fxLine 0.32s ease-in forwards;

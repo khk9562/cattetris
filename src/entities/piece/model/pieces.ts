@@ -4,6 +4,8 @@ import { nextRandom } from '@/shared/lib';
 import { TETROMINO_IDS, TETROMINO_SHAPES, getKicks, type TetrominoId } from './tetromino';
 
 export interface ActivePiece {
+  /** 판 안에서 조각을 구분하는 번호 (연출 키 용도, 엔진이 부여) */
+  uid?: number;
   id: TetrominoId;
   shape: number[][];
   shapes: number[][][];
@@ -72,7 +74,7 @@ export function makePiece(id: TetrominoId, catType: CatType): ActivePiece {
 
 /** 홀드에서 꺼낼 때처럼 회전과 위치를 초기 상태로 되돌린다. */
 export function resetPiece(piece: ActivePiece): ActivePiece {
-  return makePiece(piece.id, piece.catType);
+  return { ...makePiece(piece.id, piece.catType), uid: piece.uid };
 }
 
 export function rotatedPiece(piece: ActivePiece, direction: 1 | -1): ActivePiece {

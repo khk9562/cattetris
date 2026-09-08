@@ -65,6 +65,8 @@ export function createInitialState(preset: DifficultyPreset = DIFFICULTY_PRESETS
     lowestY: 0,
     phaseMs: 0,
     clearing: [],
+    lastLocked: null,
+    pieceUid: 0,
     popups: [],
     popupSeq: 0,
     events: [],
@@ -114,18 +116,19 @@ function refillQueue(s: EngineState): EngineState {
   let state = s;
   const queue = [...s.queue];
   const scripted = [...s.scripted];
+  let pieceUid = state.pieceUid;
   while (queue.length < NEXT_QUEUE_SIZE) {
     const next = scripted.shift();
     if (next) {
-      queue.push(makePiece(next.id, next.catType));
+      queue.push({ ...makePiece(next.id, next.catType), uid: ++pieceUid });
       state = { ...state, lastBreed: next.catType };
       continue;
     }
     const d = drawPiece(state);
-    queue.push(d.piece);
+    queue.push({ ...d.piece, uid: ++pieceUid });
     state = d.state;
   }
-  return { ...state, queue, scripted };
+  return { ...state, queue, scripted, pieceUid };
 }
 
 function gameOver(s: EngineState): EngineState {
@@ -327,7 +330,18 @@ function lockPiece(s: EngineState): EngineState {
   if (!piece) return s;
   // lock out: 조각 전체가 보이는 영역 위에서 고정되면 게임 오버
   if (pieceCells(piece).every(c => c.y < 0)) return gameOver({ ...s, board: placePiece(s.board, piece) });
-  const state = withFeedback({ ...s, board: placePiece(s.board, piece), current: null, lockMs: 0, piecesPlaced: s.piecesPlaced + 1 }, 'lock');
+  const cells = pieceCells(piece).filter(c => c.y >= 0);
+  const state = withFeedback(
+    {
+      ...s,
+      board: placePiece(s.board, piece),
+      current: null,
+      lockMs: 0,
+      piecesPlaced: s.piecesPlaced + 1,
+      lastLocked: { cells, seq: (s.lastLocked?.seq ?? 0) + 1 },
+    },
+    'lock',
+  );
   return evaluate(state, 0);
 }
 

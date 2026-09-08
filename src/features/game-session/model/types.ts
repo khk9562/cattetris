@@ -98,6 +98,10 @@ export interface EngineState {
   phaseMs: number;
 
   clearing: ClearCell[];
+  /** 방금 고정된 조각의 셀 (착지 연출용). seq는 고정마다 증가 */
+  lastLocked: { cells: Position[]; seq: number } | null;
+  /** 조각 번호 발급기 */
+  pieceUid: number;
   popups: Popup[];
   popupSeq: number;
   /** 최근 피드백 이벤트 (최대 8개 유지) */

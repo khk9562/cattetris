@@ -1,5 +1,5 @@
 import { memo, useCallback, useMemo, useState } from 'react';
-import type { Board as BoardType } from '@/entities/board';
+import type { Board as BoardType, Position } from '@/entities/board';
 import type { ActivePiece } from '@/entities/piece';
 import { CatBlock, type CatType } from '@/entities/cat';
 import type { ClearCell, ClearKind, Popup } from '@/features/game-session';
@@ -15,9 +15,37 @@ interface Props {
   clearing: ClearCell[];
   popups: Popup[];
   gameOver?: boolean;
+  /** 방금 고정된 셀 (착지 스쿼시) */
+  lastLocked?: { cells: Position[]; seq: number } | null;
 }
 
 type RenderCell = { type: CatType; ghost: boolean; active?: boolean } | null;
+
+interface FloatCell {
+  x: number;
+  y: number;
+  conn: { top: boolean; right: boolean; bottom: boolean; left: boolean };
+  face: boolean;
+  tail: boolean;
+}
+
+/** 조각 하나의 셀 목록과 조각 내부 연결/얼굴/꼬리 정보 */
+function pieceFloatCells(p: ActivePiece): FloatCell[] {
+  const cells: { r: number; c: number }[] = [];
+  p.shape.forEach((row, r) => row.forEach((v, c) => { if (v) cells.push({ r, c }); }));
+  const has = (r: number, c: number) => !!p.shape[r]?.[c];
+  const sorted = [...cells].sort((a, b) => (a.r !== b.r ? a.r - b.r : a.c - b.c));
+  const face = sorted[0];
+  const tail = [...cells].sort((a, b) => (a.r !== b.r ? b.r - a.r : b.c - a.c))[0];
+  return cells.map(({ r, c }) => ({
+    x: p.position.x + c,
+    y: p.position.y + r,
+    conn: { top: has(r - 1, c), right: has(r, c + 1), bottom: has(r + 1, c), left: has(r, c - 1) },
+    face: r === face.r && c === face.c,
+    tail: cells.length > 1 && r === tail.r && c === tail.c,
+  }));
+}
+
 
 function cellAt(grid: RenderCell[][], x: number, y: number): RenderCell {
   if (y < 0 || y >= BOARD_HEIGHT || x < 0 || x >= BOARD_WIDTH) return null;
@@ -65,28 +93,18 @@ function computeFeatures(grid: RenderCell[][]) {
   return { faceMap, tailMap };
 }
 
-function buildGrid(board: BoardType, current: ActivePiece | null, ghost: ActivePiece | null): RenderCell[][] {
-  const grid: RenderCell[][] = board.map(row => row.map(c => (c ? { type: c, ghost: false } : null)));
-  const paint = (p: ActivePiece, isGhost: boolean) => {
-    for (let r = 0; r < p.shape.length; r++) {
-      for (let c = 0; c < p.shape[r].length; c++) {
-        if (!p.shape[r][c]) continue;
-        const x = p.position.x + c;
-        const y = p.position.y + r;
-        if (y < 0 || y >= BOARD_HEIGHT || x < 0 || x >= BOARD_WIDTH) continue;
-        if (isGhost && grid[y][x]) continue;
-        grid[y][x] = { type: p.catType, ghost: isGhost, active: !isGhost };
-      }
-    }
-  };
-  if (ghost) paint(ghost, true);
-  if (current) paint(current, false);
-  return grid;
+function buildGrid(board: BoardType): RenderCell[][] {
+  return board.map(row => row.map(c => (c ? { type: c, ghost: false } : null)));
 }
 
-function Board({ board, currentPiece, ghostPiece, clearing, popups, gameOver = false }: Props) {
-  const grid = useMemo(() => buildGrid(board, currentPiece, ghostPiece), [board, currentPiece, ghostPiece]);
+function Board({ board, currentPiece, ghostPiece, clearing, popups, gameOver = false, lastLocked = null }: Props) {
+  const grid = useMemo(() => buildGrid(board), [board]);
   const { faceMap, tailMap } = useMemo(() => computeFeatures(grid), [grid]);
+
+  // 활성 조각 셀은 조각 번호(uid)를 키로 써서 새 조각이면 마운트 팝, 같은 조각이면 left/top 트랜지션으로 미끄러진다
+  const activeCells = useMemo(() => (currentPiece ? pieceFloatCells(currentPiece) : []), [currentPiece]);
+  const ghostCells = useMemo(() => (ghostPiece ? pieceFloatCells(ghostPiece) : []), [ghostPiece]);
+  const landedSet = useMemo(() => new Set((lastLocked?.cells ?? []).map(c => `${c.x},${c.y}`)), [lastLocked]);
   const clearMap = useMemo(() => {
     const m = new Map<string, ClearKind>();
     for (const c of clearing) m.set(`${c.x},${c.y}`, c.kind);
@@ -110,10 +128,13 @@ function Board({ board, currentPiece, ghostPiece, clearing, popups, gameOver = f
           row.map((cell, x) => {
             if (!cell) return <div key={`${y}-${x}`} className={styles.cell} />;
             const effect = clearMap.get(`${x},${y}`);
-            const expression = pickExpression({ gameOver, danger, isActive: !!cell.active, effect });
+            const expression = pickExpression({ gameOver, danger, isActive: false, effect });
+            const landed = landedSet.has(`${x},${y}`);
             return (
               <div key={`${y}-${x}`} className={styles.cell}>
                 <CatBlock
+                  key={landed ? `l${lastLocked?.seq}` : 'c'}
+                  landing={landed}
                   catType={cell.type}
                   ghost={cell.ghost}
                   conn={{
@@ -135,8 +156,38 @@ function Board({ board, currentPiece, ghostPiece, clearing, popups, gameOver = f
             );
           }),
         )}
+        <div className={styles.layer} aria-hidden="true">
+          {ghostPiece && ghostCells.map((c, i) => (
+            <div
+              key={`g${ghostPiece.uid}-${i}`}
+              className={`${styles.floatCell} ${styles.glide}`}
+              style={{ left: `${(c.x / BOARD_WIDTH) * 100}%`, top: `${(c.y / BOARD_HEIGHT) * 100}%` }}
+            >
+              <CatBlock catType={ghostPiece.catType} ghost conn={c.conn} cellX={c.x} cellY={c.y} />
+            </div>
+          ))}
+          {currentPiece && activeCells.map((c, i) => (
+            <div
+              key={`p${currentPiece.uid}-${i}`}
+              className={`${styles.floatCell} ${styles.glide} ${styles.pop}`}
+              style={{ left: `${(c.x / BOARD_WIDTH) * 100}%`, top: `${(c.y / BOARD_HEIGHT) * 100}%`, zIndex: 3 }}
+            >
+              <CatBlock
+                catType={currentPiece.catType}
+                conn={c.conn}
+                showFace={c.face}
+                showEars={c.face}
+                showTail={c.tail}
+                expression="idle"
+                blinkDelay={blinkDelayFor(c.x, c.y)}
+                cellX={c.x}
+                cellY={c.y}
+              />
+            </div>
+          ))}
+        </div>
       </div>
-      <ExplosionLayer board={board} clearing={clearing} onShake={onShake} />
+      <ExplosionLayer board={board} clearing={clearing} landed={lastLocked} onShake={onShake} />
       {popups.map(p => (
         <div
           key={p.id}

@@ -125,6 +125,7 @@ export default function GamePage() {
             clearing={state.clearing}
             popups={state.popups}
             gameOver={state.status === 'gameover'}
+            lastLocked={state.lastLocked}
           />
         </div>
       </main>

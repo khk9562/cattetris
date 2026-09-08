@@ -20,7 +20,11 @@ function HoldSlot({ piece, disabled, onHold }: Props) {
     >
       <p className={styles.label}>홀드</p>
       <div className={styles.body}>
-        {piece ? <PiecePreview piece={piece} /> : <Icon name="hold" size="1.5rem" style={{ opacity: 0.35 }} />}
+        {piece ? (
+          <div key={piece.uid ?? 0} className={styles.flip}><PiecePreview piece={piece} /></div>
+        ) : (
+          <Icon name="hold" size="1.5rem" style={{ opacity: 0.35 }} />
+        )}
       </div>
     </button>
   );

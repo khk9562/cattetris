@@ -33,6 +33,42 @@
   overflow: visible;
 }
 
+/* ---------- 활성 조각/고스트 레이어 (그리드 위에 떠서 움직임) ---------- */
+.grid { position: relative; }
+
+.layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.floatCell {
+  position: absolute;
+  width: 10%;
+  height: 5%;
+}
+
+.glide {
+  transition: left 85ms cubic-bezier(0.2, 0.8, 0.3, 1), top 95ms cubic-bezier(0.2, 0.8, 0.3, 1);
+}
+
+.pop {
+  animation: spawnPop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transform-origin: center bottom;
+}
+
+@keyframes spawnPop {
+  0% { transform: scale(0.55) translateY(-30%); opacity: 0; }
+  60% { transform: scale(1.08) translateY(0); opacity: 1; }
+  100% { transform: scale(1) translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .glide { transition: none; }
+  .pop { animation: none; }
+}
+
 /* ---------- 폭발 흔들림 ---------- */
 .shaking {
   animation: boardShake 0.36s cubic-bezier(0.36, 0.07, 0.19, 0.97);

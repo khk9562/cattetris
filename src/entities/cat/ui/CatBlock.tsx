@@ -27,6 +27,8 @@ interface Props {
   /** 보드 좌표. 무늬 타일이 셀에 붙어 이어지도록 위상을 정한다 */
   cellX?: number;
   cellY?: number;
+  /** 방금 착지한 셀: 젤리처럼 눌렸다 튀어오름 */
+  landing?: boolean;
   /** 컨텍스트 대신 직접 지정할 스킨 (도감 미리보기용) */
   skinId?: string;
   accessory?: AccessoryId | null;
@@ -37,7 +39,7 @@ export type CatExpression = 'idle' | 'happy' | 'scared' | 'dizzy' | 'sleepy';
 const R = '38%';
 
 function CatBlock({
-  catType, ghost, conn, showFace, showEars, showTail, effect, expression = 'idle', blinkDelay = 0, cellX = 0, cellY = 0, skinId, accessory,
+  catType, ghost, conn, showFace, showEars, showTail, effect, expression = 'idle', blinkDelay = 0, cellX = 0, cellY = 0, landing = false, skinId, accessory,
 }: Props) {
   const isDark = DARK_CAT_TYPES.includes(catType);
   const equipped = useEquippedSkins();
@@ -69,6 +71,7 @@ function CatBlock({
     c.left ? styles.connLeft : '',
     effect ? styles[`fx_${effect}`] : '',
     styles[`face_${expression}`] || '',
+    landing ? styles.landing : '',
   ].filter(Boolean).join(' ');
 
   const style = {

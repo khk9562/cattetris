@@ -1,11 +1,11 @@
-import { memo, useEffect, useRef } from 'react';
-import type { Board } from '@/entities/board';
+import { memo, useCallback, useEffect, useRef } from 'react';
+import type { Board, Position } from '@/entities/board';
 import { CAT_FUR_COLORS, getSkin, useEquippedSkins, type CatType, type EquippedSkins } from '@/entities/cat';
 import type { ClearCell } from '@/features/game-session';
 import { BOARD_HEIGHT, BOARD_WIDTH } from '@/shared/config';
 import styles from './ExplosionLayer.module.css';
 
-type ParticleKind = 'fur' | 'spark' | 'paw' | 'star' | 'ring' | 'flash';
+type ParticleKind = 'fur' | 'spark' | 'paw' | 'star' | 'ring' | 'flash' | 'dust';
 
 interface Particle {
   kind: ParticleKind;
@@ -27,6 +27,8 @@ interface Particle {
 interface Props {
   board: Board;
   clearing: ClearCell[];
+  /** 방금 착지한 셀: 바닥에 닿은 셀 아래로 먼지 */
+  landed?: { cells: Position[]; seq: number } | null;
   /** 큰 폭발일 때 보드 흔들림을 부모에게 알린다 */
   onShake?: (strength: number) => void;
 }
@@ -152,11 +154,12 @@ function drawStar(ctx: CanvasRenderingContext2D, size: number) {
   ctx.fill();
 }
 
-function ExplosionLayer({ board, clearing, onShake }: Props) {
+function ExplosionLayer({ board, clearing, landed = null, onShake }: Props) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const particles = useRef<Particle[]>([]);
   const raf = useRef(0);
   const lastClearing = useRef<ClearCell[]>([]);
+  const lastLandedSeq = useRef(0);
   const reduceMotion = useRef(false);
   const equipped = useEquippedSkins();
   const equippedRef = useRef(equipped);
@@ -184,33 +187,9 @@ function ExplosionLayer({ board, clearing, onShake }: Props) {
     return () => ro.disconnect();
   }, []);
 
-  // 제거 셀 묶음이 새로 들어오면 파티클 생성
-  useEffect(() => {
-    if (clearing.length === 0 || clearing === lastClearing.current || reduceMotion.current) return;
-    lastClearing.current = clearing;
+  const startLoop = useCallback(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-    const rect = canvas.getBoundingClientRect();
-    const cellW = rect.width / BOARD_WIDTH;
-    const cellH = rect.height / BOARD_HEIGHT;
-    const out = particles.current;
-
-    const clusterCells = clearing.filter(c => c.kind === 'cluster');
-    for (const cell of clearing) {
-      const cat = cell.y >= 0 && cell.y < BOARD_HEIGHT ? board[cell.y][cell.x] : null;
-      spawnForCell(out, cell, cat, cellW, cellH, equippedRef.current);
-    }
-    if (clusterCells.length > 0) {
-      // 뭉치 중심에 충격파 링과 섬광
-      const cx = (clusterCells.reduce((a, c) => a + c.x, 0) / clusterCells.length + 0.5) * cellW;
-      const cy = (clusterCells.reduce((a, c) => a + c.y, 0) / clusterCells.length + 0.5) * cellH;
-      const radius = Math.sqrt(clusterCells.length) * cellW * 1.6;
-      out.push({ kind: 'ring', x: cx, y: cy, vx: 0, vy: 0, size: radius, rotation: 0, spin: 0, color: '#ff8a3d', life: 0, maxLife: 520, gravity: 0, drag: 0 });
-      out.push({ kind: 'ring', x: cx, y: cy, vx: 0, vy: 0, size: radius * 0.7, rotation: 0, spin: 0, color: '#ffd54f', life: -90, maxLife: 420, gravity: 0, drag: 0 });
-      out.push({ kind: 'flash', x: cx, y: cy, vx: 0, vy: 0, size: radius * 0.9, rotation: 0, spin: 0, color: '#fff8e1', life: 0, maxLife: 260, gravity: 0, drag: 0 });
-      onShake?.(Math.min(1, clusterCells.length / 12));
-    }
-
     if (!raf.current) {
       let last = performance.now();
       const loop = (now: number) => {
@@ -279,6 +258,13 @@ function ExplosionLayer({ board, clearing, onShake }: Props) {
               ctx.stroke();
               break;
             }
+            case 'dust': {
+              ctx.fillStyle = p.color;
+              ctx.beginPath();
+              ctx.arc(0, 0, p.size * (0.6 + t * 0.9), 0, Math.PI * 2);
+              ctx.fill();
+              break;
+            }
             case 'flash': {
               ctx.globalCompositeOperation = 'lighter';
               const g = ctx.createRadialGradient(0, 0, 0, 0, 0, p.size);
@@ -304,7 +290,65 @@ function ExplosionLayer({ board, clearing, onShake }: Props) {
       };
       raf.current = requestAnimationFrame(loop);
     }
-  }, [clearing, board, onShake]);
+  }, []);
+
+  // 제거 셀 묶음이 새로 들어오면 파티클 생성
+  useEffect(() => {
+    if (clearing.length === 0 || clearing === lastClearing.current || reduceMotion.current) return;
+    lastClearing.current = clearing;
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const rect = canvas.getBoundingClientRect();
+    const cellW = rect.width / BOARD_WIDTH;
+    const cellH = rect.height / BOARD_HEIGHT;
+    const out = particles.current;
+
+    const clusterCells = clearing.filter(c => c.kind === 'cluster');
+    for (const cell of clearing) {
+      const cat = cell.y >= 0 && cell.y < BOARD_HEIGHT ? board[cell.y][cell.x] : null;
+      spawnForCell(out, cell, cat, cellW, cellH, equippedRef.current);
+    }
+    if (clusterCells.length > 0) {
+      // 뭉치 중심에 충격파 링과 섬광
+      const cx = (clusterCells.reduce((a, c) => a + c.x, 0) / clusterCells.length + 0.5) * cellW;
+      const cy = (clusterCells.reduce((a, c) => a + c.y, 0) / clusterCells.length + 0.5) * cellH;
+      const radius = Math.sqrt(clusterCells.length) * cellW * 1.6;
+      out.push({ kind: 'ring', x: cx, y: cy, vx: 0, vy: 0, size: radius, rotation: 0, spin: 0, color: '#ff8a3d', life: 0, maxLife: 520, gravity: 0, drag: 0 });
+      out.push({ kind: 'ring', x: cx, y: cy, vx: 0, vy: 0, size: radius * 0.7, rotation: 0, spin: 0, color: '#ffd54f', life: -90, maxLife: 420, gravity: 0, drag: 0 });
+      out.push({ kind: 'flash', x: cx, y: cy, vx: 0, vy: 0, size: radius * 0.9, rotation: 0, spin: 0, color: '#fff8e1', life: 0, maxLife: 260, gravity: 0, drag: 0 });
+      onShake?.(Math.min(1, clusterCells.length / 12));
+    }
+
+    startLoop();
+  }, [clearing, board, onShake, startLoop]);
+
+  // 착지 먼지: 조각의 바닥 셀 아래로 작은 먼지 구름
+  useEffect(() => {
+    if (!landed || landed.seq === lastLandedSeq.current || reduceMotion.current) return;
+    lastLandedSeq.current = landed.seq;
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const rect = canvas.getBoundingClientRect();
+    const cellW = rect.width / BOARD_WIDTH;
+    const cellH = rect.height / BOARD_HEIGHT;
+    const set = new Set(landed.cells.map(c => `${c.x},${c.y}`));
+    const scale = cellW / 30;
+    for (const c of landed.cells) {
+      if (set.has(`${c.x},${c.y + 1}`)) continue; // 아래에 같은 조각 셀이 있으면 바닥이 아님
+      const bx = (c.x + 0.5) * cellW;
+      const by = (c.y + 1) * cellH;
+      for (let i = 0; i < 4; i++) {
+        const dir = i % 2 === 0 ? -1 : 1;
+        particles.current.push({
+          kind: 'dust', x: bx + dir * rand(0.1, 0.45) * cellW, y: by - rand(0, 2) * scale,
+          vx: dir * rand(0.06, 0.16) * scale, vy: rand(-0.05, -0.01) * scale,
+          size: rand(3, 5) * scale, rotation: 0, spin: 0,
+          color: 'rgba(120, 100, 80, 0.28)', life: 0, maxLife: rand(260, 420), gravity: 0, drag: 0.004,
+        });
+      }
+    }
+    startLoop();
+  }, [landed, startLoop]);
 
   useEffect(() => () => { if (raf.current) cancelAnimationFrame(raf.current); }, []);
 

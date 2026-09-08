@@ -12,7 +12,7 @@ function NextQueue({ pieces }: Props) {
       <p className={styles.label}>다음</p>
       <div className={styles.list}>
         {pieces.map((p, i) => (
-          <div key={i} className={i === 0 ? styles.first : styles.rest}>
+          <div key={p.uid ?? i} className={`${i === 0 ? styles.first : styles.rest} ${styles.item}`}>
             <PiecePreview piece={p} />
           </div>
         ))}
