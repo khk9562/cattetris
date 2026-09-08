@@ -26,11 +26,26 @@ export interface Popup {
   bornAt: number;
 }
 
-export type FeedbackKind = 'lock' | 'line' | 'explode' | 'hold' | 'gameover' | 'levelup' | 'hardDrop';
+export type FeedbackKind =
+  | 'start'
+  | 'move'
+  | 'rotate'
+  | 'softDrop'
+  | 'hardDrop'
+  | 'lock'
+  | 'hold'
+  | 'line'
+  | 'explode'
+  | 'chain'
+  | 'combo'
+  | 'levelup'
+  | 'gameover';
 
+/** 사운드/진동이 소비하는 이벤트. seq는 단조 증가, strength는 종류별 세기(뭉치 크기, 연쇄 단계 등) */
 export interface Feedback {
   seq: number;
   kind: FeedbackKind;
+  strength?: number;
 }
 
 export interface SessionStats {
@@ -74,7 +89,9 @@ export interface EngineState {
   clearing: ClearCell[];
   popups: Popup[];
   popupSeq: number;
-  feedback: Feedback | null;
+  /** 최근 피드백 이벤트 (최대 8개 유지) */
+  events: Feedback[];
+  eventSeq: number;
 
   destroyed: Partial<Record<CatType, number>>;
   stats: SessionStats;

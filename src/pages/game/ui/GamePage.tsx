@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useGame } from '@/features/game-session';
 import { useKeyboardControls } from '@/features/keyboard-controls';
 import { useSettings } from '@/features/settings';
+import { useSound } from '@/features/sound';
 import { useBoardGestures } from '@/features/touch-gestures';
 import { Header } from '@/widgets/header';
 import { StatsHUD } from '@/widgets/stats-hud';
@@ -22,6 +23,7 @@ export default function GamePage() {
   const [showSettings, setShowSettings] = useState(false);
 
   useKeyboardControls(state.status, actions);
+  useSound(state.events, { sound: settings.sound, music: settings.music, status: state.status, level: state.level });
   const gestures = useBoardGestures(actions, state.status === 'playing' && settings.gestures);
 
   const inGame = state.status === 'playing' || state.status === 'paused';

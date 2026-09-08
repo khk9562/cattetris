@@ -28,6 +28,7 @@ const VIBRATION: Partial<Record<FeedbackKind, number | number[]>> = {
   hardDrop: 15,
   line: 30,
   explode: [40, 30, 60],
+  chain: [20, 20, 40],
   hold: 10,
   levelup: [20, 40, 20],
   gameover: [80, 60, 120],
@@ -86,11 +87,14 @@ export function useGame({ difficulty, vibration }: UseGameOptions) {
   // ---- 진동 피드백 ----
   const lastFeedbackSeq = useRef(0);
   useEffect(() => {
-    const fb = state.feedback;
-    if (!fb || fb.seq === lastFeedbackSeq.current) return;
-    lastFeedbackSeq.current = fb.seq;
-    if (vibration) vibrate(fb.kind);
-  }, [state.feedback, vibration]);
+    let last = lastFeedbackSeq.current;
+    for (const ev of state.events) {
+      if (ev.seq <= last) continue;
+      last = ev.seq;
+      if (vibration) vibrate(ev.kind);
+    }
+    lastFeedbackSeq.current = last;
+  }, [state.events, vibration]);
 
   // ---- 도감 통계: 세션 증가분을 누적 저장 ----
   const prevDestroyed = useRef<Stats>(state.destroyed);

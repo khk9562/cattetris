@@ -62,7 +62,8 @@ export function createInitialState(preset: DifficultyPreset = DIFFICULTY_PRESETS
     clearing: [],
     popups: [],
     popupSeq: 0,
-    feedback: null,
+    events: [],
+    eventSeq: 0,
     destroyed: {},
     stats: { maxChain: 0, explosions: 0, linesCleared: 0 },
   };
@@ -70,8 +71,10 @@ export function createInitialState(preset: DifficultyPreset = DIFFICULTY_PRESETS
 
 // ---------- helpers (모두 새 객체를 돌려주는 순수 함수) ----------
 
-function withFeedback(s: EngineState, kind: FeedbackKind): EngineState {
-  return { ...s, feedback: { seq: (s.feedback?.seq ?? 0) + 1, kind } };
+function withFeedback(s: EngineState, kind: FeedbackKind, strength?: number): EngineState {
+  const seq = s.eventSeq + 1;
+  const events = [...s.events, { seq, kind, strength }].slice(-8);
+  return { ...s, events, eventSeq: seq };
 }
 
 function withPopup(s: EngineState, x: number, y: number, text: string, kind: PopupKind): EngineState {
@@ -245,11 +248,15 @@ function evaluate(s: EngineState, chain: number): EngineState {
   const newLines = s.lines + lines.length;
   const newLevel = levelFor(newLines, s.preset);
   state = { ...state, lines: newLines, level: newLevel };
+  if (clusters.length > 0) state = withFeedback(state, 'explode', clusterCells + splashCells);
+  if (lines.length > 0) state = withFeedback(state, 'line', lines.length);
+  if (chain > 0) state = withFeedback(state, 'chain', chain);
   if (newLevel > s.level) {
     state = withPopup(state, 4.5, 12, `LEVEL ${newLevel}`, 'level');
+    state = withFeedback(state, 'levelup', newLevel);
   }
 
-  return withFeedback(state, clusters.length > 0 ? 'explode' : 'line');
+  return state;
 }
 
 /** 제거 연출이 끝난 뒤 실제로 셀을 지우고 중력을 적용한다. */
@@ -269,7 +276,7 @@ function finishPiece(s: EngineState): EngineState {
     state = { ...state, combo };
     if (combo >= 2) {
       const bonus = Math.round(COMBO_SCORE * (combo - 1) * s.level * s.preset.scoreMultiplier);
-      state = withPopup({ ...state, score: state.score + bonus }, 4.5, 3, `콤보 x${combo}`, 'combo');
+      state = withPopup(withFeedback({ ...state, score: state.score + bonus }, 'combo', combo), 4.5, 3, `콤보 x${combo}`, 'combo');
     }
   } else {
     state = { ...state, combo: 0 };
@@ -294,7 +301,7 @@ export function engineReducer(s: EngineState, action: EngineAction): EngineState
       const base = createInitialState(action.preset);
       const order = shuffle(action.breeds, action.seed);
       let state: EngineState = { ...base, status: 'playing', seed: order.seed, breedOrder: order.items };
-      state = refillQueue(state);
+      state = refillQueue(withFeedback(state, 'start'));
       return spawnNext(state);
     }
 
@@ -314,21 +321,21 @@ export function engineReducer(s: EngineState, action: EngineAction): EngineState
       if (!canAct(s)) return s;
       const moved = movedPiece(s.current!, action.dx, 0);
       if (!isValidPosition(s.board, moved)) return s;
-      return afterSuccessfulMove(s, moved);
+      return afterSuccessfulMove(withFeedback(s, 'move'), moved);
     }
 
     case 'rotate': {
       if (!canAct(s)) return s;
       const rotated = rotateWithKicks(s.current!, action.direction, p => isValidPosition(s.board, p));
       if (!rotated) return s;
-      return afterSuccessfulMove(s, rotated);
+      return afterSuccessfulMove(withFeedback(s, 'rotate'), rotated);
     }
 
     case 'softDrop': {
       if (!canAct(s)) return s;
       const moved = movedPiece(s.current!, 0, 1);
       if (!isValidPosition(s.board, moved)) return s;
-      return afterSuccessfulMove({ ...s, gravityMs: 0, score: s.score + SOFT_DROP_SCORE }, moved);
+      return afterSuccessfulMove(withFeedback({ ...s, gravityMs: 0, score: s.score + SOFT_DROP_SCORE }, 'softDrop'), moved);
     }
 
     case 'hardDrop': {
