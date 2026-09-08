@@ -30,7 +30,7 @@ function CatParade() {
     <div className={styles.parade} aria-hidden="true">
       {PARADE.map((cat, i) => (
         <div key={cat} className={styles.paradeCat} style={{ animationDelay: `${i * 0.15}s` }}>
-          <CatBlock catType={cat} showFace showEars showTail={i === PARADE.length - 1} conn={{ top: false, bottom: false, left: i > 0, right: i < PARADE.length - 1 }} />
+          <CatBlock catType={cat} showFace showEars expression="happy" showTail={i === PARADE.length - 1} conn={{ top: false, bottom: false, left: i > 0, right: i < PARADE.length - 1 }} />
         </div>
       ))}
     </div>
@@ -96,7 +96,7 @@ function GameOverlays({
       )}
 
       {status === 'gameover' && (
-        <div className={styles.overlay}>
+        <div className={`${styles.overlay} ${styles.overlayGameover}`}>
           <div className={styles.overlayContent}>
             <h2 className={styles.overlayTitle}>게임 오버!</h2>
             {isNewHighScore && (

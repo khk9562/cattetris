@@ -5,6 +5,7 @@ import { CatBlock, type CatType } from '@/entities/cat';
 import type { ClearCell, ClearKind, Popup } from '@/features/game-session';
 import { BOARD_HEIGHT, BOARD_WIDTH } from '@/shared/config';
 import ExplosionLayer from './ExplosionLayer';
+import { DANGER_ROWS, blinkDelayFor, pickExpression, stackHeight } from '../model/expression';
 import styles from './Board.module.css';
 
 interface Props {
@@ -13,9 +14,10 @@ interface Props {
   ghostPiece: ActivePiece | null;
   clearing: ClearCell[];
   popups: Popup[];
+  gameOver?: boolean;
 }
 
-type RenderCell = { type: CatType; ghost: boolean } | null;
+type RenderCell = { type: CatType; ghost: boolean; active?: boolean } | null;
 
 function cellAt(grid: RenderCell[][], x: number, y: number): RenderCell {
   if (y < 0 || y >= BOARD_HEIGHT || x < 0 || x >= BOARD_WIDTH) return null;
@@ -73,7 +75,7 @@ function buildGrid(board: BoardType, current: ActivePiece | null, ghost: ActiveP
         const y = p.position.y + r;
         if (y < 0 || y >= BOARD_HEIGHT || x < 0 || x >= BOARD_WIDTH) continue;
         if (isGhost && grid[y][x]) continue;
-        grid[y][x] = { type: p.catType, ghost: isGhost };
+        grid[y][x] = { type: p.catType, ghost: isGhost, active: !isGhost };
       }
     }
   };
@@ -82,7 +84,7 @@ function buildGrid(board: BoardType, current: ActivePiece | null, ghost: ActiveP
   return grid;
 }
 
-function Board({ board, currentPiece, ghostPiece, clearing, popups }: Props) {
+function Board({ board, currentPiece, ghostPiece, clearing, popups, gameOver = false }: Props) {
   const grid = useMemo(() => buildGrid(board, currentPiece, ghostPiece), [board, currentPiece, ghostPiece]);
   const { faceMap, tailMap } = useMemo(() => computeFeatures(grid), [grid]);
   const clearMap = useMemo(() => {
@@ -90,6 +92,8 @@ function Board({ board, currentPiece, ghostPiece, clearing, popups }: Props) {
     for (const c of clearing) m.set(`${c.x},${c.y}`, c.kind);
     return m;
   }, [clearing]);
+
+  const danger = useMemo(() => stackHeight(board) >= DANGER_ROWS, [board]);
 
   // 폭발 강도에 따른 보드 흔들림 (CSS 변수로 진폭 전달)
   const [shake, setShake] = useState<{ id: number; strength: number } | null>(null);
@@ -108,6 +112,7 @@ function Board({ board, currentPiece, ghostPiece, clearing, popups }: Props) {
           row.map((cell, x) => {
             if (!cell) return <div key={`${y}-${x}`} className={styles.cell} />;
             const effect = clearMap.get(`${x},${y}`);
+            const expression = pickExpression({ gameOver, danger, isActive: !!cell.active, effect });
             return (
               <div key={`${y}-${x}`} className={styles.cell}>
                 <CatBlock
@@ -123,6 +128,8 @@ function Board({ board, currentPiece, ghostPiece, clearing, popups }: Props) {
                   showEars={!cell.ghost && faceMap[y][x]}
                   showTail={!cell.ghost && tailMap[y][x]}
                   effect={effect}
+                  expression={expression}
+                  blinkDelay={blinkDelayFor(x, y)}
                 />
               </div>
             );

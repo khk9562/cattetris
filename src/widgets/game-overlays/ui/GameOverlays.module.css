@@ -4,6 +4,12 @@
   z-index: 100;
   background: rgba(253, 246, 227, 0.92);
   backdrop-filter: blur(0.5rem);
+}
+
+/* 게임오버는 잠든 고양이들이 비치도록 덜 가린다 */
+.overlayGameover {
+  background: rgba(253, 246, 227, 0.72);
+  backdrop-filter: blur(0.125rem);
   display: flex;
   align-items: center;
   justify-content: center;

@@ -18,9 +18,15 @@ interface Props {
   showTail?: boolean;
   /** 제거 연출 종류 */
   effect?: 'line' | 'cluster' | 'splash';
+  /** 얼굴 표정 (기본 idle: 가끔 깜빡임) */
+  expression?: CatExpression;
+  /** 깜빡임 타이밍을 셀마다 다르게 하기 위한 지연(초) */
+  blinkDelay?: number;
 }
 
-function CatBlock({ catType, ghost, conn, showFace, showEars, showTail, effect }: Props) {
+export type CatExpression = 'idle' | 'happy' | 'scared' | 'dizzy' | 'sleepy';
+
+function CatBlock({ catType, ghost, conn, showFace, showEars, showTail, effect, expression = 'idle', blinkDelay = 0 }: Props) {
   const isDark = DARK_CAT_TYPES.includes(catType);
   const c = conn || { top: false, right: false, bottom: false, left: false };
 
@@ -46,6 +52,7 @@ function CatBlock({ catType, ghost, conn, showFace, showEars, showTail, effect }
     c.bottom ? styles.connBottom : '',
     c.left ? styles.connLeft : '',
     effect ? styles[`fx_${effect}`] : '',
+    styles[`face_${expression}`] || '',
   ].filter(Boolean).join(' ');
 
   return (
@@ -65,7 +72,7 @@ function CatBlock({ catType, ghost, conn, showFace, showEars, showTail, effect }
       )}
       {showFace && !ghost && (
         <div className={styles.face}>
-          <div className={styles.eyes}>
+          <div className={styles.eyes} style={expression === 'idle' ? { animationDelay: `${blinkDelay}s` } : undefined}>
             <div className={`${styles.eye} ${styles.eyeLeft} ${isDark ? styles.lightEye : ''}`} />
             <div className={`${styles.eye} ${styles.eyeRight} ${isDark ? styles.lightEye : ''}`} />
           </div>
@@ -73,6 +80,8 @@ function CatBlock({ catType, ghost, conn, showFace, showEars, showTail, effect }
             <div className={`${styles.mouthArc} ${isDark ? styles.lightMouth : ''}`} />
             <div className={`${styles.mouthArc} ${isDark ? styles.lightMouth : ''}`} />
           </div>
+          {expression === 'sleepy' && <span className={styles.zzz}>z</span>}
+          {expression === 'scared' && <span className={styles.sweat} />}
         </div>
       )}
       {showTail && !ghost && (

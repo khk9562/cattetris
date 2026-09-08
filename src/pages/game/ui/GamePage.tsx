@@ -76,6 +76,7 @@ export default function GamePage() {
             ghostPiece={settings.ghost ? game.ghost : null}
             clearing={state.clearing}
             popups={state.popups}
+            gameOver={state.status === 'gameover'}
           />
         </div>
       </main>
