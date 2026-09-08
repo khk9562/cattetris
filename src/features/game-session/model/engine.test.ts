@@ -273,3 +273,15 @@ describe('start setup (tutorial)', () => {
     expect(s.mode).toBe('endless');
   });
 });
+
+describe('event sequence', () => {
+  it('keeps increasing across restarts so listeners never miss new events', () => {
+    let s = start(1);
+    s = engineReducer(s, { type: 'hardDrop' });
+    const before = s.eventSeq;
+    expect(before).toBeGreaterThan(0);
+    s = engineReducer(s, { type: 'home' });
+    s = engineReducer(s, { type: 'start', preset: normal, breeds: ALL_CAT_TYPES, seed: 2 });
+    expect(s.events[s.events.length - 1].seq).toBeGreaterThan(before);
+  });
+});

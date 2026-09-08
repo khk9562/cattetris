@@ -342,6 +342,8 @@ export function engineReducer(s: EngineState, action: EngineAction): EngineState
       const order = stage?.breeds ? { items: stage.breeds, seed: action.seed } : shuffle(action.breeds, action.seed);
       let state: EngineState = {
         ...base,
+        // 이벤트 번호는 판이 바뀌어도 이어져야 소리/진동 훅이 새 판의 이벤트를 놓치지 않는다
+        eventSeq: s.eventSeq,
         status: 'playing',
         seed: order.seed,
         breedOrder: order.items,
@@ -361,7 +363,7 @@ export function engineReducer(s: EngineState, action: EngineAction): EngineState
       return s.status === 'paused' ? { ...s, status: 'playing' } : s;
 
     case 'home':
-      return createInitialState(s.preset);
+      return { ...createInitialState(s.preset), eventSeq: s.eventSeq };
 
     case 'tick':
       return tick(s, action.dt);
