@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { ALL_CAT_TYPES } from '@/entities/cat';
 import { DIFFICULTY_PRESETS } from '@/entities/difficulty';
+import { makePiece } from '@/entities/piece';
 import { BOARD_HEIGHT, BOARD_WIDTH, CLEAR_ANIMATION_MS, NEXT_QUEUE_SIZE, SETTLE_MS } from '@/shared/config';
 import { createInitialState, engineReducer } from './engine';
 import type { EngineState } from './types';
@@ -121,9 +122,9 @@ describe('line clear flow', () => {
 
   it('animates, then removes the row, scores by level and counts lines', () => {
     let s = start(3);
-    // I 조각을 세로로 세워 빈 칸에 떨어뜨리기보다 단순하게: 현재 조각을 x=gap 위치의 세로 I로 교체
-    const I = s.queue.find(p => p.id === 'I') ?? s.current!;
-    const vertical = { ...I, shape: I.shapes[1], rotationIndex: 1, position: { x: -2 + 0, y: 0 } };
+    // 현재 조각을 x=gap 위치의 세로 I로 교체
+    const I = makePiece('I', 'ginger');
+    const vertical = { ...I, shape: I.shapes[1], rotationIndex: 1, position: { x: -2, y: 0 } };
     // shapes[1]은 열 인덱스 2가 채워져 있으므로 x=-2면 보드 x=0에 놓인다
     s = withFullRowExcept({ ...s, current: vertical }, 0);
     s = engineReducer(s, { type: 'hardDrop' });

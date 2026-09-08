@@ -1,4 +1,4 @@
-import type { CatType } from '../model/types';
+import { DARK_CAT_TYPES, type CatType } from '../model/types';
 import styles from './CatBlock.module.css';
 
 export interface Conn {
@@ -20,7 +20,7 @@ interface Props {
 }
 
 export default function CatBlock({ catType, ghost, conn, showFace, showEars, showTail, effect }: Props) {
-  const isDark = catType === 'black' || catType === 'russianBlue';
+  const isDark = DARK_CAT_TYPES.includes(catType);
   const c = conn || { top: false, right: false, bottom: false, left: false };
 
   const tl = !c.top && !c.left ? '0.35rem' : '0';
@@ -65,8 +65,8 @@ export default function CatBlock({ catType, ghost, conn, showFace, showEars, sho
       {showFace && !ghost && (
         <div className={styles.face}>
           <div className={styles.eyes}>
-            <div className={`${styles.eye} ${isDark ? styles.lightEye : ''}`} />
-            <div className={`${styles.eye} ${isDark ? styles.lightEye : ''}`} />
+            <div className={`${styles.eye} ${styles.eyeLeft} ${isDark ? styles.lightEye : ''}`} />
+            <div className={`${styles.eye} ${styles.eyeRight} ${isDark ? styles.lightEye : ''}`} />
           </div>
           <div className={styles.mouth}>
             <div className={`${styles.mouthArc} ${isDark ? styles.lightMouth : ''}`} />

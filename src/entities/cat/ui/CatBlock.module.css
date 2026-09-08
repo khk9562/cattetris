@@ -266,3 +266,70 @@
 .russianBlue .earLeft, .russianBlue .earRight { background-color: #8c9fae; }
 .russianBlue .tail { border-color: #8c9fae; }
 .russianBlue .eye { background-color: #90ee90 !important; }
+
+/* 8. White odd-eyed (흰냥이 오드아이) */
+.white {
+  background-color: #fbfaf6;
+  background-image: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.9) 0%, transparent 60%);
+}
+.white .earLeft, .white .earRight { background-color: #f3ece2; }
+.white .earLeft::after, .white .earRight::after {
+  content: "";
+  position: absolute;
+  inset: 30% 25% 0 25%;
+  background: #f5b8c4;
+  border-radius: 40% 40% 0 0;
+}
+.white .tail { border-color: #efe8dc; }
+.white .eyeLeft { background-color: #4fa8f0 !important; }
+.white .eyeRight { background-color: #f0b429 !important; }
+
+/* 9. Tortoiseshell (카오스) */
+.tortie {
+  background-color: #2b2320;
+  background-image:
+    radial-gradient(ellipse at 15px 25px, #d9741f 14px, transparent 17px),
+    radial-gradient(ellipse at 70px 10px, #f0a34a 10px, transparent 13px),
+    radial-gradient(ellipse at 95px 60px, #c9661a 16px, transparent 19px),
+    radial-gradient(ellipse at 40px 80px, #e8933c 9px, transparent 12px),
+    radial-gradient(ellipse at 110px 110px, #d9741f 12px, transparent 15px);
+  background-size: 130px 130px;
+  background-attachment: fixed;
+}
+.tortie .earLeft { background-color: #d9741f; }
+.tortie .earRight { background-color: #2b2320; }
+.tortie .tail { border-color: #c9661a; }
+.tortie .eye { background-color: #c9d64a !important; }
+
+/* 10. Bengal (벵갈) */
+.bengal {
+  background-color: #e3a955;
+  background-image:
+    radial-gradient(circle at 10px 10px, #cf8f3f 3px, #3b2312 4px, #3b2312 6px, transparent 7px),
+    radial-gradient(circle at 32px 22px, #cf8f3f 3px, #3b2312 4px, #3b2312 6px, transparent 7px),
+    radial-gradient(circle at 50px 8px, #cf8f3f 2px, #3b2312 3px, #3b2312 5px, transparent 6px),
+    radial-gradient(circle at 16px 40px, #cf8f3f 2px, #3b2312 3px, #3b2312 5px, transparent 6px),
+    radial-gradient(circle at 48px 42px, #cf8f3f 3px, #3b2312 4px, #3b2312 6px, transparent 7px);
+  background-size: 60px 52px;
+  background-attachment: fixed;
+}
+.bengal .earLeft, .bengal .earRight { background-color: #e3a955; }
+.bengal .tail { border-color: #3b2312; }
+.bengal .eye { background-color: #6fbf73 !important; }
+
+/* 11. Scottish Fold (스코티시 폴드) - 접힌 귀 */
+.scottishFold {
+  background-color: #c9bdb0;
+  background-image: radial-gradient(circle at 50% 60%, rgba(255, 255, 255, 0.25) 0%, transparent 55%);
+}
+.scottishFold .earLeft, .scottishFold .earRight {
+  background-color: #b9ab9c;
+  top: -9%;
+  height: 22%;
+  width: 34%;
+  border-radius: 50% 50% 30% 30% / 70% 70% 30% 30%;
+}
+.scottishFold .earLeft { transform: rotate(-35deg); left: 6%; }
+.scottishFold .earRight { transform: rotate(35deg); right: 6%; }
+.scottishFold .tail { border-color: #b9ab9c; }
+.scottishFold .eye { background-color: #d9822b !important; width: 24%; }
