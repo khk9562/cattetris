@@ -107,8 +107,9 @@
   min-height: 3px;
 }
 
+/* 어두운 품종의 기본 밝은 눈은 --eye 변수로 처리한다 (lightEye는 입 색만 담당) */
 .lightEye {
-  background-color: #fce83a !important; /* Yellow eyes for black cats */
+  background-color: var(--eye, #fce83a);
 }
 
 .mouth {
@@ -263,25 +264,50 @@
 
 /* =========================================
    Breed Specific Styles
+   색은 전부 CSS 변수로 두고, 품종 클래스는 기본값만 선언한다.
+   스킨은 CatBlock이 inline style로 같은 변수를 덮어써서 적용한다.
+   --fur-base 바탕, --fur-pattern 무늬, --fur-pattern2 보조 무늬,
+   --fur-ear/--fur-ear2 귀, --fur-tail 꼬리, --eye/--eye-right 눈
    ========================================= */
+
+.block {
+  --fur-ear: var(--fur-base);
+  --fur-ear2: var(--fur-ear);
+  --fur-tail: var(--fur-pattern);
+  --eye-right: var(--eye);
+}
+
+.eyeLeft { background-color: var(--eye, #322f22); }
+.eyeRight { background-color: var(--eye-right, var(--eye, #322f22)); }
+.earLeft { background-color: var(--fur-ear); }
+.earRight { background-color: var(--fur-ear2); }
+.tail { border-color: var(--fur-tail); }
 
 /* 1. Calico (삼색고양이) */
 .calico {
-  background-color: #ffffff;
+  --fur-base: #ffffff;
+  --fur-pattern: #ff9d00;
+  --fur-pattern2: #3a3a3a;
+  --fur-ear: var(--fur-pattern);
+  --fur-ear2: var(--fur-pattern2);
+  --fur-tail: var(--fur-pattern2);
+  --eye: #322f22;
+  background-color: var(--fur-base);
   background-image:
-    radial-gradient(circle at 20px 20px, #ff9d00 15px, transparent 18px),
-    radial-gradient(circle at 60px 70px, #3a3a3a 18px, transparent 20px),
-    radial-gradient(circle at 100px 30px, #ff9d00 12px, transparent 15px);
+    radial-gradient(circle at 20px 20px, var(--fur-pattern) 15px, transparent 18px),
+    radial-gradient(circle at 60px 70px, var(--fur-pattern2) 18px, transparent 20px),
+    radial-gradient(circle at 100px 30px, var(--fur-pattern) 12px, transparent 15px);
   background-size: 130px 130px;
   background-attachment: fixed;
 }
-.calico .earLeft { background-color: #ff9d00; }
-.calico .earRight { background-color: #3a3a3a; }
-.calico .tail { border-color: #3a3a3a; }
 
 /* 2. Tuxedo (턱시도고양이) */
 .tuxedo {
-  background-color: #1a1a1a;
+  --fur-base: #1a1a1a;
+  --fur-pattern: #ffffff;
+  --fur-tail: var(--fur-pattern);
+  --eye: #fce83a;
+  background-color: var(--fur-base);
 }
 .tuxedo .face::before {
   content: "";
@@ -289,150 +315,141 @@
   bottom: 0;
   width: 85%;
   height: 65%;
-  background: white;
+  background: var(--fur-pattern);
   border-radius: 50% 50% 10% 10%;
   z-index: 1;
 }
-.tuxedo .earLeft, .tuxedo .earRight { background-color: #1a1a1a; }
-.tuxedo .tail { border-color: white; }
 .tuxedo .mouthArc { z-index: 3; }
 
 /* 3. Ginger (치즈냥이) */
 .ginger {
-  background-color: #ffb03a;
-  background-image: repeating-linear-gradient(
-    45deg,
-    transparent,
-    transparent 15px,
-    #e88d14 15px,
-    #e88d14 25px
-  );
+  --fur-base: #ffb03a;
+  --fur-pattern: #e88d14;
+  --eye: #322f22;
+  background-color: var(--fur-base);
+  background-image: repeating-linear-gradient(45deg, transparent, transparent 15px, var(--fur-pattern) 15px, var(--fur-pattern) 25px);
   background-attachment: fixed;
 }
-.ginger .earLeft, .ginger .earRight { background-color: #ffb03a; }
-.ginger .tail { border-color: #e88d14; }
 
 /* 4. Tabby (고등어 - 브라운 줄무늬) */
 .tabby {
-  background-color: #c8956c;
-  background-image: repeating-linear-gradient(
-    90deg,
-    transparent,
-    transparent 10px,
-    #7a5230 10px,
-    #7a5230 16px
-  );
+  --fur-base: #c8956c;
+  --fur-pattern: #7a5230;
+  --eye: #322f22;
+  background-color: var(--fur-base);
+  background-image: repeating-linear-gradient(90deg, transparent, transparent 10px, var(--fur-pattern) 10px, var(--fur-pattern) 16px);
   background-attachment: fixed;
 }
-.tabby .earLeft, .tabby .earRight { background-color: #c8956c; }
-.tabby .tail { border-color: #7a5230; }
 
-/* 4b. Dark Tabby (검은색 얼룩 고양이) */
+/* 4b. Dark Tabby (실버태비) */
 .darkTabby {
-  background-color: #5c626b; /* Blueish dark grey base */
-  background-image: repeating-linear-gradient(
-    -45deg,
-    transparent,
-    transparent 15px,
-    #2a2d34 15px, /* Darker charcoal stripes */
-    #2a2d34 25px
-  );
+  --fur-base: #5c626b;
+  --fur-pattern: #2a2d34;
+  --eye: #ffd700;
+  background-color: var(--fur-base);
+  background-image: repeating-linear-gradient(-45deg, transparent, transparent 15px, var(--fur-pattern) 15px, var(--fur-pattern) 25px);
   background-attachment: fixed;
 }
-.darkTabby .earLeft, .darkTabby .earRight { background-color: #5c626b; }
-.darkTabby .tail { border-color: #2a2d34; }
-.darkTabby .eye { background-color: #ffd700 !important; /* Golden eyes */ }
 
 /* 5. Black (까만고양이) */
 .black {
-  background-color: #3b3b45; /* Distinct deep twilight/purple-black to stand out */
+  --fur-base: #3b3b45;
+  --fur-pattern: #3b3b45;
+  --eye: #fce83a;
+  background-color: var(--fur-base);
 }
-.black .earLeft, .black .earRight { background-color: #3b3b45; }
-.black .tail { border-color: #3b3b45; }
-/* .lightEye / .lightMouth handles the bright eyes for black cat automatically in CatBlock.tsx */
 
 /* 6. Siamese (샴고양이) */
 .siamese {
-  background-color: #f5e6d0;
+  --fur-base: #f5e6d0;
+  --fur-pattern: #4a3b32;
+  --fur-ear: var(--fur-pattern);
+  --eye: #5ab1f5;
+  background-color: var(--fur-base);
 }
 .siamese .face::before {
   content: "";
   position: absolute;
   width: 75%;
   height: 70%;
-  background: radial-gradient(circle at 50% 50%, #4a3b32 40%, transparent 70%);
+  background: radial-gradient(circle at 50% 50%, var(--fur-pattern) 40%, transparent 70%);
   z-index: 1;
 }
-.siamese .earLeft, .siamese .earRight { background-color: #4a3b32; }
-.siamese .tail { border-color: #4a3b32; }
-.siamese .eye { background-color: #5ab1f5 !important; }
 .siamese .mouthArc { border-color: white !important; z-index: 3; }
 
 /* 7. Russian Blue (러시안블루) */
 .russianBlue {
-  background-color: #8c9fae;
+  --fur-base: #8c9fae;
+  --fur-pattern: #8c9fae;
+  --eye: #90ee90;
+  background-color: var(--fur-base);
 }
-.russianBlue .earLeft, .russianBlue .earRight { background-color: #8c9fae; }
-.russianBlue .tail { border-color: #8c9fae; }
-.russianBlue .eye { background-color: #90ee90 !important; }
 
 /* 8. White odd-eyed (흰냥이 오드아이) */
 .white {
-  background-color: #fbfaf6;
+  --fur-base: #fbfaf6;
+  --fur-pattern: #efe8dc;
+  --fur-pattern2: #f5b8c4;
+  --fur-ear: #f3ece2;
+  --eye: #4fa8f0;
+  --eye-right: #f0b429;
+  background-color: var(--fur-base);
   background-image: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.9) 0%, transparent 60%);
 }
-.white .earLeft, .white .earRight { background-color: #f3ece2; }
 .white .earLeft::after, .white .earRight::after {
   content: "";
   position: absolute;
   inset: 30% 25% 0 25%;
-  background: #f5b8c4;
+  background: var(--fur-pattern2);
   border-radius: 40% 40% 0 0;
 }
-.white .tail { border-color: #efe8dc; }
-.white .eyeLeft { background-color: #4fa8f0 !important; }
-.white .eyeRight { background-color: #f0b429 !important; }
 
 /* 9. Tortoiseshell (카오스) */
 .tortie {
-  background-color: #2b2320;
+  --fur-base: #2b2320;
+  --fur-pattern: #d9741f;
+  --fur-pattern2: #f0a34a;
+  --fur-ear: var(--fur-pattern);
+  --fur-ear2: var(--fur-base);
+  --eye: #c9d64a;
+  background-color: var(--fur-base);
   background-image:
-    radial-gradient(ellipse at 15px 25px, #d9741f 14px, transparent 17px),
-    radial-gradient(ellipse at 70px 10px, #f0a34a 10px, transparent 13px),
-    radial-gradient(ellipse at 95px 60px, #c9661a 16px, transparent 19px),
-    radial-gradient(ellipse at 40px 80px, #e8933c 9px, transparent 12px),
-    radial-gradient(ellipse at 110px 110px, #d9741f 12px, transparent 15px);
+    radial-gradient(ellipse at 15px 25px, var(--fur-pattern) 14px, transparent 17px),
+    radial-gradient(ellipse at 70px 10px, var(--fur-pattern2) 10px, transparent 13px),
+    radial-gradient(ellipse at 95px 60px, var(--fur-pattern) 16px, transparent 19px),
+    radial-gradient(ellipse at 40px 80px, var(--fur-pattern2) 9px, transparent 12px),
+    radial-gradient(ellipse at 110px 110px, var(--fur-pattern) 12px, transparent 15px);
   background-size: 130px 130px;
   background-attachment: fixed;
 }
-.tortie .earLeft { background-color: #d9741f; }
-.tortie .earRight { background-color: #2b2320; }
-.tortie .tail { border-color: #c9661a; }
-.tortie .eye { background-color: #c9d64a !important; }
 
 /* 10. Bengal (벵갈) */
 .bengal {
-  background-color: #e3a955;
+  --fur-base: #e3a955;
+  --fur-pattern: #3b2312;
+  --fur-pattern2: #cf8f3f;
+  --eye: #6fbf73;
+  background-color: var(--fur-base);
   background-image:
-    radial-gradient(circle at 10px 10px, #cf8f3f 3px, #3b2312 4px, #3b2312 6px, transparent 7px),
-    radial-gradient(circle at 32px 22px, #cf8f3f 3px, #3b2312 4px, #3b2312 6px, transparent 7px),
-    radial-gradient(circle at 50px 8px, #cf8f3f 2px, #3b2312 3px, #3b2312 5px, transparent 6px),
-    radial-gradient(circle at 16px 40px, #cf8f3f 2px, #3b2312 3px, #3b2312 5px, transparent 6px),
-    radial-gradient(circle at 48px 42px, #cf8f3f 3px, #3b2312 4px, #3b2312 6px, transparent 7px);
+    radial-gradient(circle at 10px 10px, var(--fur-pattern2) 3px, var(--fur-pattern) 4px, var(--fur-pattern) 6px, transparent 7px),
+    radial-gradient(circle at 32px 22px, var(--fur-pattern2) 3px, var(--fur-pattern) 4px, var(--fur-pattern) 6px, transparent 7px),
+    radial-gradient(circle at 50px 8px, var(--fur-pattern2) 2px, var(--fur-pattern) 3px, var(--fur-pattern) 5px, transparent 6px),
+    radial-gradient(circle at 16px 40px, var(--fur-pattern2) 2px, var(--fur-pattern) 3px, var(--fur-pattern) 5px, transparent 6px),
+    radial-gradient(circle at 48px 42px, var(--fur-pattern2) 3px, var(--fur-pattern) 4px, var(--fur-pattern) 6px, transparent 7px);
   background-size: 60px 52px;
   background-attachment: fixed;
 }
-.bengal .earLeft, .bengal .earRight { background-color: #e3a955; }
-.bengal .tail { border-color: #3b2312; }
-.bengal .eye { background-color: #6fbf73 !important; }
 
 /* 11. Scottish Fold (스코티시 폴드) - 접힌 귀 */
 .scottishFold {
-  background-color: #c9bdb0;
+  --fur-base: #c9bdb0;
+  --fur-pattern: #b9ab9c;
+  --fur-ear: var(--fur-pattern);
+  --eye: #d9822b;
+  background-color: var(--fur-base);
   background-image: radial-gradient(circle at 50% 60%, rgba(255, 255, 255, 0.25) 0%, transparent 55%);
 }
 .scottishFold .earLeft, .scottishFold .earRight {
-  background-color: #b9ab9c;
   top: -9%;
   height: 22%;
   width: 34%;
@@ -440,5 +457,98 @@
 }
 .scottishFold .earLeft { transform: rotate(-35deg); left: 6%; }
 .scottishFold .earRight { transform: rotate(35deg); right: 6%; }
-.scottishFold .tail { border-color: #b9ab9c; }
-.scottishFold .eye { background-color: #d9822b !important; width: 24%; }
+.scottishFold .eye { width: 24%; }
+
+/* =========================================
+   Accessories (액세서리)
+   ========================================= */
+.acc {
+  position: absolute;
+  pointer-events: none;
+  z-index: 4;
+}
+
+.acc_ribbon {
+  top: -22%;
+  right: -4%;
+  width: 40%;
+  height: 22%;
+}
+.acc_ribbon::before,
+.acc_ribbon::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  width: 45%;
+  height: 100%;
+  background: #ff6b9d;
+  border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+}
+.acc_ribbon::before { left: 0; transform: rotate(-20deg); }
+.acc_ribbon::after { right: 0; transform: rotate(20deg); }
+.acc_ribbon span {
+  position: absolute;
+  left: 38%;
+  top: 25%;
+  width: 24%;
+  height: 50%;
+  background: #ff3d7f;
+  border-radius: 50%;
+}
+
+.acc_crown {
+  top: -34%;
+  left: 22%;
+  width: 56%;
+  height: 30%;
+  background: #ffc107;
+  clip-path: polygon(0 100%, 0 25%, 25% 60%, 50% 0, 75% 60%, 100% 25%, 100% 100%);
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.3));
+}
+
+.acc_glasses {
+  top: 30%;
+  left: 12%;
+  width: 76%;
+  height: 32%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.acc_glasses::before,
+.acc_glasses::after {
+  content: "";
+  width: 40%;
+  aspect-ratio: 1;
+  border: 2px solid #322f22;
+  border-radius: 50%;
+  background: rgba(120, 200, 255, 0.25);
+  box-sizing: border-box;
+}
+.acc_glasses span {
+  position: absolute;
+  left: 42%;
+  top: 45%;
+  width: 16%;
+  height: 2px;
+  background: #322f22;
+}
+
+.acc_bell {
+  bottom: 4%;
+  left: 15%;
+  width: 70%;
+  height: 16%;
+  border-top: 3px solid #d32f2f;
+  border-radius: 50%;
+}
+.acc_bell span {
+  position: absolute;
+  left: 40%;
+  top: -10%;
+  width: 20%;
+  aspect-ratio: 1;
+  background: #ffd54f;
+  border-radius: 50%;
+  box-shadow: inset 0 -1px 0 #b8860b;
+}

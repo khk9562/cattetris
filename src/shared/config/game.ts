@@ -37,3 +37,4 @@ export const MISSIONS_KEY = 'cattetris_missions';
 export const TITLES_KEY = 'cattetris_titles';
 export const TOTALS_KEY = 'cattetris_totals';
 export const TUTORIAL_KEY = 'cattetris_tutorial_done';
+export const SKINS_KEY = 'cattetris_skins';

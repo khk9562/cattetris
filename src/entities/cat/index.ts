@@ -4,3 +4,8 @@ export { CAT_INFO, CAT_NAMES, CAT_FUR_COLORS, COLLECTION_UNLOCK_THRESHOLD } from
 export type { CatInfo } from './config/breeds';
 export { default as CatBlock } from './ui/CatBlock';
 export type { Conn, CatExpression } from './ui/CatBlock';
+export { CAT_SKINS, ACCESSORIES, SKIN_TIER_THRESHOLDS, DEFAULT_SKIN_ID, getSkin, paletteVars } from './config/skins';
+export type { SkinDef, Palette, AccessoryId, AccessoryDef } from './config/skins';
+export { isSkinUnlocked, isAccessoryUnlocked, unlockedSkinCount, totalSkinCount } from './model/skinUnlock';
+export { SkinProvider, useEquippedSkins, EMPTY_EQUIPPED } from './model/SkinContext';
+export type { EquippedSkins } from './model/SkinContext';
