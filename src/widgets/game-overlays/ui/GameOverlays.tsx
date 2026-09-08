@@ -1,4 +1,5 @@
 import { memo } from 'react';
+import { CatBlock, type CatType } from '@/entities/cat';
 import { DIFFICULTY_ORDER, DIFFICULTY_PRESETS, type DifficultyId } from '@/entities/difficulty';
 import type { GameStatus, SessionStats } from '@/features/game-session';
 import type { Theme } from '@/features/theme';
@@ -22,6 +23,20 @@ interface Props {
   setTheme: (t: Theme) => void;
 }
 
+const PARADE: CatType[] = ['ginger', 'tuxedo', 'calico', 'siamese', 'bengal', 'white'];
+
+function CatParade() {
+  return (
+    <div className={styles.parade} aria-hidden="true">
+      {PARADE.map((cat, i) => (
+        <div key={cat} className={styles.paradeCat} style={{ animationDelay: `${i * 0.15}s` }}>
+          <CatBlock catType={cat} showFace showEars showTail={i === PARADE.length - 1} conn={{ top: false, bottom: false, left: i > 0, right: i < PARADE.length - 1 }} />
+        </div>
+      ))}
+    </div>
+  );
+}
+
 function GameOverlays({
   status, score, level, highScore, isNewHighScore, stats, difficulty, onSelectDifficulty,
   startGame, togglePause, goHome, onOpenCollection, theme, setTheme,
@@ -34,8 +49,9 @@ function GameOverlays({
       {status === 'ready' && (
         <div className={styles.overlay}>
           <div className={styles.overlayContent}>
-            <Icon name="paw" size="4rem" style={{ color: 'var(--color-primary)' }} />
+            <CatParade />
             <h2 className={styles.overlayTitle}>CAT TETRIS</h2>
+            <p className={styles.tagline}>같은 냥이끼리 모이면 팡! 주변까지 같이 터져요</p>
 
             <div className={styles.difficultyGroup} role="radiogroup" aria-label="난이도">
               {DIFFICULTY_ORDER.map(id => (

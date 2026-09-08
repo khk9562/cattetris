@@ -33,7 +33,7 @@ export default function GamePage() {
         onTogglePause={actions.togglePause}
         showGhost={showGhost}
         onToggleGhost={() => setShowGhost(g => !g)}
-        onGoHome={actions.home}
+        onGoHome={state.status === 'playing' ? actions.pause : actions.home}
         onOpenCollection={() => setShowCollection(true)}
       />
 

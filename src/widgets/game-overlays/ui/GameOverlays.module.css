@@ -191,3 +191,30 @@
   font-size: 1rem;
   color: var(--color-primary);
 }
+
+.tagline {
+  font-size: 0.8rem;
+  color: var(--color-outline);
+  margin-top: -0.5rem;
+}
+
+.parade {
+  display: flex;
+  gap: 0;
+  width: 15rem;
+  height: 2.5rem;
+  margin-bottom: 0.5rem;
+  padding-right: 1.5rem;
+}
+
+.paradeCat {
+  flex: 1;
+  height: 100%;
+  position: relative;
+  animation: paradeBob 1.6s ease-in-out infinite;
+}
+
+@keyframes paradeBob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-0.3rem); }
+}

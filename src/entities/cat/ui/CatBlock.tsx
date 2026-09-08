@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import { DARK_CAT_TYPES, type CatType } from '../model/types';
 import styles from './CatBlock.module.css';
 
@@ -19,7 +20,7 @@ interface Props {
   effect?: 'line' | 'cluster' | 'splash';
 }
 
-export default function CatBlock({ catType, ghost, conn, showFace, showEars, showTail, effect }: Props) {
+function CatBlock({ catType, ghost, conn, showFace, showEars, showTail, effect }: Props) {
   const isDark = DARK_CAT_TYPES.includes(catType);
   const c = conn || { top: false, right: false, bottom: false, left: false };
 
@@ -80,3 +81,5 @@ export default function CatBlock({ catType, ghost, conn, showFace, showEars, sho
     </div>
   );
 }
+
+export default memo(CatBlock);
