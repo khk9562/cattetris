@@ -3,6 +3,8 @@ import { BOARD_HEIGHT, BOARD_WIDTH } from '@/shared/config';
 import {
   applyGravity,
   clearMatches,
+  findClusters,
+  getSplashCells,
   clearRows,
   createBoard,
   findMatches,
@@ -19,7 +21,7 @@ const O_SHAPE = [
 ];
 
 function piece(x: number, y: number, shape = O_SHAPE) {
-  return { shape, shapes: [shape, shape, shape, shape], rotationIndex: 0, catType: 'ginger' as const, position: { x, y } };
+  return { id: 'O' as const, shape, shapes: [shape, shape, shape, shape], rotationIndex: 0, catType: 'ginger' as const, position: { x, y } };
 }
 
 describe('createBoard', () => {
@@ -91,5 +93,26 @@ describe('findMatches / clearMatches / applyGravity', () => {
     expect(newBoard[19][2]).toBe('black');
     expect(newBoard[18][2]).toBe('tabby');
     expect(newBoard[17][2]).toBeNull();
+  });
+});
+
+describe('findClusters / getSplashCells', () => {
+  it('groups clusters by breed and reports the 8-neighbour splash ring', () => {
+    const board = createBoard();
+    // 2x3 block of siamese at the bottom-left, ringed by other breeds
+    for (let y = 18; y <= 19; y++) for (let x = 0; x <= 2; x++) board[y][x] = 'siamese';
+    board[17][0] = 'black';
+    board[17][3] = 'tabby';
+    board[19][3] = 'ginger';
+    board[15][0] = 'calico'; // too far away
+
+    const clusters = findClusters(board, 6);
+    expect(clusters).toHaveLength(1);
+    expect(clusters[0].catType).toBe('siamese');
+    expect(clusters[0].cells).toHaveLength(6);
+
+    const splash = getSplashCells(board, clusters[0].cells);
+    const keys = splash.map(c => `${c.x},${c.y}`).sort();
+    expect(keys).toEqual(['0,17', '3,17', '3,19']);
   });
 });

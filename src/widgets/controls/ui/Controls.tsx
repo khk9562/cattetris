@@ -1,122 +1,81 @@
-import { useCallback, useEffect, useRef } from 'react';
+import { memo, useCallback, useEffect, useRef } from 'react';
+import type { GameActions } from '@/features/game-session';
+import { Icon, type IconName } from '@/shared/ui';
 import styles from './Controls.module.css';
 
 interface Props {
-  onLeft: () => void;
-  onRight: () => void;
-  onRotate: () => void;
-  onSoftDrop: () => void;
-  onHardDrop: () => void;
+  actions: GameActions;
 }
 
-export default function Controls({ onLeft, onRight, onRotate, onSoftDrop, onHardDrop }: Props) {
-  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+/** DAS: 첫 반복까지 지연, ARR: 이후 반복 간격 (가이드라인 권장값 근처) */
+const DAS_MS = 170;
+const ARR_MS = 50;
+/** 소프트 드롭은 조금 더 느슨하게 반복 */
+const SOFT_DROP_ARR_MS = 60;
 
-  // Clear intervals on unmount
-  useEffect(() => {
-    return () => {
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current);
-      }
-    };
+function useRepeat() {
+  const timeout = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const interval = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  const stop = useCallback(() => {
+    if (timeout.current) clearTimeout(timeout.current);
+    if (interval.current) clearInterval(interval.current);
+    timeout.current = null;
+    interval.current = null;
   }, []);
 
-  // --- Left / Right Movement ---
-  const handleMovePointerDown = useCallback((e: React.PointerEvent, action: () => void) => {
-    e.currentTarget.setPointerCapture(e.pointerId);
-    if (intervalRef.current) return;
+  const startRepeat = useCallback((action: () => void, das: number, arr: number) => {
+    stop();
     action();
-    intervalRef.current = setInterval(action, 120);
-  }, []);
+    timeout.current = setTimeout(() => {
+      interval.current = setInterval(action, arr);
+    }, das);
+  }, [stop]);
 
-  const handleMovePointerUp = useCallback((e: React.PointerEvent) => {
-    if (e.currentTarget.hasPointerCapture(e.pointerId)) {
-      e.currentTarget.releasePointerCapture(e.pointerId);
-    }
-    if (intervalRef.current) {
-      clearInterval(intervalRef.current);
-      intervalRef.current = null;
-    }
-  }, []);
+  useEffect(() => stop, [stop]);
+  return { startRepeat, stop };
+}
 
-  // --- Unified Drop (Tap = Soft Drop, Hold = Hard Drop) ---
-  const longPressTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+interface ButtonProps {
+  icon: IconName;
+  label: string;
+  onDown: (e: React.PointerEvent<HTMLButtonElement>) => void;
+  onUp: (e: React.PointerEvent<HTMLButtonElement>) => void;
+  accent?: boolean;
+}
 
-  const handleDropPointerDown = useCallback((e: React.PointerEvent) => {
-    e.currentTarget.setPointerCapture(e.pointerId);
-    onSoftDrop(); // Perform immediate soft drop on press
-    
-    // Hold for 250ms triggers hard drop
-    longPressTimeoutRef.current = setTimeout(() => {
-      onHardDrop();
-    }, 250);
-  }, [onSoftDrop, onHardDrop]);
+function ControlButton({ icon, label, onDown, onUp, accent }: ButtonProps) {
+  return (
+    <button
+      type="button"
+      className={`${styles.btn} ${accent ? styles.accent : ''}`}
+      aria-label={label}
+      onPointerDown={e => { e.currentTarget.setPointerCapture(e.pointerId); onDown(e); }}
+      onPointerUp={e => { if (e.currentTarget.hasPointerCapture(e.pointerId)) e.currentTarget.releasePointerCapture(e.pointerId); onUp(e); }}
+      onPointerCancel={onUp}
+      onContextMenu={e => e.preventDefault()}
+    >
+      <Icon name={icon} size="2rem" />
+    </button>
+  );
+}
 
-  const handleDropPointerUp = useCallback((e: React.PointerEvent) => {
-    if (e.currentTarget.hasPointerCapture(e.pointerId)) {
-      e.currentTarget.releasePointerCapture(e.pointerId);
-    }
-    if (longPressTimeoutRef.current) {
-      clearTimeout(longPressTimeoutRef.current);
-      longPressTimeoutRef.current = null;
-    }
-  }, []);
-
-  // --- Rotate ---
-  const handleRotatePointerDown = useCallback((e: React.PointerEvent) => {
-    e.currentTarget.setPointerCapture(e.pointerId);
-    onRotate();
-  }, [onRotate]);
-
-  const handleRotatePointerUp = useCallback((e: React.PointerEvent) => {
-    if (e.currentTarget.hasPointerCapture(e.pointerId)) {
-      e.currentTarget.releasePointerCapture(e.pointerId);
-    }
-  }, []);
+function Controls({ actions }: Props) {
+  const move = useRepeat();
+  const drop = useRepeat();
 
   return (
     <footer className={styles.footer}>
       <div className={styles.row}>
-        <button
-          className={styles.btn}
-          onPointerDown={(e) => handleMovePointerDown(e, onLeft)}
-          onPointerUp={handleMovePointerUp}
-          onPointerCancel={handleMovePointerUp}
-          onContextMenu={(e) => e.preventDefault()}
-        >
-          <span className="material-symbols-outlined" style={{ fontSize: '2.25rem' }}>keyboard_arrow_left</span>
-        </button>
-
-        <button
-          className={styles.btn}
-          onPointerDown={handleDropPointerDown}
-          onPointerUp={handleDropPointerUp}
-          onPointerCancel={handleDropPointerUp}
-          onContextMenu={(e) => e.preventDefault()}
-        >
-          <span className="material-symbols-outlined" style={{ fontSize: '2.25rem' }}>keyboard_arrow_down</span>
-        </button>
-
-        <button
-          className={styles.btn}
-          onPointerDown={(e) => handleMovePointerDown(e, onRight)}
-          onPointerUp={handleMovePointerUp}
-          onPointerCancel={handleMovePointerUp}
-          onContextMenu={(e) => e.preventDefault()}
-        >
-          <span className="material-symbols-outlined" style={{ fontSize: '2.25rem' }}>keyboard_arrow_right</span>
-        </button>
-        
-        <button 
-          className={styles.btn} 
-          onPointerDown={handleRotatePointerDown}
-          onPointerUp={handleRotatePointerUp}
-          onPointerCancel={handleRotatePointerUp}
-          onContextMenu={(e) => e.preventDefault()}
-        >
-          <span className="material-symbols-outlined" style={{ fontSize: '2.25rem' }}>rotate_right</span>
-        </button>
+        <ControlButton icon="hold" label="홀드" onDown={() => actions.hold()} onUp={() => undefined} />
+        <ControlButton icon="left" label="왼쪽" onDown={() => move.startRepeat(actions.moveLeft, DAS_MS, ARR_MS)} onUp={move.stop} />
+        <ControlButton icon="down" label="소프트 드롭" onDown={() => drop.startRepeat(actions.softDrop, DAS_MS, SOFT_DROP_ARR_MS)} onUp={drop.stop} />
+        <ControlButton icon="right" label="오른쪽" onDown={() => move.startRepeat(actions.moveRight, DAS_MS, ARR_MS)} onUp={move.stop} />
+        <ControlButton icon="rotate" label="회전" accent onDown={() => actions.rotateCW()} onUp={() => undefined} />
       </div>
+      <p className={styles.hint}>보드를 탭하면 회전, 좌우로 끌면 이동, 아래로 튕기면 하드 드롭</p>
     </footer>
   );
 }
+
+export default memo(Controls);

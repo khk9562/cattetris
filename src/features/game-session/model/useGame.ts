@@ -1,296 +1,183 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
-import { createBoard, isValidPosition, placePiece, getCompletedRows, clearRows, getGhostPosition, findMatches, clearMatches, applyGravity } from '@/entities/board';
-import { createPiece, rotatePiece, type ActivePiece } from '@/entities/piece';
-import { SCORE_TABLE, SPEED_TABLE, LINES_PER_LEVEL, HIGH_SCORE_KEY, STATS_KEY } from '@/shared/config';
-import type { Board } from '@/entities/board';
-import type { GameStatus } from './types';
+import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from 'react';
+import { ALL_CAT_TYPES, type CatType } from '@/entities/cat';
+import { DIFFICULTY_PRESETS, isDifficultyId, type DifficultyId } from '@/entities/difficulty';
+import { DIFFICULTY_KEY, HIGH_SCORE_KEY, STATS_KEY } from '@/shared/config';
+import { randomSeed, readJson, readNumber, readString, writeJson, writeNumber, writeString } from '@/shared/lib';
+import { createInitialState, engineReducer, selectGhost } from './engine';
+import type { EngineState, FeedbackKind } from './types';
 
+type HighScores = Record<DifficultyId, number>;
+type Stats = Partial<Record<CatType, number>>;
 
-function getStoredHighScore(): number {
-  try {
-    return parseInt(localStorage.getItem(HIGH_SCORE_KEY) || '0', 10);
-  } catch {
-    return 0;
-  }
+function highScoreKey(id: DifficultyId): string {
+  return `${HIGH_SCORE_KEY}_${id}`;
 }
 
-export function getStoredStats(): Record<string, number> {
-  try {
-    const data = localStorage.getItem(STATS_KEY);
-    return data ? JSON.parse(data) : {};
-  } catch {
-    return {};
-  }
-}
-
-export function useGame() {
-  const [board, setBoard] = useState<Board>(createBoard);
-  const [currentPiece, setCurrentPiece] = useState<ActivePiece | null>(null);
-  const [nextPiece, setNextPiece] = useState<ActivePiece>(createPiece);
-  const [score, setScore] = useState(0);
-  const [highScore, setHighScore] = useState(getStoredHighScore);
-  const [combo, setCombo] = useState(0);
-  const [level, setLevel] = useState(1);
-  const [linesCleared, setLinesCleared] = useState(0);
-  const [status, setStatus] = useState<GameStatus>('ready');
-  const [elapsedTime, setElapsedTime] = useState(0);
-  const [destroyedStats, setDestroyedStats] = useState<Record<string, number>>(getStoredStats);
-
-  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
-  const dropRef = useRef<ReturnType<typeof setInterval> | null>(null);
-  const boardRef = useRef(board);
-  boardRef.current = board;
-  const currentPieceRef = useRef(currentPiece);
-  currentPieceRef.current = currentPiece;
-  const comboRef = useRef(combo);
-  comboRef.current = combo;
-  const statusRef = useRef(status);
-  statusRef.current = status;
-  const destroyedStatsRef = useRef(destroyedStats);
-  destroyedStatsRef.current = destroyedStats;
-
-  const spawnPiece = useCallback(() => {
-    const piece = nextPiece;
-    const next = createPiece();
-    if (!isValidPosition(boardRef.current, piece)) {
-      setStatus('gameover');
-      const finalScore = score;
-      if (finalScore > getStoredHighScore()) {
-        localStorage.setItem(HIGH_SCORE_KEY, String(finalScore));
-        setHighScore(finalScore);
-      }
-      localStorage.setItem(STATS_KEY, JSON.stringify(destroyedStatsRef.current));
-      return;
-    }
-    setCurrentPiece(piece);
-    setNextPiece(next);
-  }, [nextPiece, score]);
-
-  const lockPiece = useCallback(() => {
-    const piece = currentPieceRef.current;
-    if (!piece) return;
-    let newBoard = placePiece(boardRef.current, piece);
-    let totalScoreToAdd = 0;
-    let didClearSomething = false;
-
-    let settling = true;
-    let localCombo = comboRef.current;
-
-    while (settling) {
-      settling = false;
-
-      // 1. Process matches (15+)
-      const matches = findMatches(newBoard, 15);
-      if (matches.length > 0) {
-        const typeCounts: Record<string, number> = {};
-        for (const m of matches) {
-          const type = newBoard[m.y][m.x];
-          if (type && typeof type === 'string') {
-            typeCounts[type] = (typeCounts[type] || 0) + 1;
-          }
-        }
-        setDestroyedStats(prev => {
-          const next = { ...prev };
-          for (const [t, count] of Object.entries(typeCounts)) {
-            next[t] = (next[t] || 0) + count;
-          }
-          return next;
-        });
-
-        newBoard = clearMatches(newBoard, matches);
-        totalScoreToAdd += matches.length * 20 * (1 + localCombo * 0.5);
-        didClearSomething = true;
-        settling = true;
-      }
-
-      // 2. Process Line Clears
-      const completed = getCompletedRows(newBoard);
-      if (completed.length > 0) {
-        const typeCounts: Record<string, number> = {};
-        for (const r of completed) {
-          for (let c = 0; c < 10; c++) {
-            const type = newBoard[r][c];
-            if (type && typeof type === 'string') {
-              typeCounts[type] = (typeCounts[type] || 0) + 1;
-            }
-          }
-        }
-        setDestroyedStats(prev => {
-          const next = { ...prev };
-          for (const [t, count] of Object.entries(typeCounts)) {
-            next[t] = (next[t] || 0) + count;
-          }
-          return next;
-        });
-
-        newBoard = clearRows(newBoard, completed);
-        totalScoreToAdd += (SCORE_TABLE[completed.length] || 0) * (1 + localCombo * 0.5);
-        didClearSomething = true;
-        settling = true;
-        
-        setLinesCleared(l => {
-          const newTotal = l + completed.length;
-          const newLevel = Math.floor(newTotal / LINES_PER_LEVEL) + 1;
-          setLevel(newLevel);
-          return newTotal;
-        });
-      }
-
-      // 3. Apply gravity if any clears occurred
-      if (settling) {
-        const gravityResult = applyGravity(newBoard);
-        if (gravityResult.changed) {
-          newBoard = gravityResult.newBoard;
-          localCombo += 1; // Increase combo for consecutive chains!
-        }
-      }
-    }
-
-    setBoard(newBoard);
-
-    if (didClearSomething) {
-      setScore(s => s + Math.floor(totalScoreToAdd));
-      setCombo(localCombo + 1);
-    } else {
-      setCombo(0);
-    }
-    
-    setCurrentPiece(null);
-  }, []);
-
-  // Spawn piece when currentPiece becomes null during playing
-  useEffect(() => {
-    if (status === 'playing' && currentPiece === null) {
-      spawnPiece();
-    }
-  }, [status, currentPiece, spawnPiece]);
-
-  // Auto drop
-  useEffect(() => {
-    if (status !== 'playing' || !currentPiece) return;
-    const speed = SPEED_TABLE[Math.min(level, 10)] || 300;
-    dropRef.current = setInterval(() => {
-      moveDown();
-    }, speed);
-    return () => {
-      if (dropRef.current) clearInterval(dropRef.current);
-    };
-  }, [status, currentPiece, level]);
-
-  // Timer
-  useEffect(() => {
-    if (status === 'playing') {
-      timerRef.current = setInterval(() => {
-        setElapsedTime(t => t + 1);
-      }, 1000);
-    }
-    return () => {
-      if (timerRef.current) clearInterval(timerRef.current);
-    };
-  }, [status]);
-
-  const moveDown = useCallback(() => {
-    setCurrentPiece(prev => {
-      if (!prev) return prev;
-      const b = boardRef.current;
-      const moved = { ...prev, position: { ...prev.position, y: prev.position.y + 1 } };
-      if (isValidPosition(b, moved)) {
-        return moved;
-      }
-      setTimeout(() => lockPiece(), 0);
-      return prev;
-    });
-  }, [lockPiece]);
-
-  const moveLeft = useCallback(() => {
-    if (statusRef.current !== 'playing') return;
-    setCurrentPiece(prev => {
-      if (!prev) return prev;
-      const moved = { ...prev, position: { ...prev.position, x: prev.position.x - 1 } };
-      return isValidPosition(boardRef.current, moved) ? moved : prev;
-    });
-  }, []);
-
-  const moveRight = useCallback(() => {
-    if (statusRef.current !== 'playing') return;
-    setCurrentPiece(prev => {
-      if (!prev) return prev;
-      const moved = { ...prev, position: { ...prev.position, x: prev.position.x + 1 } };
-      return isValidPosition(boardRef.current, moved) ? moved : prev;
-    });
-  }, []);
-
-  const rotate = useCallback(() => {
-    if (statusRef.current !== 'playing') return;
-    setCurrentPiece(prev => {
-      if (!prev) return prev;
-      const b = boardRef.current;
-      const rotated = rotatePiece(prev);
-      if (isValidPosition(b, rotated)) return rotated;
-      for (const offset of [-1, 1, -2, 2]) {
-        const kicked = { ...rotated, position: { ...rotated.position, x: rotated.position.x + offset } };
-        if (isValidPosition(b, kicked)) return kicked;
-      }
-      return prev;
-    });
-  }, []);
-
-  const hardDrop = useCallback(() => {
-    if (statusRef.current !== 'playing') return;
-    setCurrentPiece(prev => {
-      if (!prev) return prev;
-      const b = boardRef.current;
-      const ghost = getGhostPosition(b, prev);
-      const dropDistance = ghost.position.y - prev.position.y;
-      setScore(s => s + dropDistance * 2);
-      setTimeout(() => lockPiece(), 0);
-      return ghost;
-    });
-  }, [lockPiece]);
-
-  const startGame = useCallback(() => {
-    setBoard(createBoard());
-    setCurrentPiece(null);
-    setNextPiece(createPiece());
-    setScore(0);
-    setCombo(0);
-    setLevel(1);
-    setLinesCleared(0);
-    setElapsedTime(0);
-    setHighScore(getStoredHighScore());
-    setStatus('playing');
-  }, []);
-
-  const togglePause = useCallback(() => {
-    setStatus(s => s === 'playing' ? 'paused' : s === 'paused' ? 'playing' : s);
-  }, []);
-
-  const goHome = useCallback(() => {
-    setStatus('ready');
-  }, []);
-
-  const ghostPiece = currentPiece ? getGhostPosition(board, currentPiece) : null;
-
+function loadHighScores(): HighScores {
+  // 예전 단일 키(cattetris_highscore)는 '중' 난이도 기록으로 승계한다.
+  const legacy = readNumber(HIGH_SCORE_KEY, 0);
   return {
-    board,
-    currentPiece,
-    nextPiece,
-    ghostPiece,
-    score,
-    highScore,
-    combo,
-    level,
-    linesCleared,
-    status,
-    elapsedTime,
-    moveLeft,
-    moveRight,
-    moveDown,
-    rotate,
-    hardDrop,
-    startGame,
-    togglePause,
-    goHome,
-    destroyedStats,
+    easy: readNumber(highScoreKey('easy'), 0),
+    normal: Math.max(readNumber(highScoreKey('normal'), 0), legacy),
+    hard: readNumber(highScoreKey('hard'), 0),
   };
 }
+
+function loadDifficulty(): DifficultyId {
+  const stored = readString(DIFFICULTY_KEY, 'normal');
+  return isDifficultyId(stored) ? stored : 'normal';
+}
+
+const VIBRATION: Partial<Record<FeedbackKind, number | number[]>> = {
+  lock: 8,
+  hardDrop: 15,
+  line: 30,
+  explode: [40, 30, 60],
+  hold: 10,
+  levelup: [20, 40, 20],
+  gameover: [80, 60, 120],
+};
+
+function vibrate(kind: FeedbackKind) {
+  const pattern = VIBRATION[kind];
+  if (!pattern) return;
+  try {
+    navigator.vibrate?.(pattern);
+  } catch {
+    // 지원하지 않는 브라우저
+  }
+}
+
+/** 탭 전환 등으로 프레임이 크게 밀렸을 때 한 번에 처리할 최대 시간 */
+const MAX_FRAME_MS = 50;
+
+export function useGame() {
+  const [difficulty, setDifficultyState] = useState<DifficultyId>(loadDifficulty);
+  const [highScores, setHighScores] = useState<HighScores>(loadHighScores);
+  const [stats, setStats] = useState<Stats>(() => readJson<Stats>(STATS_KEY, {}));
+  const [state, dispatch] = useReducer(engineReducer, DIFFICULTY_PRESETS[difficulty], createInitialState);
+
+  const stateRef = useRef(state);
+  stateRef.current = state;
+
+  // ---- 게임 루프 (requestAnimationFrame) ----
+  useEffect(() => {
+    if (state.status !== 'playing') return;
+    let raf = 0;
+    let last = performance.now();
+    const loop = (now: number) => {
+      const dt = Math.min(MAX_FRAME_MS, now - last);
+      last = now;
+      dispatch({ type: 'tick', dt });
+      raf = requestAnimationFrame(loop);
+    };
+    raf = requestAnimationFrame(loop);
+    return () => cancelAnimationFrame(raf);
+  }, [state.status]);
+
+  // ---- 화면을 벗어나면 자동 일시정지 ----
+  useEffect(() => {
+    const onVisibility = () => {
+      if (document.hidden && stateRef.current.status === 'playing') dispatch({ type: 'pause' });
+    };
+    document.addEventListener('visibilitychange', onVisibility);
+    return () => document.removeEventListener('visibilitychange', onVisibility);
+  }, []);
+
+  // ---- 진동 피드백 ----
+  const lastFeedbackSeq = useRef(0);
+  useEffect(() => {
+    const fb = state.feedback;
+    if (!fb || fb.seq === lastFeedbackSeq.current) return;
+    lastFeedbackSeq.current = fb.seq;
+    vibrate(fb.kind);
+  }, [state.feedback]);
+
+  // ---- 도감 통계: 세션 증가분을 누적 저장 ----
+  const prevDestroyed = useRef<Stats>(state.destroyed);
+  useEffect(() => {
+    const prev = prevDestroyed.current;
+    const cur = state.destroyed;
+    if (cur === prev) return;
+    prevDestroyed.current = cur;
+    let changed = false;
+    const merged: Stats = { ...stats };
+    for (const t of Object.keys(cur) as CatType[]) {
+      const delta = (cur[t] ?? 0) - (prev[t] ?? 0);
+      if (delta > 0) {
+        merged[t] = (merged[t] ?? 0) + delta;
+        changed = true;
+      }
+    }
+    if (changed) {
+      setStats(merged);
+      writeJson(STATS_KEY, merged);
+    }
+  }, [state.destroyed, stats]);
+
+  // ---- 최고 기록 갱신 ----
+  const [isNewHighScore, setIsNewHighScore] = useState(false);
+  useEffect(() => {
+    if (state.status !== 'gameover') return;
+    const id = state.preset.id;
+    if (state.score > highScores[id]) {
+      const next = { ...highScores, [id]: state.score };
+      setHighScores(next);
+      writeNumber(highScoreKey(id), state.score);
+      setIsNewHighScore(true);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [state.status]);
+
+  const setDifficulty = useCallback((id: DifficultyId) => {
+    setDifficultyState(id);
+    writeString(DIFFICULTY_KEY, id);
+  }, []);
+
+  const start = useCallback(() => {
+    setIsNewHighScore(false);
+    dispatch({ type: 'start', preset: DIFFICULTY_PRESETS[difficulty], breeds: ALL_CAT_TYPES, seed: randomSeed() });
+  }, [difficulty]);
+
+  const togglePause = useCallback(() => {
+    const st = stateRef.current.status;
+    if (st === 'playing') dispatch({ type: 'pause' });
+    else if (st === 'paused') dispatch({ type: 'resume' });
+  }, []);
+
+  const actions = useMemo(
+    () => ({
+      start,
+      togglePause,
+      pause: () => dispatch({ type: 'pause' }),
+      resume: () => dispatch({ type: 'resume' }),
+      home: () => dispatch({ type: 'home' }),
+      moveLeft: () => dispatch({ type: 'move', dx: -1 }),
+      moveRight: () => dispatch({ type: 'move', dx: 1 }),
+      softDrop: () => dispatch({ type: 'softDrop' }),
+      hardDrop: () => dispatch({ type: 'hardDrop' }),
+      rotateCW: () => dispatch({ type: 'rotate', direction: 1 }),
+      rotateCCW: () => dispatch({ type: 'rotate', direction: -1 }),
+      hold: () => dispatch({ type: 'hold' }),
+    }),
+    [start, togglePause],
+  );
+
+  const ghost = useMemo(() => selectGhost(state), [state]);
+
+  return {
+    state,
+    ghost,
+    actions,
+    difficulty,
+    setDifficulty,
+    highScore: highScores[difficulty],
+    highScores,
+    isNewHighScore,
+    stats,
+  };
+}
+
+export type GameController = ReturnType<typeof useGame>;
+export type GameActions = GameController['actions'];
+export type { EngineState };

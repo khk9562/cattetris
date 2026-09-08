@@ -1,8 +1,10 @@
+import { memo } from 'react';
 import type { GameStatus } from '@/features/game-session';
+import { Icon } from '@/shared/ui';
 import styles from './Header.module.css';
 
 interface Props {
-  elapsedTime: number;
+  elapsedSeconds: number;
   status: GameStatus;
   onTogglePause: () => void;
   showGhost: boolean;
@@ -11,44 +13,40 @@ interface Props {
   onOpenCollection: () => void;
 }
 
-export default function Header({ elapsedTime, status, onTogglePause, showGhost, onToggleGhost, onGoHome, onOpenCollection }: Props) {
-  const minutes = String(Math.floor(elapsedTime / 60)).padStart(2, '0');
-  const seconds = String(elapsedTime % 60).padStart(2, '0');
+function Header({ elapsedSeconds, status, onTogglePause, showGhost, onToggleGhost, onGoHome, onOpenCollection }: Props) {
+  const minutes = String(Math.floor(elapsedSeconds / 60)).padStart(2, '0');
+  const seconds = String(elapsedSeconds % 60).padStart(2, '0');
   const showPause = status === 'playing' || status === 'paused';
 
   return (
     <header className={styles.header}>
       <div className={styles.titleGroup}>
-        <span className="material-symbols-outlined" style={{ color: 'var(--color-primary)', fontSize: '1.5rem' }}>pets</span>
+        <Icon name="paw" size="1.5rem" style={{ color: 'var(--color-primary)' }} />
         <h1 className={styles.title}>CAT TETRIS</h1>
       </div>
       <div className={styles.controlsGroup}>
         {status !== 'playing' && (
           <button className={styles.iconBtn} onClick={onOpenCollection} aria-label="도감 열기">
-            <span className="material-symbols-outlined" style={{ fontSize: '1.25rem' }}>menu_book</span>
+            <Icon name="book" />
           </button>
         )}
         <button className={styles.iconBtn} onClick={onGoHome} aria-label="메인 메뉴">
-          <span className="material-symbols-outlined" style={{ fontSize: '1.25rem' }}>home</span>
+          <Icon name="home" />
         </button>
         <button className={styles.iconBtn} onClick={onToggleGhost} aria-label="고스트 미리보기 전환">
-          <span className="material-symbols-outlined" style={{ fontSize: '1.25rem' }}>
-            {showGhost ? 'visibility' : 'visibility_off'}
-          </span>
+          <Icon name={showGhost ? 'eye' : 'eyeOff'} />
         </button>
         {showPause ? (
-          <button className={styles.timerBtn} onClick={onTogglePause}>
+          <button className={styles.timerBtn} onClick={onTogglePause} aria-label={status === 'paused' ? '이어하기' : '일시 정지'}>
             <span className={styles.timerText}>{minutes}:{seconds}</span>
-            <span className="material-symbols-outlined" style={{ fontSize: '1.25rem' }}>
-              {status === 'paused' ? 'play_arrow' : 'pause'}
-            </span>
+            <Icon name={status === 'paused' ? 'play' : 'pause'} />
           </button>
         ) : (
-          <div className={styles.timer}>
-            {minutes}:{seconds}
-          </div>
+          <div className={styles.timer}>{minutes}:{seconds}</div>
         )}
       </div>
     </header>
   );
 }
+
+export default memo(Header);

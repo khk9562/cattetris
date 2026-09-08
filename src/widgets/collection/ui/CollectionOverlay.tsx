@@ -1,4 +1,5 @@
 import { CatBlock, CAT_NAMES, type CatType } from '@/entities/cat';
+import { Icon } from '@/shared/ui';
 import styles from './CollectionOverlay.module.css';
 
 interface Props {
@@ -17,7 +18,7 @@ export default function CollectionOverlay({ stats, onClose }: Props) {
         <div className={styles.header}>
           <h2 className={styles.title}>고양이 도감</h2>
           <button className={styles.closeBtn} onClick={onClose} aria-label="도감 닫기">
-            <span className="material-symbols-outlined">close</span>
+            <Icon name="close" size="1.5rem" />
           </button>
         </div>
         <div className={styles.grid}>

@@ -7,6 +7,41 @@
   transition: all 0.2s;
 }
 
+/* ---------- 제거 연출 ---------- */
+.fx_line {
+  animation: fxLine 0.32s ease-in forwards;
+  z-index: 5;
+}
+
+.fx_cluster {
+  animation: fxCluster 0.32s ease-out forwards;
+  z-index: 6;
+}
+
+.fx_splash {
+  animation: fxSplash 0.32s ease-in forwards;
+  z-index: 5;
+}
+
+@keyframes fxLine {
+  0% { filter: brightness(1); transform: scale(1); }
+  30% { filter: brightness(2.2); }
+  100% { filter: brightness(2.5); transform: scale(1, 0.05); opacity: 0; }
+}
+
+@keyframes fxCluster {
+  0% { transform: scale(1); filter: brightness(1) saturate(1); }
+  35% { transform: scale(1.25); filter: brightness(1.8) saturate(1.6) drop-shadow(0 0 0.5rem #ffb300); }
+  100% { transform: scale(0); filter: brightness(3) drop-shadow(0 0 1rem #ff5722); opacity: 0; }
+}
+
+@keyframes fxSplash {
+  0% { transform: translate(0, 0) rotate(0); }
+  25% { transform: translate(-6%, 4%) rotate(-6deg); filter: brightness(1.5); }
+  50% { transform: translate(6%, -4%) rotate(6deg); }
+  100% { transform: translate(0, 40%) rotate(12deg) scale(0.6); opacity: 0; }
+}
+
 .ghost {
   background-image: none !important;
   background-color: transparent !important;

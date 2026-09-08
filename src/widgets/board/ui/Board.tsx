@@ -1,137 +1,136 @@
+import { memo, useMemo } from 'react';
 import type { Board as BoardType } from '@/entities/board';
 import type { ActivePiece } from '@/entities/piece';
-import { CatBlock } from '@/entities/cat';
+import { CatBlock, type CatType } from '@/entities/cat';
+import type { ClearCell, ClearKind, Popup } from '@/features/game-session';
+import { BOARD_HEIGHT, BOARD_WIDTH } from '@/shared/config';
 import styles from './Board.module.css';
 
 interface Props {
   board: BoardType;
   currentPiece: ActivePiece | null;
   ghostPiece: ActivePiece | null;
+  clearing: ClearCell[];
+  popups: Popup[];
 }
 
-function getCatType(board: (string | null)[][], x: number, y: number): string | null {
-  if (y < 0 || y >= 20 || x < 0 || x >= 10) return null;
-  return board[y][x];
+type RenderCell = { type: CatType; ghost: boolean } | null;
+
+function cellAt(grid: RenderCell[][], x: number, y: number): RenderCell {
+  if (y < 0 || y >= BOARD_HEIGHT || x < 0 || x >= BOARD_WIDTH) return null;
+  return grid[y][x];
 }
 
-// Flood-fill to find connected groups and assign face/tail per group
-function computeFeatures(board: (string | null)[][]) {
-  const visited = Array.from({ length: 20 }, () => Array(10).fill(false));
-  const faceMap = Array.from({ length: 20 }, () => Array(10).fill(false));
-  const tailMap = Array.from({ length: 20 }, () => Array(10).fill(false));
+function sameCat(grid: RenderCell[][], x: number, y: number, type: CatType, ghost: boolean): boolean {
+  const c = cellAt(grid, x, y);
+  return !!c && c.type === type && c.ghost === ghost;
+}
 
-  for (let y = 0; y < 20; y++) {
-    for (let x = 0; x < 10; x++) {
-      const t = getCatType(board, x, y);
-      if (!t || visited[y][x]) continue;
+/** 연결된 같은 품종 그룹마다 얼굴(위-왼쪽)과 꼬리(아래-오른쪽) 셀을 정한다. */
+function computeFeatures(grid: RenderCell[][]) {
+  const visited = Array.from({ length: BOARD_HEIGHT }, () => Array<boolean>(BOARD_WIDTH).fill(false));
+  const faceMap = Array.from({ length: BOARD_HEIGHT }, () => Array<boolean>(BOARD_WIDTH).fill(false));
+  const tailMap = Array.from({ length: BOARD_HEIGHT }, () => Array<boolean>(BOARD_WIDTH).fill(false));
 
-      // BFS to collect connected group
+  for (let y = 0; y < BOARD_HEIGHT; y++) {
+    for (let x = 0; x < BOARD_WIDTH; x++) {
+      const c = grid[y][x];
+      if (!c || visited[y][x]) continue;
       const group: { x: number; y: number }[] = [];
-      const queue: { x: number; y: number }[] = [{ x, y }];
+      const queue = [{ x, y }];
       visited[y][x] = true;
-
-      while (queue.length > 0) {
+      while (queue.length) {
         const cur = queue.shift()!;
         group.push(cur);
-        for (const [dx, dy] of [[0, -1], [1, 0], [0, 1], [-1, 0]]) {
+        for (const [dx, dy] of [[0, -1], [1, 0], [0, 1], [-1, 0]] as const) {
           const nx = cur.x + dx;
           const ny = cur.y + dy;
-          if (ny >= 0 && ny < 20 && nx >= 0 && nx < 10 && !visited[ny][nx] && getCatType(board, nx, ny) === t) {
+          if (ny >= 0 && ny < BOARD_HEIGHT && nx >= 0 && nx < BOARD_WIDTH && !visited[ny][nx] && sameCat(grid, nx, ny, c.type, c.ghost)) {
             visited[ny][nx] = true;
             queue.push({ x: nx, y: ny });
           }
         }
       }
-
-      // Face: topmost row, then leftmost in that row
-      group.sort((a, b) => a.y !== b.y ? a.y - b.y : a.x - b.x);
-      const face = group[0];
-      faceMap[face.y][face.x] = true;
-
-      // Tail: bottommost row, then rightmost in that row
-      group.sort((a, b) => a.y !== b.y ? b.y - a.y : b.x - a.x);
-      const tail = group[0];
+      group.sort((a, b) => (a.y !== b.y ? a.y - b.y : a.x - b.x));
+      faceMap[group[0].y][group[0].x] = true;
       if (group.length > 1) {
-        tailMap[tail.y][tail.x] = true;
+        group.sort((a, b) => (a.y !== b.y ? b.y - a.y : b.x - a.x));
+        tailMap[group[0].y][group[0].x] = true;
       }
     }
   }
-
   return { faceMap, tailMap };
 }
 
-export default function Board({ board, currentPiece, ghostPiece }: Props) {
-  const renderBoard = board.map(row => [...row]);
-
-  if (ghostPiece) {
-    for (let row = 0; row < ghostPiece.shape.length; row++) {
-      for (let col = 0; col < ghostPiece.shape[row].length; col++) {
-        if (ghostPiece.shape[row][col]) {
-          const x = ghostPiece.position.x + col;
-          const y = ghostPiece.position.y + row;
-          if (y >= 0 && y < 20 && x >= 0 && x < 10 && renderBoard[y][x] === null) {
-            renderBoard[y][x] = `ghost_${ghostPiece.catType}` as any;
-          }
-        }
+function buildGrid(board: BoardType, current: ActivePiece | null, ghost: ActivePiece | null): RenderCell[][] {
+  const grid: RenderCell[][] = board.map(row => row.map(c => (c ? { type: c, ghost: false } : null)));
+  const paint = (p: ActivePiece, isGhost: boolean) => {
+    for (let r = 0; r < p.shape.length; r++) {
+      for (let c = 0; c < p.shape[r].length; c++) {
+        if (!p.shape[r][c]) continue;
+        const x = p.position.x + c;
+        const y = p.position.y + r;
+        if (y < 0 || y >= BOARD_HEIGHT || x < 0 || x >= BOARD_WIDTH) continue;
+        if (isGhost && grid[y][x]) continue;
+        grid[y][x] = { type: p.catType, ghost: isGhost };
       }
     }
-  }
+  };
+  if (ghost) paint(ghost, true);
+  if (current) paint(current, false);
+  return grid;
+}
 
-  if (currentPiece) {
-    for (let row = 0; row < currentPiece.shape.length; row++) {
-      for (let col = 0; col < currentPiece.shape[row].length; col++) {
-        if (currentPiece.shape[row][col]) {
-          const x = currentPiece.position.x + col;
-          const y = currentPiece.position.y + row;
-          if (y >= 0 && y < 20 && x >= 0 && x < 10) {
-            renderBoard[y][x] = currentPiece.catType;
-          }
-        }
-      }
-    }
-  }
-
-  const { faceMap, tailMap } = computeFeatures(renderBoard);
+function Board({ board, currentPiece, ghostPiece, clearing, popups }: Props) {
+  const grid = useMemo(() => buildGrid(board, currentPiece, ghostPiece), [board, currentPiece, ghostPiece]);
+  const { faceMap, tailMap } = useMemo(() => computeFeatures(grid), [grid]);
+  const clearMap = useMemo(() => {
+    const m = new Map<string, ClearKind>();
+    for (const c of clearing) m.set(`${c.x},${c.y}`, c.kind);
+    return m;
+  }, [clearing]);
 
   return (
     <div className={styles.wrapper}>
       <div className={styles.shelfTop} />
       <div className={styles.shelfBottom} />
       <div className={styles.grid}>
-        {renderBoard.map((row, y) =>
+        {grid.map((row, y) =>
           row.map((cell, x) => {
-            if (!cell) {
-              return <div key={`${y}-${x}`} className={styles.cell} />;
-            }
-
-            const isGhost = typeof cell === 'string' && cell.startsWith('ghost_');
-            const catType = isGhost ? cell.replace('ghost_', '') : cell;
-            const t = cell;
-
-            const connTop = t ? getCatType(renderBoard, x, y - 1) === t : false;
-            const connRight = t ? getCatType(renderBoard, x + 1, y) === t : false;
-            const connBottom = t ? getCatType(renderBoard, x, y + 1) === t : false;
-            const connLeft = t ? getCatType(renderBoard, x - 1, y) === t : false;
-
-            const showFace = !isGhost && faceMap[y][x];
-            const showEars = showFace;
-            const showTail = !isGhost && tailMap[y][x];
-
+            if (!cell) return <div key={`${y}-${x}`} className={styles.cell} />;
+            const effect = clearMap.get(`${x},${y}`);
             return (
               <div key={`${y}-${x}`} className={styles.cell}>
                 <CatBlock
-                  catType={catType as any}
-                  ghost={isGhost}
-                  conn={{ top: connTop, right: connRight, bottom: connBottom, left: connLeft }}
-                  showFace={showFace}
-                  showEars={showEars}
-                  showTail={showTail}
+                  catType={cell.type}
+                  ghost={cell.ghost}
+                  conn={{
+                    top: sameCat(grid, x, y - 1, cell.type, cell.ghost),
+                    right: sameCat(grid, x + 1, y, cell.type, cell.ghost),
+                    bottom: sameCat(grid, x, y + 1, cell.type, cell.ghost),
+                    left: sameCat(grid, x - 1, y, cell.type, cell.ghost),
+                  }}
+                  showFace={!cell.ghost && faceMap[y][x]}
+                  showEars={!cell.ghost && faceMap[y][x]}
+                  showTail={!cell.ghost && tailMap[y][x]}
+                  effect={effect}
                 />
               </div>
             );
-          })
+          }),
         )}
       </div>
+      {popups.map(p => (
+        <div
+          key={p.id}
+          className={`${styles.popup} ${styles[`popup_${p.kind}`] ?? ''}`}
+          style={{ left: `${((p.x + 0.5) / BOARD_WIDTH) * 100}%`, top: `${((p.y + 0.5) / BOARD_HEIGHT) * 100}%` }}
+        >
+          {p.text}
+        </div>
+      ))}
     </div>
   );
 }
+
+export default memo(Board);

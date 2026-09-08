@@ -1,46 +1,44 @@
 import { useEffect } from 'react';
+import type { GameActions, GameStatus } from '@/features/game-session/@x/keyboard-controls';
 
-// Type representing the shape of the game returned by useGame
-interface GameActions {
-  status: string;
-  moveLeft: () => void;
-  moveRight: () => void;
-  moveDown: () => void;
-  rotate: () => void;
-  hardDrop: () => void;
-}
-
-export function useKeyboardControls(game: GameActions) {
+/**
+ * 가이드라인 기본 키 배치:
+ * ← → 이동, ↓ 소프트 드롭, Space 하드 드롭, ↑/X 시계 회전, Z/Ctrl 반시계 회전,
+ * C/Shift 홀드, P/Esc 일시정지, Enter 시작(대기 화면)
+ */
+export function useKeyboardControls(status: GameStatus, actions: GameActions) {
   useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (game.status !== 'playing') return;
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.code === 'KeyP' || e.code === 'Escape') {
+        if (status === 'playing' || status === 'paused') {
+          e.preventDefault();
+          actions.togglePause();
+        }
+        return;
+      }
+      if (status === 'ready' && e.code === 'Enter') {
+        e.preventDefault();
+        actions.start();
+        return;
+      }
+      if (status !== 'playing') return;
 
       switch (e.code) {
-        case 'ArrowLeft':
-          e.preventDefault();
-          game.moveLeft();
-          break;
-        case 'ArrowRight':
-          e.preventDefault();
-          game.moveRight();
-          break;
-        case 'ArrowDown':
-          e.preventDefault();
-          game.moveDown();
-          break;
-        case 'Space':
+        case 'ArrowLeft': e.preventDefault(); actions.moveLeft(); break;
+        case 'ArrowRight': e.preventDefault(); actions.moveRight(); break;
+        case 'ArrowDown': e.preventDefault(); actions.softDrop(); break;
+        case 'Space': if (!e.repeat) { e.preventDefault(); actions.hardDrop(); } break;
         case 'ArrowUp':
-          e.preventDefault();
-          game.rotate();
-          break;
-        case 'Enter':
-          e.preventDefault();
-          game.hardDrop();
-          break;
+        case 'KeyX': if (!e.repeat) { e.preventDefault(); actions.rotateCW(); } break;
+        case 'KeyZ':
+        case 'ControlLeft':
+        case 'ControlRight': if (!e.repeat) { e.preventDefault(); actions.rotateCCW(); } break;
+        case 'KeyC':
+        case 'ShiftLeft':
+        case 'ShiftRight': if (!e.repeat) { e.preventDefault(); actions.hold(); } break;
       }
     };
-
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [game.status, game.moveLeft, game.moveRight, game.moveDown, game.rotate, game.hardDrop]);
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [status, actions]);
 }

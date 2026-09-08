@@ -1,0 +1,47 @@
+.container {
+  position: relative;
+  width: 4.75rem;
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(0.75rem);
+  border-radius: 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 0.25rem 1rem rgba(0, 0, 0, 0.08);
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.5rem 0.5rem 0.25rem;
+  justify-content: center;
+  flex-shrink: 0;
+  cursor: pointer;
+  color: var(--color-primary);
+  -webkit-tap-highlight-color: transparent;
+  touch-action: none;
+  transition: transform 75ms, opacity 0.2s;
+}
+
+.container:active {
+  transform: scale(0.95);
+}
+
+.disabled {
+  opacity: 0.55;
+}
+
+.label {
+  font-size: 0.55rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-outline);
+  position: absolute;
+  top: 0.25rem;
+  left: 0.5rem;
+}
+
+.body {
+  width: 3rem;
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

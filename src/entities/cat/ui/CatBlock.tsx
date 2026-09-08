@@ -15,9 +15,11 @@ interface Props {
   showFace?: boolean;
   showEars?: boolean;
   showTail?: boolean;
+  /** 제거 연출 종류 */
+  effect?: 'line' | 'cluster' | 'splash';
 }
 
-export default function CatBlock({ catType, ghost, conn, showFace, showEars, showTail }: Props) {
+export default function CatBlock({ catType, ghost, conn, showFace, showEars, showTail, effect }: Props) {
   const isDark = catType === 'black' || catType === 'russianBlue';
   const c = conn || { top: false, right: false, bottom: false, left: false };
 
@@ -41,7 +43,8 @@ export default function CatBlock({ catType, ghost, conn, showFace, showEars, sho
     c.top ? styles.connTop : '',
     c.right ? styles.connRight : '',
     c.bottom ? styles.connBottom : '',
-    c.left ? styles.connLeft : ''
+    c.left ? styles.connLeft : '',
+    effect ? styles[`fx_${effect}`] : '',
   ].filter(Boolean).join(' ');
 
   return (
