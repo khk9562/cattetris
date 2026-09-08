@@ -46,9 +46,7 @@ function Header({ elapsedSeconds, status, onTogglePause, onOpenSettings, onOpenS
             <span className={styles.timerText}>{minutes}:{seconds}</span>
             <Icon name={status === 'paused' ? 'play' : 'pause'} />
           </button>
-        ) : (
-          <div className={styles.timer}>{minutes}:{seconds}</div>
-        )}
+        ) : null}
       </div>
     </header>
   );

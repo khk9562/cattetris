@@ -105,8 +105,6 @@ function Board({ board, currentPiece, ghostPiece, clearing, popups, gameOver = f
       style={shake ? ({ '--shake': `${(0.15 + shake.strength * 0.35).toFixed(2)}rem` } as React.CSSProperties) : undefined}
       onAnimationEnd={() => setShake(null)}
     >
-      <div className={styles.shelfTop} />
-      <div className={styles.shelfBottom} />
       <div className={styles.grid}>
         {grid.map((row, y) =>
           row.map((cell, x) => {
@@ -130,6 +128,8 @@ function Board({ board, currentPiece, ghostPiece, clearing, popups, gameOver = f
                   effect={effect}
                   expression={expression}
                   blinkDelay={blinkDelayFor(x, y)}
+                  cellX={x}
+                  cellY={y}
                 />
               </div>
             );

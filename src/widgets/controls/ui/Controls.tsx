@@ -75,7 +75,6 @@ function Controls({ actions }: Props) {
         <ControlButton icon="right" label="오른쪽" coach="right" onDown={() => move.startRepeat(actions.moveRight, DAS_MS, ARR_MS)} onUp={move.stop} />
         <ControlButton icon="rotate" label="회전" coach="rotate" accent onDown={() => actions.rotateCW()} onUp={() => undefined} />
       </div>
-      <p className={styles.hint}>보드를 탭하면 회전, 좌우로 끌면 이동, 아래로 튕기면 하드 드롭</p>
     </footer>
   );
 }

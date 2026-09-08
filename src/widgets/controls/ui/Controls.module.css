@@ -53,10 +53,3 @@
 .accent {
   background-color: var(--color-primary-container);
 }
-
-.hint {
-  font-size: 0.6rem;
-  color: var(--color-outline);
-  opacity: 0.7;
-  text-align: center;
-}

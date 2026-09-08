@@ -47,7 +47,7 @@
   --font-body: 'Be Vietnam Pro', 'Pretendard', 'Apple SD Gothic Neo', 'Noto Sans KR', system-ui, sans-serif;
 
   --header-height: 3.5rem;
-  --controls-height: 6.25rem;
+  --controls-height: 5.5rem;
   --controls-padding-bottom: env(safe-area-inset-bottom, 1rem);
 }
 
