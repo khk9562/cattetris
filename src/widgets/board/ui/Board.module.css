@@ -55,6 +55,24 @@
   overflow: visible;
 }
 
+/* ---------- 폭발 흔들림 ---------- */
+.shaking {
+  animation: boardShake 0.36s cubic-bezier(0.36, 0.07, 0.19, 0.97);
+}
+
+@keyframes boardShake {
+  0%, 100% { transform: translate(0, 0); }
+  15% { transform: translate(calc(var(--shake, 0.25rem) * -1), calc(var(--shake, 0.25rem) * 0.6)); }
+  30% { transform: translate(var(--shake, 0.25rem), calc(var(--shake, 0.25rem) * -0.5)); }
+  45% { transform: translate(calc(var(--shake, 0.25rem) * -0.7), calc(var(--shake, 0.25rem) * -0.4)); }
+  60% { transform: translate(calc(var(--shake, 0.25rem) * 0.5), calc(var(--shake, 0.25rem) * 0.4)); }
+  80% { transform: translate(calc(var(--shake, 0.25rem) * -0.2), 0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .shaking { animation: none; }
+}
+
 /* ---------- 점수 팝업 ---------- */
 .popup {
   position: absolute;

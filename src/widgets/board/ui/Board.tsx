@@ -1,9 +1,10 @@
-import { memo, useMemo } from 'react';
+import { memo, useCallback, useMemo, useState } from 'react';
 import type { Board as BoardType } from '@/entities/board';
 import type { ActivePiece } from '@/entities/piece';
 import { CatBlock, type CatType } from '@/entities/cat';
 import type { ClearCell, ClearKind, Popup } from '@/features/game-session';
 import { BOARD_HEIGHT, BOARD_WIDTH } from '@/shared/config';
+import ExplosionLayer from './ExplosionLayer';
 import styles from './Board.module.css';
 
 interface Props {
@@ -90,8 +91,16 @@ function Board({ board, currentPiece, ghostPiece, clearing, popups }: Props) {
     return m;
   }, [clearing]);
 
+  // 폭발 강도에 따른 보드 흔들림 (CSS 변수로 진폭 전달)
+  const [shake, setShake] = useState<{ id: number; strength: number } | null>(null);
+  const onShake = useCallback((strength: number) => setShake({ id: Date.now(), strength }), []);
+
   return (
-    <div className={styles.wrapper}>
+    <div
+      className={`${styles.wrapper} ${shake ? styles.shaking : ''}`}
+      style={shake ? ({ '--shake': `${(0.15 + shake.strength * 0.35).toFixed(2)}rem` } as React.CSSProperties) : undefined}
+      onAnimationEnd={() => setShake(null)}
+    >
       <div className={styles.shelfTop} />
       <div className={styles.shelfBottom} />
       <div className={styles.grid}>
@@ -120,6 +129,7 @@ function Board({ board, currentPiece, ghostPiece, clearing, popups }: Props) {
           }),
         )}
       </div>
+      <ExplosionLayer board={board} clearing={clearing} onShake={onShake} />
       {popups.map(p => (
         <div
           key={p.id}

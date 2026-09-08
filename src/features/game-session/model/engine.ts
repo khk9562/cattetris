@@ -229,7 +229,8 @@ function evaluate(s: EngineState, chain: number): EngineState {
   // 팝업: 뭉치별 폭발 텍스트, 줄 삭제 텍스트, 연쇄 텍스트
   for (const cluster of clusters) {
     const c = centroid(cluster.cells);
-    state = withPopup(state, c.x, c.y, `팡! ${cluster.cells.length}마리`, 'cluster');
+    // 보드 가장자리에서 글자가 잘리지 않도록 가로 위치를 안쪽으로 제한
+    state = withPopup(state, Math.min(7, Math.max(2, c.x)), Math.min(17, Math.max(2, c.y)), `팡! ${cluster.cells.length}마리`, 'cluster');
   }
   if (lines.length > 0) {
     const label = lines.length >= 4 ? '테트리스!' : `${lines.length}줄`;

@@ -27,3 +27,19 @@ export const CAT_NAMES: Record<CatType, string> = Object.fromEntries(
 
 /** 도감 해금에 필요한 누적 제거 수 */
 export const COLLECTION_UNLOCK_THRESHOLD = 500;
+
+/** 파티클 연출용 털 색 (바탕색, 무늬색) */
+export const CAT_FUR_COLORS: Record<CatType, [string, string]> = {
+  ginger: ['#ffb03a', '#e88d14'],
+  tuxedo: ['#1a1a1a', '#ffffff'],
+  russianBlue: ['#8c9fae', '#b8c6d1'],
+  calico: ['#ffffff', '#ff9d00'],
+  siamese: ['#f5e6d0', '#4a3b32'],
+  black: ['#3b3b45', '#5a5a68'],
+  tabby: ['#c8956c', '#7a5230'],
+  darkTabby: ['#5c626b', '#2a2d34'],
+  white: ['#fbfaf6', '#f5b8c4'],
+  tortie: ['#2b2320', '#d9741f'],
+  bengal: ['#e3a955', '#3b2312'],
+  scottishFold: ['#c9bdb0', '#b9ab9c'],
+};
