@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useGame } from '@/features/game-session';
 import { useKeyboardControls } from '@/features/keyboard-controls';
 import { useTheme } from '@/features/theme';
+import { useBoardGestures } from '@/features/touch-gestures';
 import { Header } from '@/widgets/header';
 import { StatsHUD } from '@/widgets/stats-hud';
 import { NextQueue } from '@/widgets/next-queue';
@@ -20,6 +21,7 @@ export default function GamePage() {
   const [showCollection, setShowCollection] = useState(false);
 
   useKeyboardControls(state.status, actions);
+  const gestures = useBoardGestures(actions, state.status === 'playing');
 
   const inGame = state.status === 'playing' || state.status === 'paused';
 
@@ -65,7 +67,7 @@ export default function GamePage() {
           <NextQueue pieces={state.queue} />
         </div>
 
-        <div className={styles.boardArea}>
+        <div className={styles.boardArea} {...gestures} onContextMenu={e => e.preventDefault()}>
           <Board
             board={state.board}
             currentPiece={state.current}
