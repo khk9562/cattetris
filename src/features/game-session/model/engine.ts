@@ -233,7 +233,7 @@ function evaluate(s: EngineState, chain: number): EngineState {
     state = withPopup(state, Math.min(7, Math.max(2, c.x)), Math.min(17, Math.max(2, c.y)), `팡! ${cluster.cells.length}마리`, 'cluster');
   }
   if (lines.length > 0) {
-    const label = lines.length >= 4 ? '테트리스!' : `${lines.length}줄`;
+    const label = lines.length >= 4 ? '4줄 클리어!' : `${lines.length}줄`;
     state = withPopup(state, 4.5, lines[Math.floor(lines.length / 2)], label, 'line');
   }
   if (chain > 0) {

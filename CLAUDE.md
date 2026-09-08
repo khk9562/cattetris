@@ -1,4 +1,4 @@
-# CAT TETRIS - Claude Code 규칙
+# 냥스택 (NYANG STACK) - Claude Code 규칙
 
 ## 커밋 컨벤션
 - `FEAT:` - 새로운 기능 추가

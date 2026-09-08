@@ -50,7 +50,8 @@ function GameOverlays({
         <div className={styles.overlay}>
           <div className={styles.overlayContent}>
             <CatParade />
-            <h2 className={styles.overlayTitle}>CAT TETRIS</h2>
+            <h2 className={styles.overlayTitle}>냥스택</h2>
+            <p className={styles.subtitle}>NYANG STACK</p>
             <p className={styles.tagline}>같은 냥이끼리 모이면 팡! 주변까지 같이 터져요</p>
 
             <div className={styles.difficultyGroup} role="radiogroup" aria-label="난이도">

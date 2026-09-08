@@ -218,3 +218,12 @@
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(-0.3rem); }
 }
+
+.subtitle {
+  font-family: var(--font-headline);
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.3em;
+  color: var(--color-outline);
+  margin-top: -0.9rem;
+}

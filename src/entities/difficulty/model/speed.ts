@@ -1,7 +1,7 @@
 import type { DifficultyPreset } from './types';
 
 /**
- * 테트리스 가이드라인 낙하 공식: 한 칸 내려가는 데 걸리는 초 = (0.8 - (L-1)*0.007)^(L-1)
+ * * 가이드라인(표준 블록 퍼즐) 낙하 공식: 한 칸 내려가는 데 걸리는 초 = (0.8 - (L-1)*0.007)^(L-1)
  * 난이도별 상한 레벨과 배율을 적용한다.
  */
 export function gravityIntervalMs(level: number, preset: DifficultyPreset): number {

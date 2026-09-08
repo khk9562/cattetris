@@ -22,7 +22,7 @@ function Header({ elapsedSeconds, status, onTogglePause, showGhost, onToggleGhos
     <header className={styles.header}>
       <div className={styles.titleGroup}>
         <Icon name="paw" size="1.5rem" style={{ color: 'var(--color-primary)' }} />
-        <h1 className={styles.title}>CAT TETRIS</h1>
+        <h1 className={styles.title}>냥스택</h1>
       </div>
       <div className={styles.controlsGroup}>
         {status !== 'playing' && (
