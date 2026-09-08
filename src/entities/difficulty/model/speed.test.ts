@@ -13,16 +13,18 @@ describe('gravityIntervalMs', () => {
     expect(gravityIntervalMs(n.maxSpeedLevel, n)).toBe(gravityIntervalMs(n.maxSpeedLevel + 5, n));
   });
 
-  it('is slower on easy than normal at the same level', () => {
-    expect(gravityIntervalMs(3, DIFFICULTY_PRESETS.easy)).toBeGreaterThan(gravityIntervalMs(3, DIFFICULTY_PRESETS.normal));
+  it('starts each tier faster than the one below it', () => {
+    const { easy, normal, hard } = DIFFICULTY_PRESETS;
+    expect(gravityIntervalMs(easy.startLevel, easy)).toBeGreaterThan(gravityIntervalMs(normal.startLevel, normal));
+    expect(gravityIntervalMs(normal.startLevel, normal)).toBeGreaterThan(gravityIntervalMs(hard.startLevel, hard));
   });
 });
 
 describe('breedCountForLevel', () => {
   it('grows by one every breedsLevelStep levels up to the max', () => {
     const n = DIFFICULTY_PRESETS.normal;
-    expect(breedCountForLevel(1, n)).toBe(n.breedsStart);
-    expect(breedCountForLevel(1 + n.breedsLevelStep, n)).toBe(n.breedsStart + 1);
+    expect(breedCountForLevel(n.startLevel, n)).toBe(n.breedsStart);
+    expect(breedCountForLevel(n.startLevel + n.breedsLevelStep, n)).toBe(n.breedsStart + 1);
     expect(breedCountForLevel(40, n)).toBe(n.breedsMax);
   });
 });

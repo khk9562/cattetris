@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { ALL_CAT_TYPES } from '@/entities/cat';
-import { DIFFICULTY_PRESETS } from '@/entities/difficulty';
+import { DIFFICULTY_PRESETS, gravityIntervalMs } from '@/entities/difficulty';
 import { makePiece } from '@/entities/piece';
 import { BOARD_HEIGHT, BOARD_WIDTH, CLEAR_ANIMATION_MS, NEXT_QUEUE_SIZE, SETTLE_MS } from '@/shared/config';
 import { createInitialState, engineReducer } from './engine';
@@ -55,7 +55,8 @@ describe('gravity and lock delay', () => {
   it('moves the piece down one row after the gravity interval', () => {
     const s = start();
     const y0 = s.current!.position.y;
-    const after = ticks(s, 1000);
+    const interval = gravityIntervalMs(s.level, normal);
+    const after = ticks(s, interval + 8, 8);
     expect(after.current!.position.y).toBe(y0 + 1);
   });
 
