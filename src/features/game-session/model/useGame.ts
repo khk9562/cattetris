@@ -5,7 +5,8 @@ import { STAGES, starsFor, type StageDef } from '@/entities/stage';
 import { HIGH_SCORE_KEY, STAGES_KEY, STATS_KEY } from '@/shared/config';
 import { randomSeed, readJson, readNumber, writeJson, writeNumber } from '@/shared/lib';
 import { createInitialState, engineReducer, progressInput, selectGhost } from './engine';
-import type { EngineState, FeedbackKind } from './types';
+import type { EngineState, FeedbackKind, StartSetup } from './types';
+import type { DifficultyPreset } from '@/entities/difficulty';
 
 type HighScores = Record<DifficultyId, number>;
 type Stats = Partial<Record<CatType, number>>;
@@ -164,6 +165,13 @@ export function useGame({ difficulty, vibration }: UseGameOptions) {
     dispatch({ type: 'start', preset: DIFFICULTY_PRESETS.easy, breeds: ALL_CAT_TYPES, seed: randomSeed(), stage });
   }, []);
 
+  /** 튜토리얼 판: 미리 정한 보드/조각으로 시작, 기록 없음 */
+  const startTutorial = useCallback((setup: StartSetup | undefined, presetOverride: Partial<DifficultyPreset> | undefined) => {
+    setIsNewHighScore(false);
+    setLastStars(null);
+    dispatch({ type: 'start', preset: DIFFICULTY_PRESETS.easy, breeds: ALL_CAT_TYPES, seed: randomSeed(), mode: 'tutorial', setup, presetOverride });
+  }, []);
+
   /** 마지막으로 플레이한 스테이지 다시 / 다음 스테이지 */
   const retryStage = useCallback(() => {
     const st = stateRef.current.stage;
@@ -186,6 +194,7 @@ export function useGame({ difficulty, vibration }: UseGameOptions) {
     () => ({
       start,
       startStage,
+      startTutorial,
       retryStage,
       nextStage,
       togglePause,
@@ -200,7 +209,7 @@ export function useGame({ difficulty, vibration }: UseGameOptions) {
       rotateCCW: () => dispatch({ type: 'rotate', direction: -1 }),
       hold: () => dispatch({ type: 'hold' }),
     }),
-    [start, startStage, retryStage, nextStage, togglePause],
+    [start, startStage, startTutorial, retryStage, nextStage, togglePause],
   );
 
   const ghost = useMemo(() => selectGhost(state), [state]);

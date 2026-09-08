@@ -31,6 +31,8 @@ interface Props {
   retryStage: () => void;
   nextStage: () => void;
   onOpenStages: () => void;
+  showTutorialPrompt: boolean;
+  onStartTutorial: () => void;
   togglePause: () => void;
   goHome: () => void;
   onOpenCollection: () => void;
@@ -83,9 +85,11 @@ function GoalList({ stage, progress }: { stage: StageDef; progress: StageProgres
 function GameOverlays({
   status, mode, stage, progress, score, level, highScore, isNewHighScore, lastStars, stageStars, nextUnclearedStage,
   stats, difficulty, onSelectDifficulty, menuMode, onSelectMenuMode,
-  startGame, startStage, retryStage, nextStage, onOpenStages, togglePause, goHome, onOpenCollection, theme, setTheme,
+  startGame, startStage, retryStage, nextStage, onOpenStages, showTutorialPrompt, onStartTutorial, togglePause, goHome, onOpenCollection, theme, setTheme,
   missions, onClaimMission, playerTitle,
 }: Props) {
+  // 튜토리얼 중 게임오버는 훅이 곧바로 구간을 다시 시작하므로 화면을 띄우지 않는다
+  if (mode === 'tutorial' && status === 'gameover') return null;
   if (status === 'playing') return null;
   const preset = DIFFICULTY_PRESETS[difficulty];
   const clearedCount = Object.keys(stageStars).length;
@@ -103,6 +107,12 @@ function GameOverlays({
               <p className={styles.playerTitle}><Icon name="star" size="0.9rem" /> {playerTitle}</p>
             ) : (
               <p className={styles.tagline}>같은 냥이끼리 모이면 팡! 주변까지 같이 터져요</p>
+            )}
+
+            {showTutorialPrompt && (
+              <button className={styles.tutorialPrompt} onClick={onStartTutorial}>
+                <Icon name="bolt" size="1.1rem" /> 처음이세요? 30초 튜토리얼
+              </button>
             )}
 
             <div className={styles.modeTabs} role="tablist" aria-label="모드">
@@ -143,6 +153,7 @@ function GameOverlays({
             <div className={styles.themeSelector}>
               <button className={`${styles.themeIcon} ${theme === 'default' ? styles.themeActive : ''}`} onClick={() => setTheme('default')} aria-label="기본 테마"><Icon name="moon" /></button>
               <button className={`${styles.themeIcon} ${theme === 'grass' ? styles.themeActive : ''}`} onClick={() => setTheme('grass')} aria-label="잔디 테마"><Icon name="grass" /></button>
+              <button className={styles.themeIcon} onClick={onStartTutorial} aria-label="튜토리얼"><Icon name="help" /></button>
             </div>
             <button className={`${styles.startBtn} ${styles.secondaryBtn}`} onClick={onOpenCollection}>도감</button>
           </div>

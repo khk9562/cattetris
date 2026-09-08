@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { progressInput, useGame, type GameMode } from '@/features/game-session';
 import { useKeyboardControls } from '@/features/keyboard-controls';
 import { useSettings } from '@/features/settings';
+import { useTutorial } from '@/features/tutorial';
 import { useSound } from '@/features/sound';
 import { useDailyMissions } from '@/features/daily-missions';
 import { usePlayerStats } from '@/features/player-stats';
@@ -18,6 +19,7 @@ import { CollectionOverlay } from '@/widgets/collection';
 import { SettingsOverlay } from '@/widgets/settings-overlay';
 import { StageSelect } from '@/widgets/stage-select';
 import { StageGoals } from '@/widgets/stage-goals';
+import { TutorialOverlay } from '@/widgets/tutorial-overlay';
 import { StatsOverlay } from '@/widgets/stats-overlay';
 import styles from './GamePage.module.css';
 
@@ -38,6 +40,7 @@ export default function GamePage() {
   const [menuMode, setMenuMode] = useState<GameMode>('endless');
 
   useKeyboardControls(state.status, actions);
+  const tutorial = useTutorial({ status: state.status, events: state.events, startGame: actions.startTutorial, goHome: actions.home });
   useSound(state.events, { sound: settings.sound, music: settings.music, status: state.status, level: state.level });
   const gestures = useBoardGestures(actions, state.status === 'playing' && settings.gestures);
 
@@ -71,6 +74,8 @@ export default function GamePage() {
           retryStage={actions.retryStage}
           nextStage={actions.nextStage}
           onOpenStages={() => setShowStages(true)}
+          showTutorialPrompt={!tutorial.done}
+          onStartTutorial={tutorial.begin}
           score={state.score}
           level={state.level}
           highScore={game.highScore}
@@ -89,7 +94,9 @@ export default function GamePage() {
           playerTitle={missions.currentTitle}
         />
 
-        {state.mode === 'stage' && state.stage ? (
+        {tutorial.active ? (
+          <TutorialOverlay step={tutorial.step} stepIndex={tutorial.stepIndex} total={tutorial.total} onNext={tutorial.next} onSkip={tutorial.skip} />
+        ) : state.mode === 'stage' && state.stage ? (
           <StageGoals stage={state.stage} progress={progress} />
         ) : (
           <StatsHUD
@@ -105,7 +112,7 @@ export default function GamePage() {
           <NextQueue pieces={state.queue} />
         </div>
 
-        <div className={styles.boardArea} {...gestures} onContextMenu={e => e.preventDefault()}>
+        <div className={styles.boardArea} {...gestures} onContextMenu={e => e.preventDefault()} data-coach-target="board">
           <Board
             board={state.board}
             currentPiece={state.current}
@@ -120,7 +127,15 @@ export default function GamePage() {
       {inGame && <Controls actions={actions} />}
 
       {showCollection && <CollectionOverlay stats={game.stats} onClose={() => setShowCollection(false)} />}
-      {showSettings && <SettingsOverlay settings={settings} onChange={update} onClose={() => setShowSettings(false)} />}
+      {showSettings && (
+        <SettingsOverlay
+          settings={settings}
+          onChange={update}
+          onClose={() => setShowSettings(false)}
+          onStartTutorial={() => { setShowSettings(false); tutorial.begin(); }}
+        />
+      )}
+
       {showStats && (
         <StatsOverlay
           totals={playerStats.totals}

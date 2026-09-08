@@ -8,6 +8,7 @@ interface Props {
   settings: Settings;
   onChange: <K extends keyof Settings>(key: K, value: Settings[K]) => void;
   onClose: () => void;
+  onStartTutorial: () => void;
 }
 
 const TOGGLES: { key: 'sound' | 'music' | 'vibration' | 'gestures' | 'ghost'; label: string; hint: string }[] = [
@@ -18,7 +19,7 @@ const TOGGLES: { key: 'sound' | 'music' | 'vibration' | 'gestures' | 'ghost'; la
   { key: 'ghost', label: '고스트 블록', hint: '떨어질 위치 미리보기' },
 ];
 
-function SettingsOverlay({ settings, onChange, onClose }: Props) {
+function SettingsOverlay({ settings, onChange, onClose, onStartTutorial }: Props) {
   return (
     <div className={styles.overlay} role="dialog" aria-label="설정">
       <div className={styles.container}>
@@ -64,6 +65,14 @@ function SettingsOverlay({ settings, onChange, onClose }: Props) {
                 </button>
               ))}
             </div>
+          </div>
+
+          <div className={styles.row}>
+            <span className={styles.rowText}>
+              <span className={styles.rowLabel}>튜토리얼</span>
+              <span className={styles.rowHint}>조작과 팡 규칙을 다시 배워요</span>
+            </span>
+            <button className={styles.actionBtn} onClick={onStartTutorial}>다시 보기</button>
           </div>
 
           <div className={styles.row}>

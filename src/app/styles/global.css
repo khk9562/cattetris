@@ -115,3 +115,23 @@ body {
   flex-direction: column;
   overflow: hidden;
 }
+
+/* 튜토리얼 강조: body[data-coach]와 같은 이름의 data-coach-target에 펄스 링 */
+body[data-coach='board'] [data-coach-target='board'],
+body[data-coach='left'] [data-coach-target='left'],
+body[data-coach='right'] [data-coach-target='right'],
+body[data-coach='rotate'] [data-coach-target='rotate'],
+body[data-coach='drop'] [data-coach-target='drop'],
+body[data-coach='hold'] [data-coach-target='hold'] {
+  animation: coachPulse 1.2s ease-in-out infinite;
+  border-radius: inherit;
+}
+
+@keyframes coachPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(254, 178, 70, 0.9); }
+  50% { box-shadow: 0 0 0 0.6rem rgba(254, 178, 70, 0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body[data-coach] [data-coach-target] { animation: none; box-shadow: 0 0 0 0.25rem rgba(254, 178, 70, 0.9); }
+}

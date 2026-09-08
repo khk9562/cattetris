@@ -161,3 +161,17 @@
   background: linear-gradient(to right, var(--color-primary), var(--color-secondary));
   color: white;
 }
+
+.actionBtn {
+  font-family: var(--font-headline);
+  font-weight: 700;
+  font-size: 0.85rem;
+  padding: 0.5rem 1rem;
+  border-radius: 9999px;
+  border: none;
+  background: var(--color-surface-container-high);
+  color: var(--color-primary);
+  cursor: pointer;
+  flex-shrink: 0;
+  -webkit-tap-highlight-color: transparent;
+}

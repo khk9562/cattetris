@@ -16,6 +16,7 @@ function HoldSlot({ piece, disabled, onHold }: Props) {
       className={`${styles.container} ${disabled ? styles.disabled : ''}`}
       onPointerDown={e => { e.preventDefault(); onHold(); }}
       aria-label="홀드"
+      data-coach-target="hold"
     >
       <p className={styles.label}>홀드</p>
       <div className={styles.body}>
