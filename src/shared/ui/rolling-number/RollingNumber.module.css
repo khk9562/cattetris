@@ -1,0 +1,17 @@
+.num {
+  display: inline-block;
+  font-variant-numeric: tabular-nums;
+}
+
+.bump {
+  animation: numBump 0.32s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transform-origin: left center;
+}
+
+@keyframes numBump {
+  0% { transform: scale(1); }
+  35% { transform: scale(1.14); }
+  100% { transform: scale(1); }
+}
+
+@media (prefers-reduced-motion: reduce) { .bump { animation: none; } }

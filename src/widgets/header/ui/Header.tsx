@@ -21,7 +21,7 @@ function Header({ elapsedSeconds, status, onTogglePause, onOpenSettings, onOpenS
   return (
     <header className={styles.header}>
       <div className={styles.titleGroup}>
-        <Icon name="paw" size="1.5rem" style={{ color: 'var(--color-primary)' }} />
+        <span className={styles.badge}><Icon name="paw" size="1.15rem" /></span>
         <h1 className={styles.title}>냥스택</h1>
       </div>
       <div className={styles.controlsGroup}>

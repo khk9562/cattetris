@@ -1,11 +1,11 @@
 .container {
   position: relative;
   flex: 1;
-  background: rgba(255, 255, 255, 0.7);
+  background: var(--color-surface-container);
   backdrop-filter: blur(0.75rem);
-  border-radius: 1rem;
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  box-shadow: 0 0.25rem 1rem rgba(0, 0, 0, 0.08);
+  border-radius: 1.1rem;
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
   display: flex;
   align-items: center;
   gap: 0.5rem;

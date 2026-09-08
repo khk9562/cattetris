@@ -2,8 +2,8 @@
   position: fixed;
   inset: 0;
   z-index: 100;
-  background: rgba(253, 246, 227, 0.92);
-  backdrop-filter: blur(0.5rem);
+  background: rgba(255, 247, 238, 0.88);
+  backdrop-filter: blur(0.75rem);
   /* 헤더 아래부터 시작하고, 내용이 길면 스크롤 (margin:auto로 여유 있을 땐 가운데 정렬) */
   padding: calc(var(--header-height) + 1rem) 1rem 1.5rem;
   overflow-y: auto;
@@ -12,7 +12,7 @@
 
 /* 게임오버는 잠든 고양이들이 비치도록 덜 가린다 */
 .overlayGameover {
-  background: rgba(253, 246, 227, 0.72);
+  background: rgba(255, 247, 238, 0.7);
   backdrop-filter: blur(0.125rem);
   display: flex;
   align-items: center;
@@ -29,10 +29,10 @@
 
 .overlayTitle {
   font-family: var(--font-headline);
-  font-size: 2rem;
+  font-size: 2.25rem;
   font-weight: 800;
-  font-style: italic;
-  color: var(--color-primary);
+  letter-spacing: -0.02em;
+  color: var(--color-on-background);
 }
 
 .highScoreLabel {
@@ -70,13 +70,13 @@
   font-size: 1rem;
   font-weight: 700;
   color: white;
-  background: linear-gradient(to right, var(--color-primary), var(--color-secondary));
+  background: var(--accent-gradient);
   border: none;
   border-radius: 9999px;
-  padding: 0.875rem 2.5rem;
+  padding: 0.9rem 2.5rem;
   cursor: pointer;
-  box-shadow: 0 0.25rem 1rem rgba(0, 0, 0, 0.15);
-  transition: transform 100ms;
+  box-shadow: 0 0.5rem 1.25rem rgba(255, 111, 145, 0.35);
+  transition: transform 120ms cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 120ms;
   -webkit-tap-highlight-color: transparent;
 }
 
@@ -115,9 +115,11 @@
 }
 
 .secondaryBtn {
-  background: var(--color-surface-container-highest);
+  background: var(--color-surface-container-high);
   background-image: var(--ui-bg, none);
-  color: var(--color-primary);
+  color: var(--color-on-background);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
 }
 
 .difficultyGroup {
@@ -143,9 +145,9 @@
 }
 
 .difficultyActive {
-  background: linear-gradient(to right, var(--color-primary), var(--color-secondary));
+  background: var(--accent-gradient);
   color: white;
-  box-shadow: 0 0.125rem 0.5rem rgba(0, 0, 0, 0.15);
+  box-shadow: 0 0.125rem 0.5rem rgba(255, 111, 145, 0.35);
 }
 
 .difficultyDesc {

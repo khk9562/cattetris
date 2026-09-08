@@ -2,9 +2,11 @@
   width: 100%;
   background-color: var(--color-surface-container);
   background-image: var(--ui-bg, none);
-  padding: 0.3rem 0.5rem;
-  border-radius: 1rem;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  backdrop-filter: blur(0.75rem);
+  border: 1px solid var(--glass-border);
+  padding: 0.35rem 0.75rem;
+  border-radius: 1.1rem;
+  box-shadow: var(--glass-shadow);
   display: flex;
   justify-content: space-between;
   align-items: center;

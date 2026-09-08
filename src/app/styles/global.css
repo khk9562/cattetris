@@ -20,33 +20,41 @@
 @font-face { font-family: 'Be Vietnam Pro'; font-style: normal; font-weight: 600; font-display: swap; src: url('/fonts/BeVietnamPro-600.woff2') format('woff2'); }
 
 :root {
-  --color-primary: #805100;
-  --color-secondary: #983d4d;
-  --color-tertiary: #006573;
-  --color-surface: #fdf6e3;
-  --color-background: #fdf6e3;
-  --color-on-background: #322f22;
-  --color-on-primary: #fff0e3;
-  --color-on-surface: #322f22;
-  --color-primary-container: #feb246;
-  --color-secondary-container: #ffc2c8;
-  --color-secondary-fixed-dim: #ffaeb7;
-  --color-tertiary-fixed: #7fe0f3;
-  --color-tertiary-fixed-dim: #70d1e4;
-  --color-surface-bright: #fdf6e3;
-  --color-surface-dim: #dcd4bb;
-  --color-surface-container: #efe8d2;
-  --color-surface-container-low: #f8f0dc;
-  --color-surface-container-high: #eae2cb;
-  --color-surface-container-highest: #e4ddc5;
-  --color-outline: #7b7767;
-  --color-outline-variant: #b2ad9c;
-  --color-error: #b02500;
+  /* 냥스택 v5 팔레트: 크림 바탕에 복숭아·라벤더·민트 파스텔 */
+  --color-primary: #c8562a;
+  --color-secondary: #7b61ff;
+  --color-tertiary: #2ba58f;
+  --color-surface: #fffaf3;
+  --color-background: #fff6ec;
+  --color-on-background: #3a2e2a;
+  --color-on-primary: #fff8f2;
+  --color-on-surface: #3a2e2a;
+  --color-primary-container: #ffb98a;
+  --color-secondary-container: #e6dfff;
+  --color-secondary-fixed-dim: #ffb3c6;
+  --color-tertiary-fixed: #c8f0e6;
+  --color-tertiary-fixed-dim: #8fdcc9;
+  --color-surface-bright: #ffffff;
+  --color-surface-dim: #efe2d6;
+  --color-surface-container: rgba(255, 255, 255, 0.62);
+  --color-surface-container-low: rgba(255, 255, 255, 0.4);
+  --color-surface-container-high: rgba(255, 255, 255, 0.82);
+  --color-surface-container-highest: #ffffff;
+  --color-outline: #9a8a80;
+  --color-outline-variant: #dccdc2;
+  --color-error: #d64545;
+
+  --glass-border: rgba(255, 255, 255, 0.85);
+  --glass-shadow: 0 0.5rem 1.5rem rgba(140, 100, 70, 0.12);
+  --accent-gradient: linear-gradient(135deg, #ff9a62 0%, #ff6f91 55%, #b58cff 100%);
+  --blob-a: #ffd6c2;
+  --blob-b: #e4dbff;
+  --blob-c: #d6f2ea;
 
   --font-headline: 'Plus Jakarta Sans', 'Pretendard', 'Apple SD Gothic Neo', 'Noto Sans KR', system-ui, sans-serif;
   --font-body: 'Be Vietnam Pro', 'Pretendard', 'Apple SD Gothic Neo', 'Noto Sans KR', system-ui, sans-serif;
 
-  --header-height: 3.5rem;
+  --header-height: 3.75rem;
   --controls-height: 5.5rem;
   --controls-padding-bottom: env(safe-area-inset-bottom, 1rem);
 }
@@ -114,6 +122,57 @@ body {
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  position: relative;
+  z-index: 1;
+}
+
+/* 떠다니는 파스텔 블롭 배경 (기본 테마) */
+body::before,
+body::after {
+  content: "";
+  position: fixed;
+  z-index: 0;
+  pointer-events: none;
+  border-radius: 50%;
+  filter: blur(3.5rem);
+  opacity: var(--blob-opacity, 0.85);
+  will-change: transform;
+}
+
+body::before {
+  width: 70vw;
+  height: 70vw;
+  left: -20vw;
+  top: -10vh;
+  background: radial-gradient(circle, var(--blob-a) 0%, transparent 70%);
+  animation: blobDriftA 22s ease-in-out infinite alternate;
+}
+
+body::after {
+  width: 80vw;
+  height: 80vw;
+  right: -30vw;
+  bottom: -10vh;
+  background:
+    radial-gradient(circle at 30% 30%, var(--blob-b) 0%, transparent 60%),
+    radial-gradient(circle at 70% 70%, var(--blob-c) 0%, transparent 60%);
+  animation: blobDriftB 26s ease-in-out infinite alternate;
+}
+
+@keyframes blobDriftA {
+  from { transform: translate(0, 0) scale(1); }
+  to { transform: translate(12vw, 10vh) scale(1.15); }
+}
+
+@keyframes blobDriftB {
+  from { transform: translate(0, 0) scale(1.05); }
+  to { transform: translate(-14vw, -12vh) scale(0.95); }
+}
+
+[data-theme='grass'] { --blob-opacity: 0; }
+
+@media (prefers-reduced-motion: reduce) {
+  body::before, body::after { animation: none; }
 }
 
 /* 튜토리얼 강조: body[data-coach]와 같은 이름의 data-coach-target에 펄스 링 */

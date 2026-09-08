@@ -5,7 +5,10 @@
   gap: 0.5rem;
   background-color: var(--color-surface-container);
   background-image: var(--ui-bg, none);
-  border-radius: 1rem;
+  backdrop-filter: blur(0.75rem);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
+  border-radius: 1.1rem;
   padding: 0.3rem 0.6rem;
 }
 
@@ -73,7 +76,7 @@
 .fill {
   display: block;
   height: 100%;
-  background: linear-gradient(to right, var(--color-primary), var(--color-secondary));
+  background: var(--accent-gradient);
   transition: width 0.3s;
 }
 
