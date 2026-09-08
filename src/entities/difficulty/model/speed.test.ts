@@ -21,9 +21,8 @@ describe('gravityIntervalMs', () => {
 describe('breedCountForLevel', () => {
   it('grows by one every breedsLevelStep levels up to the max', () => {
     const n = DIFFICULTY_PRESETS.normal;
-    expect(breedCountForLevel(1, n)).toBe(4);
-    expect(breedCountForLevel(5, n)).toBe(5);
-    expect(breedCountForLevel(9, n)).toBe(6);
-    expect(breedCountForLevel(40, n)).toBe(6);
+    expect(breedCountForLevel(1, n)).toBe(n.breedsStart);
+    expect(breedCountForLevel(1 + n.breedsLevelStep, n)).toBe(n.breedsStart + 1);
+    expect(breedCountForLevel(40, n)).toBe(n.breedsMax);
   });
 });

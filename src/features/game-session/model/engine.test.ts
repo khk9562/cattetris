@@ -146,12 +146,13 @@ describe('cluster explosion', () => {
   it('explodes a cluster at the threshold together with its 8-neighbour ring and chains', () => {
     let s = start(11);
     const board = s.board.map(r => [...r]);
-    // 바닥에 시암 5개 가로, 그 위에 시암 1개 → 6개 뭉치 (normal threshold 6)
-    for (let x = 0; x < 5; x++) board[BOARD_HEIGHT - 1][x] = 'siamese';
-    board[BOARD_HEIGHT - 2][0] = 'siamese';
-    // 폭발 여파 대상
+    // 왼쪽 0~4열을 아래에서부터 채워 정확히 기준 개수만큼의 시암 뭉치를 만든다
+    const thr = normal.clusterThreshold;
+    for (let i = 0; i < thr; i++) board[BOARD_HEIGHT - 1 - Math.floor(i / 5)][i % 5] = 'siamese';
+    const rows = Math.ceil(thr / 5);
+    // 폭발 여파 대상: 뭉치 오른쪽에 붙은 5열
     board[BOARD_HEIGHT - 1][5] = 'black';
-    board[BOARD_HEIGHT - 2][5] = 'black';
+    board[BOARD_HEIGHT - rows][5] = 'black';
     // 여파 밖 셀
     board[BOARD_HEIGHT - 1][8] = 'tabby';
     board[BOARD_HEIGHT - 3][8] = 'tabby';
@@ -160,7 +161,7 @@ describe('cluster explosion', () => {
     s = { ...s, phase: 'settling', phaseMs: 0 };
     s = ticks(s, SETTLE_MS + 16);
     expect(s.phase).toBe('clearing');
-    expect(s.clearing.filter(c => c.kind === 'cluster')).toHaveLength(6);
+    expect(s.clearing.filter(c => c.kind === 'cluster')).toHaveLength(thr);
     expect(s.clearing.filter(c => c.kind === 'splash')).toHaveLength(2);
     expect(s.stats.explosions).toBe(1);
 
@@ -169,7 +170,7 @@ describe('cluster explosion', () => {
     expect(after.board[BOARD_HEIGHT - 1][5]).toBeNull();
     expect(after.board[BOARD_HEIGHT - 1][8]).toBe('tabby');
     expect(after.board[BOARD_HEIGHT - 2][8]).toBe('tabby'); // 중력으로 한 칸 내려옴
-    expect(after.destroyed.siamese).toBe(6);
+    expect(after.destroyed.siamese).toBe(thr);
     expect(after.destroyed.black).toBe(2);
   });
 });
