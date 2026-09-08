@@ -12,7 +12,8 @@
     "test:watch": "vitest",
     "preview": "vite preview",
     "sim": "vite-node scripts/balance-sim.ts",
-    "sim:sweep": "vite-node scripts/balance-sweep.ts"
+    "sim:sweep": "vite-node scripts/balance-sweep.ts",
+    "build:single": "vite build -c vite.artifact.config.ts"
   },
   "dependencies": {
     "react": "^19.2.4",
