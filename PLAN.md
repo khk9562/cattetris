@@ -71,7 +71,7 @@ src/
     ├── lib/                     시드 난수(mulberry32), 안전한 storage 유틸
     └── ui/                      Icon(SVG)
 public/
-├── fonts/                       자체 호스팅 woff2 (Plus Jakarta Sans 가변, Be Vietnam Pro 400/500/600)
+├── fonts/pretendard/            Pretendard Variable 다이내믹 서브셋(92개) + 전체 가변 폰트(아티팩트용)
 └── icons/                       PWA 아이콘 (192/512/maskable/apple-touch)
 scripts/
 ├── balance-sim.ts               난이도별 봇 플레이 지표
@@ -233,6 +233,15 @@ v4에서 격차를 한 번 더 벌렸다. '상'은 가이드라인 20G에 해당
 | 대기/게임오버 화면의 00:00 타이머, 항상 보이는 조작 힌트 | 상태 무관 렌더 | 플레이 중에만 타이머, 힌트는 튜토리얼로 대체 |
 | 연결 상태가 바뀔 때 모든 속성이 애니메이션되며 번쩍임 | `transition: all` | 모서리/그림자만 전환 |
 | 재시작 후 효과음·진동 누락 | 이벤트 번호 초기화 | 판 사이에 번호 유지 (v4.1) |
+
+## 모바일 뷰포트 고정과 폰트 (v5.1)
+- `html, body { position: fixed; inset: 0; overflow: hidden; overscroll-behavior: none }`, `#root { height: var(--app-height, 100dvh) }`.
+  `app/model/useViewportHeight`가 `visualViewport.height`를 `--app-height`로 써서 주소창·툴바가 오르내려도 정확히 채운다.
+- `app/lib/lockScroll`: `[data-scroll]` 안에서 실제로 더 스크롤할 수 있을 때만 터치/휠을 통과, 그 외엔 preventDefault (iOS 바운스·툴바 접힘 제스처 차단). 스크롤이 생기면 즉시 0으로 되돌린다.
+- 내부 스크롤 영역(시작/게임오버 오버레이, 도감, 스테이지 목록, 설정, 통계)에만 `data-scroll` + `overscroll-behavior: contain`.
+- `viewport-fit=cover` + safe-area-inset 반영, `max-height` 720/640/600px 단계로 압축 레이아웃(행렬·태그라인·부제·시작 화면 도감 버튼 순으로 숨김).
+- 폰트: Pretendard Variable(OFL) 다이내믹 서브셋 92개를 자체 호스팅. 첫 로드에 전부 받지 않도록 프리캐시에서 제외하고 런타임 CacheFirst. 아티팩트 빌드에는 전체 가변 폰트를 base64로 인라인.
+- 검증: 390x664, 375x553, 412x915에서 `scrollHeight === innerHeight`, `#root` 높이 === `visualViewport.height`, 휠/탭 후 `scrollY 0`, `document.fonts.check('Pretendard Variable')` true.
 
 ## 남은 개선 항목
 | 우선순위 | 항목 | 상태 |

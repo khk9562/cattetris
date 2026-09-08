@@ -65,3 +65,8 @@
   background: var(--accent-gradient);
   filter: brightness(1.08);
 }
+
+@media (max-height: 640px) {
+  .btn { max-width: 3.6rem; }
+  .row { padding: 0.3rem; }
+}

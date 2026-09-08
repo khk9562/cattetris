@@ -30,7 +30,7 @@ function StatsOverlay({ totals, highScores, stageStars, titles, skinsUnlocked, s
           <h2 className={styles.title}>통계</h2>
           <button className={styles.closeBtn} onClick={onClose} aria-label="통계 닫기"><Icon name="close" size="1.5rem" /></button>
         </div>
-        <div className={styles.body}>
+        <div className={styles.body} data-scroll>
           <div className={styles.tiles}>
             <div className={styles.tile}><span>플레이</span><strong>{totals.games}판</strong></div>
             <div className={styles.tile}><span>시간</span><strong>{formatDuration(totals.playMs)}</strong></div>

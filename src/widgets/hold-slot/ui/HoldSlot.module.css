@@ -57,3 +57,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) { .flip { animation: none; } }
+
+@media (max-height: 640px) {
+  .container { padding: 0.15rem 0.5rem; }
+}

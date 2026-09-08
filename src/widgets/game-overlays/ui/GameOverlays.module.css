@@ -5,7 +5,7 @@
   background: rgba(255, 247, 238, 0.88);
   backdrop-filter: blur(0.75rem);
   /* 헤더 아래부터 시작하고, 내용이 길면 스크롤 (margin:auto로 여유 있을 땐 가운데 정렬) */
-  padding: calc(var(--header-height) + 1rem) 1rem 1.5rem;
+  padding: calc(var(--safe-top) + var(--header-height) + 0.75rem) 1rem calc(var(--controls-padding-bottom) + 1rem);
   overflow-y: auto;
   align-items: flex-start;
 }
@@ -376,4 +376,32 @@
 @keyframes promptBob {
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(-0.2rem); }
+}
+
+/* 짧은 화면(툴바가 보이는 폰): 스크롤 없이 들어가도록 압축 */
+@media (max-height: 720px) {
+  .parade { display: none; }
+  .tagline { display: none; }
+  .overlayContent { gap: 0.6rem; }
+  .overlayTitle { font-size: 1.85rem; }
+  .startBtn { padding: 0.7rem 2rem; font-size: 0.95rem; }
+  .missions { gap: 0.3rem; padding: 0.6rem 0.75rem; }
+  .themeSelector { margin: -0.25rem 0 0; }
+}
+
+@media (max-height: 640px) {
+  .overlayContent { gap: 0.45rem; }
+  .subtitle { display: none; }
+  .missionRow { padding: 0.2rem 0; }
+  .summary { padding: 0.35rem 0.75rem; }
+}
+
+/* 아주 짧은 화면: 헤더에 같은 도감 버튼이 있으므로 시작 화면의 도감 버튼은 숨기고 여백을 더 줄인다 */
+@media (max-height: 600px) {
+  .readyExtra { display: none; }
+  .overlayContent { gap: 0.35rem; }
+  .difficultyDesc { display: none; }
+  .highScoreLabel { margin-bottom: -0.5rem; }
+  .missions { padding: 0.45rem 0.65rem; }
+  .missionRow { padding: 0.12rem 0; }
 }

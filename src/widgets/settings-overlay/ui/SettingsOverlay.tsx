@@ -29,7 +29,7 @@ function SettingsOverlay({ settings, onChange, onClose, onStartTutorial }: Props
             <Icon name="close" size="1.5rem" />
           </button>
         </div>
-        <div className={styles.body}>
+        <div className={styles.body} data-scroll>
           {TOGGLES.map(t => (
             <label key={t.key} className={styles.row}>
               <span className={styles.rowText}>

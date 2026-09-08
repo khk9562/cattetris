@@ -51,3 +51,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) { .item { animation: none; transition: none; } }
+
+@media (max-height: 640px) {
+  .container { padding: 0.15rem 0.5rem; }
+}

@@ -98,7 +98,7 @@ function GameOverlays({
   return (
     <>
       {status === 'ready' && (
-        <div className={styles.overlay}>
+        <div className={styles.overlay} data-scroll>
           <div className={styles.overlayContent}>
             <CatParade />
             <h2 className={styles.overlayTitle}>냥스택</h2>
@@ -155,13 +155,13 @@ function GameOverlays({
               <button className={`${styles.themeIcon} ${theme === 'grass' ? styles.themeActive : ''}`} onClick={() => setTheme('grass')} aria-label="잔디 테마"><Icon name="grass" /></button>
               <button className={styles.themeIcon} onClick={onStartTutorial} aria-label="튜토리얼"><Icon name="help" /></button>
             </div>
-            <button className={`${styles.startBtn} ${styles.secondaryBtn}`} onClick={onOpenCollection}>도감</button>
+            <button className={`${styles.startBtn} ${styles.secondaryBtn} ${styles.readyExtra}`} onClick={onOpenCollection}>도감</button>
           </div>
         </div>
       )}
 
       {status === 'cleared' && stage && (
-        <div className={`${styles.overlay} ${styles.overlayGameover}`}>
+        <div className={`${styles.overlay} ${styles.overlayGameover}`} data-scroll>
           <div className={styles.overlayContent}>
             <h2 className={styles.overlayTitle}>클리어!</h2>
             <p className={styles.finalLabel}>스테이지 {stage.id} · {stage.title}</p>
@@ -181,7 +181,7 @@ function GameOverlays({
       )}
 
       {status === 'gameover' && (
-        <div className={`${styles.overlay} ${styles.overlayGameover}`}>
+        <div className={`${styles.overlay} ${styles.overlayGameover}`} data-scroll>
           <div className={styles.overlayContent}>
             <h2 className={styles.overlayTitle}>{mode === 'stage' ? '아쉬워요' : '게임 오버!'}</h2>
             {mode === 'stage' && stage ? (
@@ -222,7 +222,7 @@ function GameOverlays({
       )}
 
       {status === 'paused' && (
-        <div className={styles.overlay}>
+        <div className={styles.overlay} data-scroll>
           <div className={styles.overlayContent}>
             <h2 className={styles.overlayTitle}>일시 정지</h2>
             {mode === 'stage' && stage && <GoalList stage={stage} progress={progress} />}

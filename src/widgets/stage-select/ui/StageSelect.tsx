@@ -31,7 +31,7 @@ function StageSelect({ stars, onSelect, onClose }: Props) {
           <span className={styles.total}><Icon name="star" size="1rem" /> {totalStars} / {STAGES.length * 3}</span>
           <button className={styles.closeBtn} onClick={onClose} aria-label="닫기"><Icon name="close" size="1.5rem" /></button>
         </div>
-        <div className={styles.grid}>
+        <div className={styles.grid} data-scroll>
           {STAGES.map((stage, i) => {
             const got = stars[stage.id] ?? 0;
             const unlocked = i === 0 || (stars[STAGES[i - 1].id] ?? 0) > 0;

@@ -41,7 +41,7 @@ function CollectionOverlay({ stats, equipped, totalStars, skinsUnlocked, skinsTo
           </button>
         </div>
 
-        <div className={styles.body}>
+        <div className={styles.body} data-scroll>
           <section className={styles.accessories} aria-label="액세서리">
             <div className={styles.sectionHead}>
               <span className={styles.sectionTitle}>액세서리</span>
