@@ -6,7 +6,7 @@ import type { StageDef } from '@/entities/stage';
 
 export type GameStatus = 'ready' | 'playing' | 'paused' | 'gameover' | 'cleared';
 
-export type GameMode = 'endless' | 'stage';
+export type GameMode = 'endless' | 'stage' | 'tutorial';
 
 /** active: 조각 조작 중, clearing: 제거 연출 중, settling: 중력 낙하 후 다음 연쇄 판정 대기 */
 export type Phase = 'active' | 'clearing' | 'settling';
@@ -66,6 +66,8 @@ export interface EngineState {
   stage: StageDef | null;
   /** 고정된 조각 수 (스테이지 제한용) */
   piecesPlaced: number;
+  /** 튜토리얼 등에서 미리 정한 조각 순서. 비면 7-bag으로 이어진다 */
+  scripted: ScriptedPiece[];
   preset: DifficultyPreset;
   /** 이번 판에서 등장 가능한 품종 순서 (앞에서부터 breedCount만큼 사용) */
   breedOrder: CatType[];
@@ -106,8 +108,29 @@ export interface EngineState {
   stats: SessionStats;
 }
 
+export interface ScriptedPiece {
+  id: TetrominoId;
+  catType: CatType;
+}
+
+/** 시작 시 보드와 조각 순서를 미리 정한다 (튜토리얼) */
+export interface StartSetup {
+  board?: Board;
+  pieces?: ScriptedPiece[];
+}
+
 export type EngineAction =
-  | { type: 'start'; preset: DifficultyPreset; breeds: CatType[]; seed: number; stage?: StageDef }
+  | {
+      type: 'start';
+      preset: DifficultyPreset;
+      breeds: CatType[];
+      seed: number;
+      stage?: StageDef;
+      mode?: GameMode;
+      /** 스테이지/튜토리얼처럼 프리셋 일부만 덮어쓸 때 */
+      presetOverride?: Partial<DifficultyPreset>;
+      setup?: StartSetup;
+    }
   | { type: 'tick'; dt: number }
   | { type: 'move'; dx: -1 | 1 }
   | { type: 'softDrop' }

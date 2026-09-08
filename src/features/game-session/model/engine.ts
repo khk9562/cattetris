@@ -41,6 +41,7 @@ export function createInitialState(preset: DifficultyPreset = DIFFICULTY_PRESETS
     mode: 'endless',
     stage: null,
     piecesPlaced: 0,
+    scripted: [],
     preset,
     breedOrder: [],
     board: createBoard(),
@@ -112,12 +113,19 @@ function drawPiece(s: EngineState): { piece: ActivePiece; state: EngineState } {
 function refillQueue(s: EngineState): EngineState {
   let state = s;
   const queue = [...s.queue];
+  const scripted = [...s.scripted];
   while (queue.length < NEXT_QUEUE_SIZE) {
+    const next = scripted.shift();
+    if (next) {
+      queue.push(makePiece(next.id, next.catType));
+      state = { ...state, lastBreed: next.catType };
+      continue;
+    }
     const d = drawPiece(state);
     queue.push(d.piece);
     state = d.state;
   }
-  return { ...state, queue };
+  return { ...state, queue, scripted };
 }
 
 function gameOver(s: EngineState): EngineState {
@@ -329,7 +337,7 @@ export function engineReducer(s: EngineState, action: EngineAction): EngineState
   switch (action.type) {
     case 'start': {
       const stage = action.stage ?? null;
-      const preset: DifficultyPreset = stage ? { ...action.preset, ...stage.preset } : action.preset;
+      const preset: DifficultyPreset = { ...action.preset, ...(stage?.preset ?? {}), ...(action.presetOverride ?? {}) };
       const base = createInitialState(preset);
       const order = stage?.breeds ? { items: stage.breeds, seed: action.seed } : shuffle(action.breeds, action.seed);
       let state: EngineState = {
@@ -337,8 +345,10 @@ export function engineReducer(s: EngineState, action: EngineAction): EngineState
         status: 'playing',
         seed: order.seed,
         breedOrder: order.items,
-        mode: stage ? 'stage' : 'endless',
+        mode: action.mode ?? (stage ? 'stage' : 'endless'),
         stage,
+        board: action.setup?.board ? action.setup.board.map(r => [...r]) : base.board,
+        scripted: action.setup?.pieces ? [...action.setup.pieces] : [],
       };
       state = refillQueue(withFeedback(state, 'start'));
       return spawnNext(state);

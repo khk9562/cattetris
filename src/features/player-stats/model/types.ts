@@ -22,7 +22,7 @@ export const EMPTY_TOTALS: PlayerTotals = {
 
 /** 한 판이 끝났을 때 기록할 값 */
 export interface SessionRecord {
-  mode: 'endless' | 'stage';
+  mode: 'endless' | 'stage' | 'tutorial';
   difficulty: DifficultyId;
   elapsedMs: number;
   lines: number;

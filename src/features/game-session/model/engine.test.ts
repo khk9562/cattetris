@@ -245,3 +245,31 @@ describe('stage mode', () => {
     expect(s.status).toBe('gameover');
   });
 });
+
+describe('start setup (tutorial)', () => {
+  it('uses the scripted piece order first, then falls back to the bag', () => {
+    const s = engineReducer(createInitialState(), {
+      type: 'start', preset: normal, breeds: ALL_CAT_TYPES, seed: 8, mode: 'tutorial',
+      setup: { pieces: [{ id: 'I', catType: 'siamese' }, { id: 'O', catType: 'ginger' }] },
+    });
+    expect(s.mode).toBe('tutorial');
+    expect(s.current?.id).toBe('I');
+    expect(s.current?.catType).toBe('siamese');
+    expect(s.queue[0]?.id).toBe('O');
+    expect(s.queue).toHaveLength(NEXT_QUEUE_SIZE);
+    expect(s.scripted).toHaveLength(0);
+  });
+
+  it('starts from the provided board and applies preset overrides', () => {
+    const board = createInitialState().board.map(r => [...r]);
+    board[BOARD_HEIGHT - 1][0] = 'black';
+    const s = engineReducer(createInitialState(), {
+      type: 'start', preset: normal, breeds: ALL_CAT_TYPES, seed: 8, presetOverride: { gravityScale: 4, clusterThreshold: 10 }, setup: { board },
+    });
+    expect(s.board[BOARD_HEIGHT - 1][0]).toBe('black');
+    expect(s.board).not.toBe(board);
+    expect(s.preset.gravityScale).toBe(4);
+    expect(s.preset.clusterThreshold).toBe(10);
+    expect(s.mode).toBe('endless');
+  });
+});

@@ -22,7 +22,8 @@ export function useSessionRecorder(
     }
     const s = state.status === 'ready' ? snapshot.current : state;
     snapshot.current = null;
-    if (!s || s.piecesPlaced === 0) return;
+    // 튜토리얼은 기록하지 않는다
+    if (!s || s.piecesPlaced === 0 || s.mode === 'tutorial') return;
     finish.current(
       { lines: s.lines, explosions: s.stats.explosions, bestChain: s.stats.maxChain + 1, destroyed: s.destroyed, score: s.score },
       { mode: s.mode, difficulty: s.preset.id, elapsedMs: s.elapsedMs, lines: s.lines, explosions: s.stats.explosions, maxChain: s.stats.maxChain, score: s.score, level: s.level },
