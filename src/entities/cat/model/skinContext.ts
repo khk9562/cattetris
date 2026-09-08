@@ -1,4 +1,4 @@
-import { createContext, useContext, type ReactNode } from 'react';
+import { createContext, useContext } from 'react';
 import type { AccessoryId } from '../config/skins';
 import type { CatType } from './types';
 
@@ -9,11 +9,7 @@ export interface EquippedSkins {
 
 export const EMPTY_EQUIPPED: EquippedSkins = { palettes: {}, accessory: null };
 
-const SkinContext = createContext<EquippedSkins>(EMPTY_EQUIPPED);
-
-export function SkinProvider({ value, children }: { value: EquippedSkins; children: ReactNode }) {
-  return <SkinContext.Provider value={value}>{children}</SkinContext.Provider>;
-}
+export const SkinContext = createContext<EquippedSkins>(EMPTY_EQUIPPED);
 
 export function useEquippedSkins(): EquippedSkins {
   return useContext(SkinContext);

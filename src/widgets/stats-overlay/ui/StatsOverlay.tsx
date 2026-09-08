@@ -10,6 +10,8 @@ interface Props {
   highScores: Record<DifficultyId, number>;
   stageStars: Record<number, number>;
   titles: string[];
+  skinsUnlocked: number;
+  skinsTotal: number;
   onClose: () => void;
 }
 
@@ -19,7 +21,7 @@ function formatDuration(ms: number): string {
   return `${Math.floor(min / 60)}시간 ${min % 60}분`;
 }
 
-function StatsOverlay({ totals, highScores, stageStars, titles, onClose }: Props) {
+function StatsOverlay({ totals, highScores, stageStars, titles, skinsUnlocked, skinsTotal, onClose }: Props) {
   const stars = Object.values(stageStars).reduce((a, b) => a + b, 0);
   return (
     <div className={styles.overlay} role="dialog" aria-label="통계">
@@ -54,6 +56,9 @@ function StatsOverlay({ totals, highScores, stageStars, titles, onClose }: Props
 
           <h3 className={styles.section}>스테이지</h3>
           <p className={styles.line}><Icon name="star" size="1rem" /> {stars} / {STAGES.length * 3} · 클리어 {Object.keys(stageStars).length} / {STAGES.length}</p>
+
+          <h3 className={styles.section}>스킨</h3>
+          <p className={styles.line}>해금 {skinsUnlocked} / {skinsTotal} · 도감 누적 500/2,000마리와 스테이지 별로 열려요</p>
 
           <h3 className={styles.section}>얻은 칭호</h3>
           {titles.length === 0 ? (

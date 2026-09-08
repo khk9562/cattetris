@@ -1,7 +1,7 @@
 import { memo } from 'react';
 import { DARK_CAT_TYPES, type CatType } from '../model/types';
 import { getSkin, paletteVars, type AccessoryId } from '../config/skins';
-import { useEquippedSkins } from '../model/SkinContext';
+import { useEquippedSkins } from '../model/skinContext';
 import styles from './CatBlock.module.css';
 
 export interface Conn {

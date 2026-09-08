@@ -3,6 +3,8 @@ import { progressInput, useGame, type GameMode } from '@/features/game-session';
 import { useKeyboardControls } from '@/features/keyboard-controls';
 import { useSettings } from '@/features/settings';
 import { useTutorial } from '@/features/tutorial';
+import { useSkins } from '@/features/skins';
+import { SkinProvider } from '@/entities/cat';
 import { useSound } from '@/features/sound';
 import { useDailyMissions } from '@/features/daily-missions';
 import { usePlayerStats } from '@/features/player-stats';
@@ -40,6 +42,8 @@ export default function GamePage() {
   const [menuMode, setMenuMode] = useState<GameMode>('endless');
 
   useKeyboardControls(state.status, actions);
+  const totalStars = Object.values(game.stageStars).reduce((a, b) => a + b, 0);
+  const skins = useSkins({ stats: game.stats, totalStars });
   const tutorial = useTutorial({ status: state.status, events: state.events, startGame: actions.startTutorial, goHome: actions.home });
   useSound(state.events, { sound: settings.sound, music: settings.music, status: state.status, level: state.level });
   const gestures = useBoardGestures(actions, state.status === 'playing' && settings.gestures);
@@ -48,6 +52,7 @@ export default function GamePage() {
   const progress = progressInput(state);
 
   return (
+    <SkinProvider value={skins.equipped}>
     <div className={styles.page}>
       <Header
         elapsedSeconds={Math.floor(state.elapsedMs / 1000)}
@@ -126,7 +131,18 @@ export default function GamePage() {
 
       {inGame && <Controls actions={actions} />}
 
-      {showCollection && <CollectionOverlay stats={game.stats} onClose={() => setShowCollection(false)} />}
+      {showCollection && (
+        <CollectionOverlay
+          stats={game.stats}
+          equipped={skins.equipped}
+          totalStars={totalStars}
+          skinsUnlocked={skins.unlocked}
+          skinsTotal={skins.total}
+          onEquipPalette={skins.equipPalette}
+          onEquipAccessory={skins.equipAccessory}
+          onClose={() => setShowCollection(false)}
+        />
+      )}
       {showSettings && (
         <SettingsOverlay
           settings={settings}
@@ -141,6 +157,8 @@ export default function GamePage() {
           totals={playerStats.totals}
           highScores={game.highScores}
           stageStars={game.stageStars}
+          skinsUnlocked={skins.unlocked}
+          skinsTotal={skins.total}
           titles={missions.titles}
           onClose={() => setShowStats(false)}
         />
@@ -153,5 +171,6 @@ export default function GamePage() {
         />
       )}
     </div>
+    </SkinProvider>
   );
 }

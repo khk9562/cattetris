@@ -1,6 +1,6 @@
 import { memo, useEffect, useRef } from 'react';
 import type { Board } from '@/entities/board';
-import { CAT_FUR_COLORS, type CatType } from '@/entities/cat';
+import { CAT_FUR_COLORS, getSkin, useEquippedSkins, type CatType, type EquippedSkins } from '@/entities/cat';
 import type { ClearCell } from '@/features/game-session';
 import { BOARD_HEIGHT, BOARD_WIDTH } from '@/shared/config';
 import styles from './ExplosionLayer.module.css';
@@ -37,16 +37,24 @@ function rand(min: number, max: number): number {
   return min + Math.random() * (max - min);
 }
 
+/** 장착한 스킨이 있으면 그 팔레트로, 없으면 품종 기본 털 색 */
+function furColors(cat: CatType | null, equipped: EquippedSkins): [string, string] {
+  if (!cat) return ['#ffffff', '#ffd54f'];
+  const skin = getSkin(cat, equipped.palettes[cat]);
+  return skin.palette ? [skin.palette.base, skin.palette.pattern] : CAT_FUR_COLORS[cat];
+}
+
 function spawnForCell(
   out: Particle[],
   cell: ClearCell,
   cat: CatType | null,
   cellW: number,
   cellH: number,
+  equipped: EquippedSkins,
 ) {
   const cx = (cell.x + 0.5) * cellW;
   const cy = (cell.y + 0.5) * cellH;
-  const [base, pattern] = cat ? CAT_FUR_COLORS[cat] : ['#ffffff', '#ffd54f'];
+  const [base, pattern] = furColors(cat, equipped);
   const scale = cellW / 30;
 
   if (cell.kind === 'cluster') {
@@ -150,6 +158,11 @@ function ExplosionLayer({ board, clearing, onShake }: Props) {
   const raf = useRef(0);
   const lastClearing = useRef<ClearCell[]>([]);
   const reduceMotion = useRef(false);
+  const equipped = useEquippedSkins();
+  const equippedRef = useRef(equipped);
+  useEffect(() => {
+    equippedRef.current = equipped;
+  }, [equipped]);
 
   useEffect(() => {
     reduceMotion.current = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
@@ -185,7 +198,7 @@ function ExplosionLayer({ board, clearing, onShake }: Props) {
     const clusterCells = clearing.filter(c => c.kind === 'cluster');
     for (const cell of clearing) {
       const cat = cell.y >= 0 && cell.y < BOARD_HEIGHT ? board[cell.y][cell.x] : null;
-      spawnForCell(out, cell, cat, cellW, cellH);
+      spawnForCell(out, cell, cat, cellW, cellH, equippedRef.current);
     }
     if (clusterCells.length > 0) {
       // 뭉치 중심에 충격파 링과 섬광

@@ -53,26 +53,197 @@
   background: rgba(255,255,255,0.1);
 }
 
-.grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 0.75rem;
-  padding: 1rem;
+.body {
   overflow-y: auto;
   flex: 1;
   min-height: 0;
   -webkit-overflow-scrolling: touch;
+  padding: 0.75rem 1rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.75rem;
 }
 
 .card {
   background: var(--color-surface-container);
   border: 2px solid var(--color-surface-container-highest);
   border-radius: 1rem;
-  padding: 1.25rem 0.5rem 0.75rem;
   text-align: center;
   display: flex;
   flex-direction: column;
+  align-items: stretch;
+  overflow: hidden;
+}
+
+.cardOpen {
+  grid-column: 1 / -1;
+  border-color: var(--color-primary-container);
+}
+
+.cardMain {
+  all: unset;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
   align-items: center;
+  padding: 1.25rem 0.5rem 0.75rem;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.cardMain:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: -2px;
+}
+
+.locked .cardMain { cursor: default; }
+
+/* ---- 스킨 스와치 ---- */
+.swatches {
+  display: flex;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 0.5rem 0.75rem 0.875rem;
+  border-top: 1px dashed var(--color-surface-container-highest);
+  background: var(--color-surface-container-low);
+}
+
+.swatch {
+  all: unset;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.5rem 0.625rem;
+  border-radius: 0.75rem;
+  border: 2px solid transparent;
+  cursor: pointer;
+  min-width: 4.5rem;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.swatchOn {
+  border-color: var(--color-primary);
+  background: var(--color-surface);
+}
+
+.swatchLocked {
+  opacity: 0.55;
+  cursor: default;
+}
+
+.swatchPreview {
+  position: relative;
+  width: 2.25rem;
+  height: 2.25rem;
+  margin-top: 0.5rem;
+}
+
+.swatchLock {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  background: rgba(0, 0, 0, 0.45);
+  border-radius: 0.35rem;
+}
+
+.swatchName {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--color-on-surface);
+}
+
+.swatchReq {
+  font-size: 0.6rem;
+  color: var(--color-outline);
+}
+
+/* ---- 액세서리 ---- */
+.accessories {
+  background: var(--color-surface-container);
+  border: 2px solid var(--color-surface-container-highest);
+  border-radius: 1rem;
+  padding: 0.625rem 0.75rem 0.75rem;
+}
+
+.sectionHead {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.sectionTitle {
+  font-family: var(--font-headline);
+  font-weight: 800;
+  font-size: 0.95rem;
+  color: var(--color-primary);
+}
+
+.sectionHint {
+  font-size: 0.65rem;
+  color: var(--color-outline);
+}
+
+.accRow {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.5rem;
+}
+
+.accItem {
+  all: unset;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem;
+  padding: 0.5rem 0.25rem 0.4rem;
+  border-radius: 0.75rem;
+  border: 2px solid transparent;
+  background: var(--color-surface-container-low);
+  cursor: pointer;
+  text-align: center;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.accOn {
+  border-color: var(--color-primary);
+  background: var(--color-surface);
+}
+
+.accLocked {
+  opacity: 0.55;
+  cursor: default;
+}
+
+.accPreview {
+  width: 2rem;
+  height: 2rem;
+  margin-top: 0.6rem;
+}
+
+.accName {
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: var(--color-on-surface);
+  margin-top: 0.25rem;
+}
+
+.accReq {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.15rem;
+  font-size: 0.58rem;
+  color: var(--color-outline);
 }
 
 .catImageWrapper {

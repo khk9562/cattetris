@@ -7,5 +7,6 @@ export type { Conn, CatExpression } from './ui/CatBlock';
 export { CAT_SKINS, ACCESSORIES, SKIN_TIER_THRESHOLDS, DEFAULT_SKIN_ID, getSkin, paletteVars } from './config/skins';
 export type { SkinDef, Palette, AccessoryId, AccessoryDef } from './config/skins';
 export { isSkinUnlocked, isAccessoryUnlocked, unlockedSkinCount, totalSkinCount } from './model/skinUnlock';
-export { SkinProvider, useEquippedSkins, EMPTY_EQUIPPED } from './model/SkinContext';
-export type { EquippedSkins } from './model/SkinContext';
+export { useEquippedSkins, EMPTY_EQUIPPED } from './model/skinContext';
+export type { EquippedSkins } from './model/skinContext';
+export { default as SkinProvider } from './ui/SkinProvider';
