@@ -340,3 +340,16 @@
   0% { transform: scale(0) rotate(-30deg); opacity: 0; }
   100% { transform: scale(1) rotate(0); opacity: 1; }
 }
+
+.playerTitle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--color-on-primary);
+  background: linear-gradient(to right, var(--color-primary), var(--color-secondary));
+  padding: 0.2rem 0.75rem;
+  border-radius: 9999px;
+  margin-top: -0.5rem;
+}

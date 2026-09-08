@@ -2,9 +2,11 @@ import { memo } from 'react';
 import { CatBlock, type CatType } from '@/entities/cat';
 import { DIFFICULTY_ORDER, DIFFICULTY_PRESETS, type DifficultyId } from '@/entities/difficulty';
 import { STAGES, stageProgress, type StageDef, type StageProgressInput } from '@/entities/stage';
+import type { MissionItem } from '@/features/daily-missions';
 import type { GameMode, GameStatus, SessionStats } from '@/features/game-session';
 import type { ThemeId } from '@/shared/config';
 import { Icon } from '@/shared/ui';
+import MissionList from './MissionList';
 import styles from './GameOverlays.module.css';
 
 interface Props {
@@ -34,6 +36,9 @@ interface Props {
   onOpenCollection: () => void;
   theme: ThemeId;
   setTheme: (t: ThemeId) => void;
+  missions: MissionItem[];
+  onClaimMission: (id: string) => void;
+  playerTitle: string | null;
 }
 
 const PARADE: CatType[] = ['ginger', 'tuxedo', 'calico', 'siamese', 'bengal', 'white'];
@@ -79,6 +84,7 @@ function GameOverlays({
   status, mode, stage, progress, score, level, highScore, isNewHighScore, lastStars, stageStars, nextUnclearedStage,
   stats, difficulty, onSelectDifficulty, menuMode, onSelectMenuMode,
   startGame, startStage, retryStage, nextStage, onOpenStages, togglePause, goHome, onOpenCollection, theme, setTheme,
+  missions, onClaimMission, playerTitle,
 }: Props) {
   if (status === 'playing') return null;
   const preset = DIFFICULTY_PRESETS[difficulty];
@@ -93,7 +99,11 @@ function GameOverlays({
             <CatParade />
             <h2 className={styles.overlayTitle}>냥스택</h2>
             <p className={styles.subtitle}>NYANG STACK</p>
-            <p className={styles.tagline}>같은 냥이끼리 모이면 팡! 주변까지 같이 터져요</p>
+            {playerTitle ? (
+              <p className={styles.playerTitle}><Icon name="star" size="0.9rem" /> {playerTitle}</p>
+            ) : (
+              <p className={styles.tagline}>같은 냥이끼리 모이면 팡! 주변까지 같이 터져요</p>
+            )}
 
             <div className={styles.modeTabs} role="tablist" aria-label="모드">
               <button role="tab" aria-selected={menuMode === 'endless'} className={`${styles.modeTab} ${menuMode === 'endless' ? styles.modeActive : ''}`} onClick={() => onSelectMenuMode('endless')}>무한</button>
@@ -127,6 +137,8 @@ function GameOverlays({
                 <button className={`${styles.startBtn} ${styles.secondaryBtn}`} onClick={onOpenStages}>스테이지 목록</button>
               </>
             )}
+
+            <MissionList items={missions} onClaim={onClaimMission} />
 
             <div className={styles.themeSelector}>
               <button className={`${styles.themeIcon} ${theme === 'default' ? styles.themeActive : ''}`} onClick={() => setTheme('default')} aria-label="기본 테마"><Icon name="moon" /></button>

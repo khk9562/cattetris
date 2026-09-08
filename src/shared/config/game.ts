@@ -33,3 +33,6 @@ export const THEME_KEY = 'cattetris_theme';
 export const DIFFICULTY_KEY = 'cattetris_difficulty';
 export const SETTINGS_KEY = 'cattetris_settings';
 export const STAGES_KEY = 'cattetris_stages';
+export const MISSIONS_KEY = 'cattetris_missions';
+export const TITLES_KEY = 'cattetris_titles';
+export const TOTALS_KEY = 'cattetris_totals';

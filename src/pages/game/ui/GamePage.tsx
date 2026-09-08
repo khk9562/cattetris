@@ -3,6 +3,9 @@ import { progressInput, useGame, type GameMode } from '@/features/game-session';
 import { useKeyboardControls } from '@/features/keyboard-controls';
 import { useSettings } from '@/features/settings';
 import { useSound } from '@/features/sound';
+import { useDailyMissions } from '@/features/daily-missions';
+import { usePlayerStats } from '@/features/player-stats';
+import { useSessionRecorder } from '../model/useSessionRecorder';
 import { useBoardGestures } from '@/features/touch-gestures';
 import { Header } from '@/widgets/header';
 import { StatsHUD } from '@/widgets/stats-hud';
@@ -15,6 +18,7 @@ import { CollectionOverlay } from '@/widgets/collection';
 import { SettingsOverlay } from '@/widgets/settings-overlay';
 import { StageSelect } from '@/widgets/stage-select';
 import { StageGoals } from '@/widgets/stage-goals';
+import { StatsOverlay } from '@/widgets/stats-overlay';
 import styles from './GamePage.module.css';
 
 export default function GamePage() {
@@ -24,6 +28,13 @@ export default function GamePage() {
   const [showCollection, setShowCollection] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const [showStages, setShowStages] = useState(false);
+  const [showStats, setShowStats] = useState(false);
+  const missions = useDailyMissions();
+  const playerStats = usePlayerStats();
+  useSessionRecorder(state, (delta, record) => {
+    missions.addProgress(delta);
+    playerStats.record(record);
+  });
   const [menuMode, setMenuMode] = useState<GameMode>('endless');
 
   useKeyboardControls(state.status, actions);
@@ -40,6 +51,7 @@ export default function GamePage() {
         status={state.status}
         onTogglePause={actions.togglePause}
         onOpenSettings={() => setShowSettings(true)}
+        onOpenStats={() => setShowStats(true)}
         onGoHome={state.status === 'playing' ? actions.pause : actions.home}
         onOpenCollection={() => setShowCollection(true)}
       />
@@ -72,6 +84,9 @@ export default function GamePage() {
           onOpenCollection={() => setShowCollection(true)}
           theme={settings.theme}
           setTheme={t => update('theme', t)}
+          missions={missions.items}
+          onClaimMission={missions.claim}
+          playerTitle={missions.currentTitle}
         />
 
         {state.mode === 'stage' && state.stage ? (
@@ -106,6 +121,15 @@ export default function GamePage() {
 
       {showCollection && <CollectionOverlay stats={game.stats} onClose={() => setShowCollection(false)} />}
       {showSettings && <SettingsOverlay settings={settings} onChange={update} onClose={() => setShowSettings(false)} />}
+      {showStats && (
+        <StatsOverlay
+          totals={playerStats.totals}
+          highScores={game.highScores}
+          stageStars={game.stageStars}
+          titles={missions.titles}
+          onClose={() => setShowStats(false)}
+        />
+      )}
       {showStages && (
         <StageSelect
           stars={game.stageStars}

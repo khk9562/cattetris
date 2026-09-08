@@ -8,11 +8,12 @@ interface Props {
   status: GameStatus;
   onTogglePause: () => void;
   onOpenSettings: () => void;
+  onOpenStats: () => void;
   onGoHome: () => void;
   onOpenCollection: () => void;
 }
 
-function Header({ elapsedSeconds, status, onTogglePause, onOpenSettings, onGoHome, onOpenCollection }: Props) {
+function Header({ elapsedSeconds, status, onTogglePause, onOpenSettings, onOpenStats, onGoHome, onOpenCollection }: Props) {
   const minutes = String(Math.floor(elapsedSeconds / 60)).padStart(2, '0');
   const seconds = String(elapsedSeconds % 60).padStart(2, '0');
   const showPause = status === 'playing' || status === 'paused';
@@ -25,9 +26,14 @@ function Header({ elapsedSeconds, status, onTogglePause, onOpenSettings, onGoHom
       </div>
       <div className={styles.controlsGroup}>
         {status !== 'playing' && (
-          <button className={styles.iconBtn} onClick={onOpenCollection} aria-label="도감 열기">
-            <Icon name="book" />
-          </button>
+          <>
+            <button className={styles.iconBtn} onClick={onOpenCollection} aria-label="도감 열기">
+              <Icon name="book" />
+            </button>
+            <button className={styles.iconBtn} onClick={onOpenStats} aria-label="통계 열기">
+              <Icon name="chart" />
+            </button>
+          </>
         )}
         <button className={styles.iconBtn} onClick={onGoHome} aria-label="메인 메뉴">
           <Icon name="home" />
