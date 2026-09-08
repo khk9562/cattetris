@@ -2,8 +2,11 @@ import type { Board, Position } from '@/entities/board';
 import type { CatType } from '@/entities/cat';
 import type { ActivePiece, TetrominoId } from '@/entities/piece';
 import type { DifficultyPreset } from '@/entities/difficulty';
+import type { StageDef } from '@/entities/stage';
 
-export type GameStatus = 'ready' | 'playing' | 'paused' | 'gameover';
+export type GameStatus = 'ready' | 'playing' | 'paused' | 'gameover' | 'cleared';
+
+export type GameMode = 'endless' | 'stage';
 
 /** active: 조각 조작 중, clearing: 제거 연출 중, settling: 중력 낙하 후 다음 연쇄 판정 대기 */
 export type Phase = 'active' | 'clearing' | 'settling';
@@ -39,7 +42,8 @@ export type FeedbackKind =
   | 'chain'
   | 'combo'
   | 'levelup'
-  | 'gameover';
+  | 'gameover'
+  | 'cleared';
 
 /** 사운드/진동이 소비하는 이벤트. seq는 단조 증가, strength는 종류별 세기(뭉치 크기, 연쇄 단계 등) */
 export interface Feedback {
@@ -57,6 +61,11 @@ export interface SessionStats {
 export interface EngineState {
   status: GameStatus;
   phase: Phase;
+  mode: GameMode;
+  /** 스테이지 모드일 때의 정의 */
+  stage: StageDef | null;
+  /** 고정된 조각 수 (스테이지 제한용) */
+  piecesPlaced: number;
   preset: DifficultyPreset;
   /** 이번 판에서 등장 가능한 품종 순서 (앞에서부터 breedCount만큼 사용) */
   breedOrder: CatType[];
@@ -98,7 +107,7 @@ export interface EngineState {
 }
 
 export type EngineAction =
-  | { type: 'start'; preset: DifficultyPreset; breeds: CatType[]; seed: number }
+  | { type: 'start'; preset: DifficultyPreset; breeds: CatType[]; seed: number; stage?: StageDef }
   | { type: 'tick'; dt: number }
   | { type: 'move'; dx: -1 | 1 }
   | { type: 'softDrop' }

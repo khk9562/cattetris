@@ -48,6 +48,11 @@ export const SFX: Record<FeedbackKind, SfxRecipe> = {
   levelup: () => {
     [784, 988, 1175, 1568].forEach((f, i) => tone(f, 0.14, { type: 'square', gain: 0.16, at: i * 0.08 }));
   },
+  cleared: () => {
+    // 승리 팡파레
+    [523, 659, 784, 1047, 1319, 1568].forEach((f, i) => tone(f, 0.16, { type: 'square', gain: 0.16, at: i * 0.09 }));
+    tone(2093, 0.5, { type: 'triangle', gain: 0.18, at: 0.55 });
+  },
   gameover: () => {
     [523, 466, 415, 349].forEach((f, i) => tone(f, 0.28, { type: 'triangle', gain: 0.22, at: i * 0.22 }));
     noise(0.6, { filterFrom: 800, filterTo: 60, gain: 0.15, at: 0.6 });

@@ -1,13 +1,16 @@
 import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from 'react';
 import { ALL_CAT_TYPES, type CatType } from '@/entities/cat';
 import { DIFFICULTY_PRESETS, type DifficultyId } from '@/entities/difficulty';
-import { HIGH_SCORE_KEY, STATS_KEY } from '@/shared/config';
+import { STAGES, starsFor, type StageDef } from '@/entities/stage';
+import { HIGH_SCORE_KEY, STAGES_KEY, STATS_KEY } from '@/shared/config';
 import { randomSeed, readJson, readNumber, writeJson, writeNumber } from '@/shared/lib';
-import { createInitialState, engineReducer, selectGhost } from './engine';
+import { createInitialState, engineReducer, progressInput, selectGhost } from './engine';
 import type { EngineState, FeedbackKind } from './types';
 
 type HighScores = Record<DifficultyId, number>;
 type Stats = Partial<Record<CatType, number>>;
+/** 스테이지 id -> 별 개수 */
+export type StageStars = Record<number, 1 | 2 | 3>;
 
 function highScoreKey(id: DifficultyId): string {
   return `${HIGH_SCORE_KEY}_${id}`;
@@ -32,6 +35,7 @@ const VIBRATION: Partial<Record<FeedbackKind, number | number[]>> = {
   hold: 10,
   levelup: [20, 40, 20],
   gameover: [80, 60, 120],
+  cleared: [30, 40, 30, 40, 80],
 };
 
 function vibrate(kind: FeedbackKind) {
@@ -55,6 +59,8 @@ export interface UseGameOptions {
 export function useGame({ difficulty, vibration }: UseGameOptions) {
   const [highScores, setHighScores] = useState<HighScores>(loadHighScores);
   const [stats, setStats] = useState<Stats>(() => readJson<Stats>(STATS_KEY, {}));
+  const [stageStars, setStageStars] = useState<StageStars>(() => readJson<StageStars>(STAGES_KEY, {}));
+  const [lastStars, setLastStars] = useState<1 | 2 | 3 | null>(null);
   const [state, dispatch] = useReducer(engineReducer, DIFFICULTY_PRESETS[difficulty], createInitialState);
 
   const stateRef = useRef(state);
@@ -118,10 +124,24 @@ export function useGame({ difficulty, vibration }: UseGameOptions) {
     }
   }, [state.destroyed, stats]);
 
-  // ---- 최고 기록 갱신 ----
+  // ---- 스테이지 클리어 저장 ----
+  useEffect(() => {
+    if (state.status !== 'cleared' || !state.stage) return;
+    const stars = starsFor(state.stage.limit, progressInput(state));
+    setLastStars(stars);
+    setStageStars(prev => {
+      if ((prev[state.stage!.id] ?? 0) >= stars) return prev;
+      const next = { ...prev, [state.stage!.id]: stars };
+      writeJson(STAGES_KEY, next);
+      return next;
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [state.status]);
+
+  // ---- 최고 기록 갱신 (무한 모드만) ----
   const [isNewHighScore, setIsNewHighScore] = useState(false);
   useEffect(() => {
-    if (state.status !== 'gameover') return;
+    if (state.status !== 'gameover' || state.mode !== 'endless') return;
     const id = state.preset.id;
     if (state.score > highScores[id]) {
       const next = { ...highScores, [id]: state.score };
@@ -134,8 +154,27 @@ export function useGame({ difficulty, vibration }: UseGameOptions) {
 
   const start = useCallback(() => {
     setIsNewHighScore(false);
+    setLastStars(null);
     dispatch({ type: 'start', preset: DIFFICULTY_PRESETS[difficulty], breeds: ALL_CAT_TYPES, seed: randomSeed() });
   }, [difficulty]);
+
+  const startStage = useCallback((stage: StageDef) => {
+    setIsNewHighScore(false);
+    setLastStars(null);
+    dispatch({ type: 'start', preset: DIFFICULTY_PRESETS.easy, breeds: ALL_CAT_TYPES, seed: randomSeed(), stage });
+  }, []);
+
+  /** 마지막으로 플레이한 스테이지 다시 / 다음 스테이지 */
+  const retryStage = useCallback(() => {
+    const st = stateRef.current.stage;
+    if (st) startStage(st);
+  }, [startStage]);
+  const nextStage = useCallback(() => {
+    const st = stateRef.current.stage;
+    const next = st ? STAGES.find(x => x.id === st.id + 1) : undefined;
+    if (next) startStage(next);
+    else dispatch({ type: 'home' });
+  }, [startStage]);
 
   const togglePause = useCallback(() => {
     const st = stateRef.current.status;
@@ -146,6 +185,9 @@ export function useGame({ difficulty, vibration }: UseGameOptions) {
   const actions = useMemo(
     () => ({
       start,
+      startStage,
+      retryStage,
+      nextStage,
       togglePause,
       pause: () => dispatch({ type: 'pause' }),
       resume: () => dispatch({ type: 'resume' }),
@@ -158,7 +200,7 @@ export function useGame({ difficulty, vibration }: UseGameOptions) {
       rotateCCW: () => dispatch({ type: 'rotate', direction: -1 }),
       hold: () => dispatch({ type: 'hold' }),
     }),
-    [start, togglePause],
+    [start, startStage, retryStage, nextStage, togglePause],
   );
 
   const ghost = useMemo(() => selectGhost(state), [state]);
@@ -172,6 +214,10 @@ export function useGame({ difficulty, vibration }: UseGameOptions) {
     highScores,
     isNewHighScore,
     stats,
+    stageStars,
+    lastStars,
+    /** 아직 클리어하지 않은 첫 스테이지 (전부 클리어면 마지막) */
+    nextUnclearedStage: STAGES.find(st => !stageStars[st.id]) ?? STAGES[STAGES.length - 1],
   };
 }
 

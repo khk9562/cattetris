@@ -16,6 +16,7 @@ import {
 import type { CatType } from '@/entities/cat';
 import { drawBreed, drawFromBag, makePiece, movedPiece, resetPiece, rotateWithKicks, type ActivePiece } from '@/entities/piece';
 import { DIFFICULTY_PRESETS, breedCountForLevel, gravityIntervalMs, type DifficultyPreset } from '@/entities/difficulty';
+import { isLimitExhausted, isStageCleared, type StageProgressInput } from '@/entities/stage';
 import {
   CHAIN_STEP_MULTIPLIER,
   CLEAR_ANIMATION_MS,
@@ -37,6 +38,9 @@ export function createInitialState(preset: DifficultyPreset = DIFFICULTY_PRESETS
   return {
     status: 'ready',
     phase: 'active',
+    mode: 'endless',
+    stage: null,
+    piecesPlaced: 0,
     preset,
     breedOrder: [],
     board: createBoard(),
@@ -165,6 +169,31 @@ function afterSuccessfulMove(s: EngineState, piece: ActivePiece): EngineState {
   return { ...s, current: piece, lockMs, lockResets, lowestY };
 }
 
+export function progressInput(s: EngineState): StageProgressInput {
+  return {
+    lines: s.lines,
+    explosions: s.stats.explosions,
+    destroyed: s.destroyed,
+    maxChain: s.stats.maxChain,
+    score: s.score,
+    piecesPlaced: s.piecesPlaced,
+    elapsedMs: s.elapsedMs,
+  };
+}
+
+function stageCleared(s: EngineState): EngineState {
+  return withFeedback({ ...s, status: 'cleared', current: null, clearing: [], phase: 'active' }, 'cleared');
+}
+
+/** 조각 하나가 완전히 정착한 뒤 스테이지 목표/제한을 판정한다 */
+function checkStage(s: EngineState): EngineState | null {
+  if (s.mode !== 'stage' || !s.stage) return null;
+  const p = progressInput(s);
+  if (isStageCleared(s.stage, p)) return stageCleared(s);
+  if (isLimitExhausted(s.stage.limit, p)) return gameOver(s);
+  return null;
+}
+
 function levelFor(lines: number, preset: DifficultyPreset): number {
   return preset.startLevel + Math.floor(lines / LINES_PER_LEVEL);
 }
@@ -281,7 +310,8 @@ function finishPiece(s: EngineState): EngineState {
   } else {
     state = { ...state, combo: 0 };
   }
-  return spawnNext({ ...state, chain: 0 });
+  state = { ...state, chain: 0 };
+  return checkStage(state) ?? spawnNext(state);
 }
 
 function lockPiece(s: EngineState): EngineState {
@@ -289,7 +319,7 @@ function lockPiece(s: EngineState): EngineState {
   if (!piece) return s;
   // lock out: 조각 전체가 보이는 영역 위에서 고정되면 게임 오버
   if (pieceCells(piece).every(c => c.y < 0)) return gameOver({ ...s, board: placePiece(s.board, piece) });
-  const state = withFeedback({ ...s, board: placePiece(s.board, piece), current: null, lockMs: 0 }, 'lock');
+  const state = withFeedback({ ...s, board: placePiece(s.board, piece), current: null, lockMs: 0, piecesPlaced: s.piecesPlaced + 1 }, 'lock');
   return evaluate(state, 0);
 }
 
@@ -298,9 +328,18 @@ function lockPiece(s: EngineState): EngineState {
 export function engineReducer(s: EngineState, action: EngineAction): EngineState {
   switch (action.type) {
     case 'start': {
-      const base = createInitialState(action.preset);
-      const order = shuffle(action.breeds, action.seed);
-      let state: EngineState = { ...base, status: 'playing', seed: order.seed, breedOrder: order.items };
+      const stage = action.stage ?? null;
+      const preset: DifficultyPreset = stage ? { ...action.preset, ...stage.preset } : action.preset;
+      const base = createInitialState(preset);
+      const order = stage?.breeds ? { items: stage.breeds, seed: action.seed } : shuffle(action.breeds, action.seed);
+      let state: EngineState = {
+        ...base,
+        status: 'playing',
+        seed: order.seed,
+        breedOrder: order.items,
+        mode: stage ? 'stage' : 'endless',
+        stage,
+      };
       state = refillQueue(withFeedback(state, 'start'));
       return spawnNext(state);
     }
@@ -388,6 +427,9 @@ function tick(s: EngineState, dt: number): EngineState {
 
   // phase === 'active'
   if (!state.current) return state;
+  if (state.mode === 'stage' && state.stage?.limit.type === 'seconds' && isLimitExhausted(state.stage.limit, progressInput(state))) {
+    return isStageCleared(state.stage, progressInput(state)) ? stageCleared(state) : gameOver(state);
+  }
   const interval = gravityIntervalMs(state.level, state.preset);
   let gravityMs = state.gravityMs + dt;
   let piece = state.current;

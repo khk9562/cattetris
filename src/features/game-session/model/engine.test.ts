@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { ALL_CAT_TYPES } from '@/entities/cat';
 import { DIFFICULTY_PRESETS, gravityIntervalMs } from '@/entities/difficulty';
 import { makePiece } from '@/entities/piece';
+import type { StageDef, StageLimit } from '@/entities/stage';
 import { BOARD_HEIGHT, BOARD_WIDTH, CLEAR_ANIMATION_MS, NEXT_QUEUE_SIZE, SETTLE_MS } from '@/shared/config';
 import { createInitialState, engineReducer } from './engine';
 import type { EngineState } from './types';
@@ -195,5 +196,52 @@ describe('pause', () => {
     expect(later.current).toEqual(s.current);
     expect(later.elapsedMs).toBe(s.elapsedMs);
     expect(engineReducer(later, { type: 'resume' }).status).toBe('playing');
+  });
+});
+
+describe('stage mode', () => {
+  const stage: StageDef = {
+    id: 99,
+    title: 'test',
+    goals: [{ type: 'lines', count: 1 }],
+    limit: { type: 'pieces', count: 2 },
+    preset: { clusterThreshold: 99 },
+  };
+
+  function startStage(limit: StageLimit = stage.limit, goals = stage.goals) {
+    return engineReducer(createInitialState(), { type: 'start', preset: normal, breeds: ALL_CAT_TYPES, seed: 4, stage: { ...stage, limit, goals } });
+  }
+
+  it('applies the stage preset overrides and mode', () => {
+    const s = startStage();
+    expect(s.mode).toBe('stage');
+    expect(s.preset.clusterThreshold).toBe(99);
+    expect(s.stage?.id).toBe(99);
+  });
+
+  it('fails when the piece limit runs out before the goal', () => {
+    let s = startStage();
+    s = engineReducer(s, { type: 'hardDrop' });
+    expect(s.status).toBe('playing');
+    expect(s.piecesPlaced).toBe(1);
+    s = engineReducer(s, { type: 'hardDrop' });
+    expect(s.status).toBe('gameover');
+  });
+
+  it('clears the stage when goals are met', () => {
+    let s = startStage({ type: 'pieces', count: 50 });
+    const board = s.board.map(r => [...r]);
+    for (let x = 1; x < BOARD_WIDTH; x++) board[BOARD_HEIGHT - 1][x] = x % 2 ? 'black' : 'tabby';
+    const I = makePiece('I', 'ginger');
+    s = { ...s, board, current: { ...I, shape: I.shapes[1], rotationIndex: 1, position: { x: -2, y: 0 } } };
+    s = settle(engineReducer(s, { type: 'hardDrop' }));
+    expect(s.status).toBe('cleared');
+    expect(s.lines).toBe(1);
+  });
+
+  it('ends a timed stage when the clock runs out', () => {
+    let s = startStage({ type: 'seconds', count: 1 });
+    s = ticks(s, 1100, 50);
+    expect(s.status).toBe('gameover');
   });
 });

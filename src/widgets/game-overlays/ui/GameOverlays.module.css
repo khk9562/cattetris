@@ -4,6 +4,10 @@
   z-index: 100;
   background: rgba(253, 246, 227, 0.92);
   backdrop-filter: blur(0.5rem);
+  /* 헤더 아래부터 시작하고, 내용이 길면 스크롤 (margin:auto로 여유 있을 땐 가운데 정렬) */
+  padding: calc(var(--header-height) + 1rem) 1rem 1.5rem;
+  overflow-y: auto;
+  align-items: flex-start;
 }
 
 /* 게임오버는 잠든 고양이들이 비치도록 덜 가린다 */
@@ -232,4 +236,107 @@
   letter-spacing: 0.3em;
   color: var(--color-outline);
   margin-top: -0.9rem;
+}
+
+.overlayContent {
+  margin: auto;
+  width: 100%;
+  max-width: 22rem;
+}
+
+.modeTabs {
+  display: flex;
+  gap: 0.25rem;
+  border-bottom: 2px solid var(--color-surface-container-highest);
+}
+
+.modeTab {
+  font-family: var(--font-headline);
+  font-weight: 800;
+  font-size: 0.95rem;
+  padding: 0.5rem 1.25rem;
+  border: none;
+  background: transparent;
+  color: var(--color-outline);
+  cursor: pointer;
+  border-bottom: 3px solid transparent;
+  margin-bottom: -2px;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.modeActive {
+  color: var(--color-primary);
+  border-bottom-color: var(--color-primary);
+}
+
+.stageCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  background: var(--color-surface-container-high);
+  border-radius: 1rem;
+  padding: 0.75rem 1.5rem;
+  min-width: 14rem;
+}
+
+.stageNum {
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--color-outline);
+  text-transform: uppercase;
+}
+
+.stageTitle {
+  font-family: var(--font-headline);
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: var(--color-primary);
+}
+
+.stageLimit {
+  font-size: 0.7rem;
+  color: var(--color-secondary);
+  font-weight: 700;
+}
+
+.goalList {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  width: 100%;
+  max-width: 14rem;
+}
+
+.goalList li {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  font-size: 0.85rem;
+  color: var(--color-on-surface);
+}
+
+.goalList strong {
+  font-family: var(--font-headline);
+  font-variant-numeric: tabular-nums;
+  color: var(--color-primary);
+}
+
+.goalDone strong { color: #2e7d32; }
+
+.stars {
+  display: flex;
+  gap: 0.25rem;
+  color: var(--color-surface-dim);
+}
+
+.star { display: flex; }
+.starOn { color: #f5b400; filter: drop-shadow(0 0.125rem 0.25rem rgba(245, 180, 0, 0.5)); }
+.starPop { animation: starPop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both; }
+
+@keyframes starPop {
+  0% { transform: scale(0) rotate(-30deg); opacity: 0; }
+  100% { transform: scale(1) rotate(0); opacity: 1; }
 }

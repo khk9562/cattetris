@@ -1,0 +1,102 @@
+.container {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background-color: var(--color-surface-container);
+  background-image: var(--ui-bg, none);
+  border-radius: 1rem;
+  padding: 0.3rem 0.6rem;
+}
+
+.stageName {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 2.5rem;
+}
+
+.num {
+  font-family: var(--font-headline);
+  font-weight: 800;
+  font-size: 1rem;
+  color: var(--color-primary);
+  line-height: 1.1;
+}
+
+.title {
+  font-size: 0.55rem;
+  color: var(--color-outline);
+  white-space: nowrap;
+}
+
+.goals {
+  flex: 1;
+  display: flex;
+  gap: 0.5rem;
+  min-width: 0;
+}
+
+.goal {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  min-width: 0;
+}
+
+.goalLabel {
+  font-size: 0.55rem;
+  font-weight: 700;
+  color: var(--color-outline);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.goalValue {
+  font-family: var(--font-headline);
+  font-weight: 700;
+  font-size: 0.8rem;
+  color: var(--color-on-background);
+  font-variant-numeric: tabular-nums;
+  line-height: 1.1;
+}
+
+.bar {
+  height: 0.25rem;
+  border-radius: 9999px;
+  background: var(--color-surface-dim);
+  overflow: hidden;
+}
+
+.fill {
+  display: block;
+  height: 100%;
+  background: linear-gradient(to right, var(--color-primary), var(--color-secondary));
+  transition: width 0.3s;
+}
+
+.done .goalValue { color: #2e7d32; }
+.done .fill { background: #66bb6a; }
+
+.limit {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  min-width: 3.25rem;
+}
+
+.limitLabel {
+  font-size: 0.55rem;
+  font-weight: 700;
+  color: var(--color-outline);
+}
+
+.limitValue {
+  font-family: var(--font-headline);
+  font-weight: 800;
+  font-size: 0.95rem;
+  color: var(--color-secondary);
+  font-variant-numeric: tabular-nums;
+}
