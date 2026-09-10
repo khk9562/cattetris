@@ -30,16 +30,16 @@ export const COLLECTION_UNLOCK_THRESHOLD = 500;
 
 /** 파티클 연출용 털 색 (바탕색, 무늬색) */
 export const CAT_FUR_COLORS: Record<CatType, [string, string]> = {
-  ginger: ['#ffb03a', '#e88d14'],
-  tuxedo: ['#1a1a1a', '#ffffff'],
-  russianBlue: ['#8c9fae', '#b8c6d1'],
-  calico: ['#ffffff', '#ff9d00'],
-  siamese: ['#f5e6d0', '#4a3b32'],
-  black: ['#3b3b45', '#5a5a68'],
-  tabby: ['#c8956c', '#7a5230'],
-  darkTabby: ['#5c626b', '#2a2d34'],
-  white: ['#fbfaf6', '#f5b8c4'],
-  tortie: ['#2b2320', '#d9741f'],
-  bengal: ['#e3a955', '#3b2312'],
-  scottishFold: ['#c9bdb0', '#b9ab9c'],
+  ginger: ['#f7b25c', '#cb7414'],
+  tuxedo: ['#22232a', '#f7f7f4'],
+  russianBlue: ['#93a5b4', '#c3d0da'],
+  calico: ['#fdfaf4', '#f39c2c'],
+  siamese: ['#f3e3cd', '#4b3c33'],
+  black: ['#3a3a46', '#5a5a68'],
+  tabby: ['#c79a72', '#6b4728'],
+  darkTabby: ['#6a717b', '#262a32'],
+  white: ['#fcfbf7', '#f6b9c6'],
+  tortie: ['#31292a', '#dd7b22'],
+  bengal: ['#e2a955', '#3b2312'],
+  scottishFold: ['#ccc0b2', '#b3a595'],
 };

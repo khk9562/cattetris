@@ -9,10 +9,23 @@
   z-index: 0;
   /* 연결 상태가 바뀔 때 모서리만 부드럽게 */
   transition: border-radius 0.12s ease-out, box-shadow 0.12s ease-out;
-  /* 무늬 타일: 셀 2x2가 한 타일. 위상은 --px/--py (0|1) */
-  background-size: 200% 200%;
-  background-position: calc(var(--px, 0) * -100%) calc(var(--py, 0) * -100%);
-  background-repeat: repeat;
+
+  /*
+   * 털은 세 겹으로 쌓는다: 위에서 드는 빛 → 품종 무늬 → 아래로 깔리는 그늘.
+   * 무늬(--fur-img)만 품종이 채우고, 줄무늬·로제트처럼 이어져야 하는 무늬는
+   * --fur-img-size를 200%로 키워 셀 2x2가 한 타일이 되게 한다 (위상은 --px/--py).
+   */
+  --fur-light: radial-gradient(120% 95% at 30% 10%, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 55%);
+  --fur-shade: radial-gradient(120% 80% at 50% 118%, rgba(60, 35, 20, 0.28) 0%, rgba(60, 35, 20, 0) 62%);
+  --fur-soft: color-mix(in srgb, var(--fur-pattern) 34%, transparent);
+  --fur-strong: color-mix(in srgb, var(--fur-pattern) 92%, transparent);
+  --fur-tile: calc(var(--px, 0) * -100%) calc(var(--py, 0) * -100%);
+
+  background-color: var(--fur-base);
+  background-image: var(--fur-light), var(--fur-img, none), var(--fur-shade);
+  background-size: 100% 100%, var(--fur-img-size, 100% 100%), 100% 100%;
+  background-position: 0 0, var(--fur-img-pos, 0 0), 0 0;
+  background-repeat: no-repeat, repeat, no-repeat;
 }
 
 /* ---------- 착지 스쿼시 ---------- */
@@ -79,10 +92,10 @@
 .earLeft,
 .earRight {
   position: absolute;
-  top: -17%;
-  width: 36%;
-  height: 32%;
-  border-radius: 55% 55% 18% 18% / 85% 85% 15% 15%;
+  top: -20%;
+  width: 38%;
+  height: 34%;
+  border-radius: 58% 58% 14% 14% / 88% 88% 12% 12%;
   z-index: -1;
   pointer-events: none;
   box-shadow: inset 0 2px 3px rgba(255, 255, 255, 0.2);
@@ -92,28 +105,35 @@
 .earRight::after {
   content: "";
   position: absolute;
-  inset: 28% 28% 0 28%;
-  border-radius: 55% 55% 18% 18% / 85% 85% 15% 15%;
-  background: var(--ear-inner, rgba(255, 170, 190, 0.85));
+  inset: 32% 26% 0 26%;
+  border-radius: 54% 54% 16% 16% / 84% 84% 16% 16%;
+  background: var(--ear-inner, rgba(255, 168, 186, 0.75));
 }
 
 .earLeft {
-  left: 8%;
-  transform: rotate(-18deg);
+  left: 6%;
+  transform: rotate(-16deg);
   transform-origin: bottom right;
 }
 
 .earRight {
-  right: 8%;
-  transform: rotate(18deg);
+  right: 6%;
+  transform: rotate(16deg);
   transform-origin: bottom left;
   animation: earTwitch 7s ease-in-out infinite;
 }
 
 @keyframes earTwitch {
-  0%, 88%, 100% { transform: rotate(18deg); }
-  91% { transform: rotate(4deg); }
-  94% { transform: rotate(22deg); }
+  0%, 88%, 100% { transform: rotate(16deg); }
+  91% { transform: rotate(2deg); }
+  94% { transform: rotate(20deg); }
+}
+
+/* --- 품종 표식: 태비 이마의 M, 턱시도 가슴털, 샴 포인트 (얼굴이 있는 칸에만) --- */
+.mark {
+  position: absolute;
+  pointer-events: none;
+  z-index: 2;
 }
 
 /* --- Face --- */
@@ -125,7 +145,7 @@
   align-items: center;
   justify-content: center;
   gap: 4%;
-  z-index: 2;
+  z-index: 3;
   pointer-events: none;
   animation: faceBob 3.2s ease-in-out infinite;
 }
@@ -352,10 +372,10 @@
 /* --- Tail (셀 안에 말린 꼬리, 살랑살랑) --- */
 .tail {
   position: absolute;
-  right: 2%;
+  right: 0;
   bottom: 2%;
-  width: 58%;
-  height: 58%;
+  width: 60%;
+  height: 60%;
   z-index: 1;
   pointer-events: none;
   overflow: visible;
@@ -394,180 +414,198 @@
 .earLeft { background-color: var(--fur-ear); }
 .earRight { background-color: var(--fur-ear2); }
 
-/* 1. Calico (삼색고양이) */
+/*
+ * 줄무늬는 한 줄짜리 반복선 대신 굵은 심 + 옅은 테두리로 두 겹을 만들어
+ * 실제 털결처럼 번지게 한다. 품종마다 각도만 다르다.
+ */
+.ginger,
+.tabby,
+.darkTabby {
+  --fur-img-size: 200% 200%;
+  --fur-img-pos: var(--fur-tile);
+}
+
+/* 1. Calico (삼색고양이) - 큰 패치 */
 .calico {
-  --fur-base: #ffffff;
-  --fur-pattern: #ff9d00;
-  --fur-pattern2: #3a3a3a;
+  --fur-base: #fdfaf4;
+  --fur-pattern: #f39c2c;
+  --fur-pattern2: #4a4038;
   --fur-ear: var(--fur-pattern);
   --fur-ear2: var(--fur-pattern2);
   --fur-tail: var(--fur-pattern2);
-  --eye: #322f22;
-  background-color: var(--fur-base);
-  background-image:
-    radial-gradient(ellipse 12% 9% at 20% 22%, var(--fur-pattern) 98%, transparent 100%),
-    radial-gradient(ellipse 9% 12% at 66% 14%, var(--fur-pattern2) 98%, transparent 100%),
-    radial-gradient(ellipse 11% 8% at 78% 58%, var(--fur-pattern) 98%, transparent 100%),
-    radial-gradient(ellipse 8% 10% at 36% 62%, var(--fur-pattern2) 98%, transparent 100%),
-    radial-gradient(ellipse 10% 7% at 58% 84%, var(--fur-pattern) 98%, transparent 100%),
-    radial-gradient(ellipse 7% 9% at 14% 86%, var(--fur-pattern2) 98%, transparent 100%);
+  --eye: #3b2f22;
+  --fur-img-size: 200% 200%;
+  --fur-img-pos: var(--fur-tile);
+  --fur-img:
+    radial-gradient(ellipse 34% 26% at 18% 20%, var(--fur-pattern) 96%, transparent 100%),
+    radial-gradient(ellipse 28% 32% at 72% 26%, var(--fur-pattern2) 96%, transparent 100%),
+    radial-gradient(ellipse 30% 24% at 80% 74%, var(--fur-pattern) 96%, transparent 100%),
+    radial-gradient(ellipse 26% 28% at 26% 78%, var(--fur-pattern2) 96%, transparent 100%);
 }
 
-/* 2. Tuxedo (턱시도고양이) */
+/* 2. Tuxedo (턱시도고양이) - 얼굴 칸에만 하얀 가슴털 */
 .tuxedo {
-  --fur-base: #1a1a1a;
-  --fur-pattern: #ffffff;
+  --fur-base: #22232a;
+  --fur-pattern: #f7f7f4;
+  --fur-ear: #2b2c33;
   --fur-tail: var(--fur-pattern);
-  --eye: #fce83a;
-  background-color: var(--fur-base);
+  --eye: #ffdd57;
+  --fur-img: radial-gradient(120% 90% at 28% 14%, rgba(255, 255, 255, 0.14) 0%, transparent 58%);
 }
-.tuxedo .face::before {
-  content: "";
-  position: absolute;
-  bottom: 0;
-  width: 85%;
-  height: 65%;
+.tuxedo .mark {
+  bottom: -2%;
+  left: 18%;
+  width: 64%;
+  height: 48%;
   background: var(--fur-pattern);
-  border-radius: 50% 50% 10% 10%;
-  z-index: 1;
+  border-radius: 48% 48% 30% 30%;
 }
-.tuxedo .mouthArc { z-index: 3; }
 
 /* 3. Ginger (치즈냥이) */
 .ginger {
-  --fur-base: #ffb03a;
-  --fur-pattern: #e88d14;
-  --eye: #322f22;
-  background-color: var(--fur-base);
-  background-image: repeating-linear-gradient(45deg, transparent 0 15%, var(--fur-pattern) 15% 25%);
+  --fur-base: #f7b25c;
+  --fur-pattern: #cb7414;
+  --fur-ear: #f0a24a;
+  --fur-tail: #dd8b22;
+  --eye: #3b2f22;
+  --fur-img: repeating-linear-gradient(78deg,
+    transparent 0 7%, var(--fur-soft) 7% 9%, var(--fur-strong) 9% 15%, var(--fur-soft) 15% 17%, transparent 17% 27%);
 }
 
 /* 4. Tabby (고등어 - 브라운 줄무늬) */
 .tabby {
-  --fur-base: #c8956c;
-  --fur-pattern: #7a5230;
-  --eye: #322f22;
-  background-color: var(--fur-base);
-  background-image: repeating-linear-gradient(90deg, transparent 0 12.5%, var(--fur-pattern) 12.5% 20%);
+  --fur-base: #c79a72;
+  --fur-pattern: #6b4728;
+  --fur-ear: #b78760;
+  --fur-tail: #7d5734;
+  --eye: #3b2f22;
+  --fur-img: repeating-linear-gradient(96deg,
+    transparent 0 7%, var(--fur-soft) 7% 9%, var(--fur-strong) 9% 15%, var(--fur-soft) 15% 17%, transparent 17% 27%);
 }
 
 /* 4b. Dark Tabby (실버태비) */
 .darkTabby {
-  --fur-base: #5c626b;
-  --fur-pattern: #2a2d34;
-  --eye: #ffd700;
-  background-color: var(--fur-base);
-  background-image: repeating-linear-gradient(-45deg, transparent 0 15%, var(--fur-pattern) 15% 25%);
+  --fur-base: #6a717b;
+  --fur-pattern: #262a32;
+  --fur-ear: #5b616a;
+  --fur-tail: #333941;
+  --eye: #ffd25e;
+  --fur-img: repeating-linear-gradient(120deg,
+    transparent 0 7%, var(--fur-soft) 7% 9%, var(--fur-strong) 9% 15%, var(--fur-soft) 15% 17%, transparent 17% 27%);
+}
+
+/* 태비 계열 이마의 M 자 */
+.ginger .mark,
+.tabby .mark,
+.darkTabby .mark {
+  top: 4%;
+  left: 30%;
+  width: 40%;
+  height: 16%;
+  background:
+    linear-gradient(105deg, transparent 44%, rgba(60, 40, 20, 0.5) 44% 52%, transparent 52%),
+    linear-gradient(75deg, transparent 44%, rgba(60, 40, 20, 0.5) 44% 52%, transparent 52%);
 }
 
 /* 5. Black (까만고양이) */
 .black {
-  --fur-base: #3b3b45;
-  --fur-pattern: #3b3b45;
-  --eye: #fce83a;
-  background-color: var(--fur-base);
+  --fur-base: #3a3a46;
+  --fur-pattern: #2f2f39;
+  --fur-ear: #33333e;
+  --eye: #ffdd57;
+  --fur-img: radial-gradient(120% 90% at 28% 16%, rgba(255, 255, 255, 0.16) 0%, transparent 58%);
 }
 
-/* 6. Siamese (샴고양이) */
+/* 6. Siamese (샴고양이) - 얼굴 칸에만 짙은 포인트 */
 .siamese {
-  --fur-base: #f5e6d0;
-  --fur-pattern: #4a3b32;
+  --fur-base: #f3e3cd;
+  --fur-pattern: #4b3c33;
   --fur-ear: var(--fur-pattern);
-  --eye: #5ab1f5;
-  background-color: var(--fur-base);
+  --eye: #59b6f0;
+  --fur-img: radial-gradient(120% 95% at 32% 14%, rgba(255, 255, 255, 0.5) 0%, transparent 62%);
 }
-.siamese .face::before {
-  content: "";
-  position: absolute;
-  width: 75%;
-  height: 70%;
-  background: radial-gradient(circle at 50% 50%, var(--fur-pattern) 40%, transparent 70%);
+.siamese .mark {
+  inset: 18% 14% 10% 14%;
   z-index: 1;
+  border-radius: 46%;
+  background: radial-gradient(circle at 50% 55%,
+    color-mix(in srgb, var(--fur-pattern) 62%, transparent) 46%,
+    transparent 78%);
 }
-.siamese .mouthArc { border-color: white !important; z-index: 3; }
 
 /* 7. Russian Blue (러시안블루) */
 .russianBlue {
-  --fur-base: #8c9fae;
-  --fur-pattern: #8c9fae;
-  --eye: #90ee90;
-  background-color: var(--fur-base);
+  --fur-base: #93a5b4;
+  --fur-pattern: #7a8d9c;
+  --fur-ear: #8496a6;
+  --eye: #8fdc9a;
+  --fur-img: radial-gradient(120% 90% at 30% 14%, rgba(255, 255, 255, 0.35) 0%, transparent 60%);
 }
 
 /* 8. White odd-eyed (흰냥이 오드아이) */
 .white {
-  --fur-base: #fbfaf6;
-  --fur-pattern: #efe8dc;
-  --fur-pattern2: #f5b8c4;
-  --fur-ear: #f3ece2;
+  --fur-base: #fcfbf7;
+  --fur-pattern: #eae2d5;
+  --fur-pattern2: #f6b9c6;
+  --fur-ear: #f6efe4;
+  --ear-inner: var(--fur-pattern2);
   --eye: #4fa8f0;
   --eye-right: #f0b429;
-  background-color: var(--fur-base);
-  background-image: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.9) 0%, transparent 60%);
-  background-size: 100% 100%;
-  background-position: 0 0;
-}
-.white .earLeft::after, .white .earRight::after {
-  content: "";
-  position: absolute;
-  inset: 30% 25% 0 25%;
-  background: var(--fur-pattern2);
-  border-radius: 40% 40% 0 0;
+  --fur-img: radial-gradient(120% 90% at 30% 16%, #ffffff 0%, transparent 62%);
 }
 
-/* 9. Tortoiseshell (카오스) */
+/* 9. Tortoiseshell (카오스) - 큰 패치 */
 .tortie {
-  --fur-base: #2b2320;
-  --fur-pattern: #d9741f;
-  --fur-pattern2: #f0a34a;
-  --fur-ear: var(--fur-pattern);
+  --fur-base: #31292a;
+  --fur-pattern: #dd7b22;
+  --fur-pattern2: #f4ab52;
+  --fur-ear: #d9741f;
   --fur-ear2: var(--fur-base);
-  --eye: #c9d64a;
-  background-color: var(--fur-base);
-  background-image:
-    radial-gradient(ellipse 11% 8% at 18% 24%, var(--fur-pattern) 98%, transparent 100%),
-    radial-gradient(ellipse 7% 9% at 56% 12%, var(--fur-pattern2) 98%, transparent 100%),
-    radial-gradient(ellipse 10% 12% at 76% 52%, var(--fur-pattern) 98%, transparent 100%),
-    radial-gradient(ellipse 8% 6% at 34% 66%, var(--fur-pattern2) 98%, transparent 100%),
-    radial-gradient(ellipse 9% 7% at 82% 86%, var(--fur-pattern) 98%, transparent 100%),
-    radial-gradient(ellipse 6% 8% at 12% 88%, var(--fur-pattern2) 98%, transparent 100%),
-    radial-gradient(ellipse 7% 6% at 48% 40%, var(--fur-pattern) 98%, transparent 100%);
+  --fur-tail: #d9741f;
+  --eye: #d7e26a;
+  --fur-img-size: 200% 200%;
+  --fur-img-pos: var(--fur-tile);
+  --fur-img:
+    radial-gradient(ellipse 34% 30% at 24% 24%, var(--fur-pattern) 96%, transparent 100%),
+    radial-gradient(ellipse 26% 24% at 74% 40%, var(--fur-pattern2) 96%, transparent 100%),
+    radial-gradient(ellipse 30% 26% at 62% 82%, var(--fur-pattern) 96%, transparent 100%),
+    radial-gradient(ellipse 22% 20% at 16% 74%, var(--fur-pattern2) 96%, transparent 100%);
 }
 
-/* 10. Bengal (벵갈) */
+/* 10. Bengal (벵갈) - 가운데가 뚫린 로제트 */
 .bengal {
-  --fur-base: #e3a955;
+  --fur-base: #e2a955;
   --fur-pattern: #3b2312;
   --fur-pattern2: #cf8f3f;
-  --eye: #6fbf73;
-  background-color: var(--fur-base);
-  background-image:
-    radial-gradient(circle at 20% 22%, var(--fur-pattern2) 4%, var(--fur-pattern) 5% 8%, transparent 9.5%),
-    radial-gradient(circle at 62% 38%, var(--fur-pattern2) 4%, var(--fur-pattern) 5% 8%, transparent 9.5%),
-    radial-gradient(circle at 82% 14%, var(--fur-pattern2) 3%, var(--fur-pattern) 4% 6.5%, transparent 8%),
-    radial-gradient(circle at 30% 66%, var(--fur-pattern2) 3%, var(--fur-pattern) 4% 6.5%, transparent 8%),
-    radial-gradient(circle at 72% 80%, var(--fur-pattern2) 4%, var(--fur-pattern) 5% 8%, transparent 9.5%);
+  --fur-ear: #d3963f;
+  --fur-tail: #43301c;
+  --eye: #79c26f;
+  --fur-img-size: 200% 200%;
+  --fur-img-pos: var(--fur-tile);
+  --fur-img:
+    radial-gradient(circle at 22% 26%, transparent 22%, var(--fur-strong) 24% 34%, transparent 36%),
+    radial-gradient(circle at 64% 44%, transparent 20%, var(--fur-strong) 22% 32%, transparent 34%),
+    radial-gradient(circle at 84% 16%, transparent 15%, var(--fur-strong) 17% 26%, transparent 28%),
+    radial-gradient(circle at 34% 74%, transparent 16%, var(--fur-strong) 18% 27%, transparent 29%),
+    radial-gradient(circle at 78% 82%, transparent 18%, var(--fur-strong) 20% 30%, transparent 32%);
 }
 
 /* 11. Scottish Fold (스코티시 폴드) - 접힌 귀 */
 .scottishFold {
-  --fur-base: #c9bdb0;
-  --fur-pattern: #b9ab9c;
-  --fur-ear: var(--fur-pattern);
-  --eye: #d9822b;
-  background-color: var(--fur-base);
-  background-image: radial-gradient(circle at 50% 60%, rgba(255, 255, 255, 0.25) 0%, transparent 55%);
-  background-size: 100% 100%;
-  background-position: 0 0;
+  --fur-base: #ccc0b2;
+  --fur-pattern: #b3a595;
+  --fur-ear: #bcae9e;
+  --eye: #dd8a2c;
+  --fur-img: radial-gradient(110% 90% at 50% 24%, rgba(255, 255, 255, 0.4) 0%, transparent 62%);
 }
 .scottishFold .earLeft, .scottishFold .earRight {
-  top: -9%;
+  top: -10%;
   height: 22%;
-  width: 34%;
-  border-radius: 50% 50% 30% 30% / 70% 70% 30% 30%;
+  width: 36%;
+  border-radius: 52% 52% 34% 34% / 74% 74% 26% 26%;
 }
-.scottishFold .earLeft { transform: rotate(-35deg); left: 6%; }
-.scottishFold .earRight { transform: rotate(35deg); right: 6%; }
+.scottishFold .earLeft { transform: rotate(-34deg); left: 6%; }
+.scottishFold .earRight { transform: rotate(34deg); right: 6%; animation: none; }
 .scottishFold .eye { width: 24%; }
 
 /* =========================================

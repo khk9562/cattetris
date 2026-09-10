@@ -36,7 +36,9 @@ interface Props {
 
 export type CatExpression = 'idle' | 'happy' | 'scared' | 'dizzy' | 'sleepy';
 
-const R = '38%';
+/** 바깥 모서리 반경. 안쪽으로 이어지는 모서리는 살짝만 깎아 덩어리로 붙어 보이게 한다 */
+const R = '44%';
+const R_INNER = '4%';
 
 function CatBlock({
   catType, ghost, conn, showFace, showEars, showTail, effect, expression = 'idle', blinkDelay = 0, cellX = 0, cellY = 0, landing = false, skinId, accessory,
@@ -48,17 +50,16 @@ function CatBlock({
   const c = conn || { top: false, right: false, bottom: false, left: false };
 
   // 조각 전체가 하나의 둥근 덩어리로 보이도록 바깥 모서리만 크게 둥글린다
-  const tl = !c.top && !c.left ? R : '0';
-  const tr = !c.top && !c.right ? R : '0';
-  const bl = !c.bottom && !c.left ? R : '0';
-  const br = !c.bottom && !c.right ? R : '0';
+  const tl = !c.top && !c.left ? R : R_INNER;
+  const tr = !c.top && !c.right ? R : R_INNER;
+  const bl = !c.bottom && !c.left ? R : R_INNER;
+  const br = !c.bottom && !c.right ? R : R_INNER;
 
   const shadows: string[] = [];
   if (!ghost) {
-    if (!c.top) shadows.push('inset 0 3px 4px rgba(255,255,255,0.35)');
-    if (!c.left) shadows.push('inset 3px 0 4px rgba(255,255,255,0.22)');
-    if (!c.bottom) shadows.push('inset 0 -4px 5px rgba(0,0,0,0.16)');
-    if (!c.right) shadows.push('inset -3px 0 4px rgba(0,0,0,0.12)');
+    if (!c.top) shadows.push('inset 0 2px 3px rgba(255,255,255,0.45)');
+    if (!c.bottom) shadows.push('inset 0 -3px 6px rgba(70,40,20,0.18)');
+    if (!c.right) shadows.push('inset -2px 0 4px rgba(70,40,20,0.1)');
   }
 
   const classNames = [
@@ -90,6 +91,7 @@ function CatBlock({
           <div className={styles.earRight} />
         </>
       )}
+      {showFace && !ghost && <div className={styles.mark} aria-hidden="true" />}
       {showFace && !ghost && (
         <div className={styles.face}>
           <span className={`${styles.cheek} ${styles.cheekL}`} />
@@ -116,8 +118,8 @@ function CatBlock({
       )}
       {showTail && !ghost && (
         <svg className={styles.tail} viewBox="0 0 40 40" aria-hidden="true">
-          <path d="M6 37 C 4 22, 30 26, 31 13 C 31.5 5, 21 4, 18 11" fill="none" stroke="var(--fur-tail)" strokeWidth="7.5" strokeLinecap="round" />
-          <path d="M6 37 C 4 22, 30 26, 31 13 C 31.5 5, 21 4, 18 11" fill="none" stroke="rgba(255,255,255,0.22)" strokeWidth="2.5" strokeLinecap="round" transform="translate(-1,-1.5)" />
+          <path d="M7 37 C 4 21, 31 26, 32 12.5 C 32.5 4.5, 21 3.5, 18 11" fill="none" stroke="var(--fur-tail)" strokeWidth="8" strokeLinecap="round" />
+          <path d="M7 37 C 4 21, 31 26, 32 12.5" fill="none" stroke="rgba(255,255,255,0.25)" strokeWidth="2.4" strokeLinecap="round" transform="translate(-0.5,-2)" />
         </svg>
       )}
     </div>
