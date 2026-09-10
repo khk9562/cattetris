@@ -1,4 +1,4 @@
-/* 폰트: Pretendard Variable(본문) + Gowun Batang 700(제목). 둘 다 index.html에서 서브셋 CSS를 로드한다 */
+/* 폰트: Pretendard Variable(본문) + Jua(제목). 둘 다 index.html에서 서브셋 CSS를 로드한다 */
 
 :root {
   /*
@@ -43,7 +43,14 @@
   --radius-lg: 1.25rem;
   --radius-sheet: 1.5rem;
 
-  --font-title: 'Gowun Batang', 'AppleMyungjo', 'Batang', 'Nanum Myeongjo', serif;
+  /*
+   * 제목은 짧고 뭉뚝한 라운드 서체.
+   * Jua는 굵기가 400 하나뿐이라 font-weight를 올리면 브라우저 가짜 볼드로 뭉개진다.
+   * 대신 글자 외곽을 같은 색으로 덧그려 실제 획을 살찌운다(--font-title-stroke).
+   */
+  --font-title: 'Jua', 'Apple SD Gothic Neo', 'Noto Sans KR', system-ui, sans-serif;
+  --font-title-weight: 400;
+  --font-title-stroke: 0.03em;
   --font-headline: 'Pretendard Variable', 'Pretendard', 'Apple SD Gothic Neo', 'Noto Sans KR', system-ui, sans-serif;
   --font-body: 'Pretendard Variable', 'Pretendard', 'Apple SD Gothic Neo', 'Noto Sans KR', system-ui, sans-serif;
 

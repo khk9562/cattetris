@@ -13,7 +13,7 @@ export default defineConfig({
       includeAssets: [
         'icons/*.png',
         'fonts/pretendard/pretendardvariable-dynamic-subset.css',
-        'fonts/gowun-batang/gowun-batang-subset.css',
+        'fonts/jua/jua-subset.css',
       ],
       manifest: {
         name: '냥스택 NYANG STACK',
@@ -33,8 +33,8 @@ export default defineConfig({
       },
       workbox: {
         globPatterns: ['**/*.{js,css,html,png,svg}'],
-        // 폰트 서브셋(Pretendard 92 + Gowun Batang 95)은 첫 로드에 전부 받지 않고 쓰이는 것만 런타임 캐시
-        globIgnores: ['**/fonts/pretendard/**', '**/fonts/gowun-batang/**'],
+        // 폰트 서브셋(Pretendard 92 + Jua 87)은 첫 로드에 전부 받지 않고 쓰이는 것만 런타임 캐시
+        globIgnores: ['**/fonts/pretendard/**', '**/fonts/jua/**'],
         runtimeCaching: [
           {
             urlPattern: /\/fonts\/pretendard\//,
@@ -42,9 +42,9 @@ export default defineConfig({
             options: { cacheName: 'pretendard', expiration: { maxEntries: 120, maxAgeSeconds: 60 * 60 * 24 * 365 } },
           },
           {
-            urlPattern: /\/fonts\/gowun-batang\//,
+            urlPattern: /\/fonts\/jua\//,
             handler: 'CacheFirst',
-            options: { cacheName: 'gowun-batang', expiration: { maxEntries: 120, maxAgeSeconds: 60 * 60 * 24 * 365 } },
+            options: { cacheName: 'jua', expiration: { maxEntries: 120, maxAgeSeconds: 60 * 60 * 24 * 365 } },
           },
         ],
       },
