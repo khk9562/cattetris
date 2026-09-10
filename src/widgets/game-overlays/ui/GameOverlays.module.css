@@ -1,171 +1,113 @@
+/* 일시정지 · 게임오버 · 클리어 화면 (시작 화면은 HomeScreen.module.css) */
 .overlay {
   position: fixed;
   inset: 0;
   z-index: 100;
-  background: rgba(255, 247, 238, 0.88);
+  background: color-mix(in srgb, var(--color-background) 88%, transparent);
   backdrop-filter: blur(0.75rem);
-  /* 헤더 아래부터 시작하고, 내용이 길면 스크롤 (margin:auto로 여유 있을 땐 가운데 정렬) */
-  padding: calc(var(--safe-top) + var(--header-height) + 0.75rem) 1rem calc(var(--controls-padding-bottom) + 1rem);
+  padding: calc(var(--safe-top) + var(--header-height) + 0.75rem) var(--screen-padding) calc(var(--controls-padding-bottom) + 1rem);
   overflow-y: auto;
+  display: flex;
   align-items: flex-start;
 }
 
 /* 게임오버는 잠든 고양이들이 비치도록 덜 가린다 */
 .overlayGameover {
-  background: rgba(255, 247, 238, 0.7);
+  background: color-mix(in srgb, var(--color-background) 70%, transparent);
   backdrop-filter: blur(0.125rem);
-  display: flex;
   align-items: center;
-  justify-content: center;
 }
 
-.overlayContent {
+.content {
+  margin: auto;
+  width: 100%;
+  max-width: 22rem;
   text-align: center;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 1rem;
+  gap: 0.875rem;
 }
 
-.overlayTitle {
-  font-family: var(--font-headline);
-  font-size: 2.25rem;
-  font-weight: 800;
-  letter-spacing: -0.02em;
+.title {
+  font-family: var(--font-title);
+  font-size: 2rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
   color: var(--color-on-background);
 }
 
-.highScoreLabel {
-  font-size: 0.625rem;
-  font-weight: 700;
+.label {
+  font-size: 0.66rem;
+  font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.1em;
   color: var(--color-outline);
-  opacity: 0.7;
-  margin-bottom: -0.75rem;
 }
 
 .highScoreValue {
-  font-family: var(--font-headline);
   font-size: 1.25rem;
   font-weight: 800;
   color: var(--color-primary);
+  font-variant-numeric: tabular-nums;
 }
 
 .finalScore {
-  font-family: var(--font-headline);
   font-size: 3rem;
   font-weight: 800;
-  color: var(--color-secondary);
+  line-height: 1.1;
+  color: var(--color-on-background);
+  font-variant-numeric: tabular-nums;
 }
 
 .finalLabel {
-  font-size: 0.875rem;
+  font-size: 0.8rem;
   color: var(--color-outline);
-  margin-top: -0.75rem;
+  margin-top: -0.625rem;
 }
 
-.startBtn {
-  font-family: var(--font-headline);
-  font-size: 1rem;
-  font-weight: 700;
-  color: white;
-  background: var(--accent-gradient);
+.btn {
+  width: 100%;
+  height: 3.125rem;
+  border-radius: var(--radius-md);
   border: none;
-  border-radius: 9999px;
-  padding: 0.9rem 2.5rem;
+  background: var(--accent-solid);
+  color: var(--color-on-primary);
+  font-size: 1.03rem;
+  font-weight: 800;
   cursor: pointer;
-  box-shadow: 0 0.5rem 1.25rem rgba(255, 111, 145, 0.35);
-  transition: transform 120ms cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 120ms;
+  box-shadow: 0 0.5rem 1.125rem var(--accent-shadow);
+  transition: transform 100ms cubic-bezier(0.34, 1.56, 0.64, 1);
   -webkit-tap-highlight-color: transparent;
 }
 
-.startBtn:active {
-  transform: scale(0.95);
-}
-
-.themeSelector {
-  display: flex;
-  justify-content: center;
-  gap: 0.5rem;
-  margin-top: -0.5rem;
-  margin-bottom: 0.5rem;
-}
-
-.themeIcon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 2.75rem;
-  height: 2.75rem;
-  border-radius: 0.75rem;
-  border: 2px solid transparent;
-  background-color: var(--color-surface-container-high);
-  color: var(--color-primary);
-  cursor: pointer;
-  transition: all 0.2s;
-  -webkit-tap-highlight-color: transparent;
-}
-
-.themeActive {
-  border-color: var(--color-primary);
-  background-color: var(--color-surface-container-highest);
-  transform: scale(1.1);
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
+.btn:active { transform: scale(0.98); }
 
 .secondaryBtn {
-  background: var(--color-surface-container-high);
-  background-image: var(--ui-bg, none);
-  color: var(--color-on-background);
-  border: 1px solid var(--glass-border);
-  box-shadow: var(--glass-shadow);
-}
-
-.difficultyGroup {
-  display: flex;
-  gap: 0.375rem;
-  background: var(--color-surface-container-high);
-  padding: 0.25rem;
-  border-radius: 9999px;
-}
-
-.difficultyBtn {
-  font-family: var(--font-headline);
-  font-weight: 800;
-  font-size: 0.95rem;
-  padding: 0.5rem 1.25rem;
-  border-radius: 9999px;
-  border: none;
   background: transparent;
-  color: var(--color-outline);
-  cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
-  transition: background-color 0.2s, color 0.2s, transform 100ms;
+  border: 1.5px solid var(--theme-line);
+  color: var(--color-on-background);
+  box-shadow: none;
+  font-weight: 700;
+  font-size: 0.94rem;
 }
 
-.difficultyActive {
-  background: var(--accent-gradient);
-  color: white;
-  box-shadow: 0 0.125rem 0.5rem rgba(255, 111, 145, 0.35);
-}
-
-.difficultyDesc {
-  font-size: 0.75rem;
-  color: var(--color-outline);
-  margin-top: -0.5rem;
+.btnRow {
+  display: flex;
+  gap: 0.625rem;
+  width: 100%;
 }
 
 .newRecord {
   display: inline-flex;
   align-items: center;
   gap: 0.25rem;
-  font-family: var(--font-headline);
   font-weight: 800;
-  color: #e65100;
-  background: rgba(255, 193, 7, 0.25);
-  padding: 0.25rem 0.875rem;
-  border-radius: 9999px;
+  font-size: 0.88rem;
+  color: var(--color-on-primary);
+  background: var(--accent-solid);
+  padding: 0.3125rem 0.875rem;
+  border-radius: var(--radius-sm);
   animation: recordPop 0.6s ease-out;
 }
 
@@ -177,11 +119,13 @@
 
 .summary {
   display: grid;
-  grid-template-columns: repeat(4, auto);
-  gap: 0.25rem 1rem;
-  background: var(--color-surface-container-high);
-  padding: 0.5rem 1rem;
-  border-radius: 1rem;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.25rem 0.75rem;
+  width: 100%;
+  background: var(--color-surface);
+  border: 1px solid var(--theme-line);
+  padding: 0.625rem 0.875rem;
+  border-radius: var(--radius-md);
 }
 
 .summary > div {
@@ -199,143 +143,44 @@
 }
 
 .summary strong {
-  font-family: var(--font-headline);
   font-size: 1rem;
-  color: var(--color-primary);
-}
-
-.tagline {
-  font-size: 0.8rem;
-  color: var(--color-outline);
-  margin-top: -0.5rem;
-}
-
-.parade {
-  display: flex;
-  gap: 0;
-  width: 15rem;
-  height: 2.5rem;
-  margin-bottom: 0.5rem;
-  padding-right: 1.5rem;
-}
-
-.paradeCat {
-  flex: 1;
-  height: 100%;
-  position: relative;
-  animation: paradeBob 1.6s ease-in-out infinite;
-}
-
-@keyframes paradeBob {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-0.3rem); }
-}
-
-.subtitle {
-  font-family: var(--font-headline);
-  font-size: 0.7rem;
   font-weight: 800;
-  letter-spacing: 0.3em;
-  color: var(--color-outline);
-  margin-top: -0.9rem;
-}
-
-.overlayContent {
-  margin: auto;
-  width: 100%;
-  max-width: 22rem;
-}
-
-.modeTabs {
-  display: flex;
-  gap: 0.25rem;
-  border-bottom: 2px solid var(--color-surface-container-highest);
-}
-
-.modeTab {
-  font-family: var(--font-headline);
-  font-weight: 800;
-  font-size: 0.95rem;
-  padding: 0.5rem 1.25rem;
-  border: none;
-  background: transparent;
-  color: var(--color-outline);
-  cursor: pointer;
-  border-bottom: 3px solid transparent;
-  margin-bottom: -2px;
-  -webkit-tap-highlight-color: transparent;
-}
-
-.modeActive {
-  color: var(--color-primary);
-  border-bottom-color: var(--color-primary);
-}
-
-.stageCard {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.25rem;
-  background: var(--color-surface-container-high);
-  border-radius: 1rem;
-  padding: 0.75rem 1.5rem;
-  min-width: 14rem;
-}
-
-.stageNum {
-  font-size: 0.65rem;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  color: var(--color-outline);
-  text-transform: uppercase;
-}
-
-.stageTitle {
-  font-family: var(--font-headline);
-  font-size: 1.2rem;
-  font-weight: 800;
-  color: var(--color-primary);
-}
-
-.stageLimit {
-  font-size: 0.7rem;
-  color: var(--color-secondary);
-  font-weight: 700;
+  color: var(--color-on-surface);
+  font-variant-numeric: tabular-nums;
 }
 
 .goalList {
   list-style: none;
   display: flex;
   flex-direction: column;
-  gap: 0.2rem;
+  gap: 0.25rem;
   width: 100%;
-  max-width: 14rem;
 }
 
 .goalList li {
   display: flex;
   justify-content: space-between;
   gap: 1rem;
-  font-size: 0.85rem;
+  font-size: 0.84rem;
   color: var(--color-on-surface);
 }
 
 .goalList strong {
-  font-family: var(--font-headline);
   font-variant-numeric: tabular-nums;
   color: var(--color-primary);
+  font-weight: 800;
 }
 
-.goalDone strong { color: #2e7d32; }
+.goalDone strong { color: var(--color-secondary); }
 
 .stars {
   display: flex;
   gap: 0.25rem;
-  color: var(--color-surface-dim);
+  color: var(--theme-grid-line);
 }
 
 .star { display: flex; }
-.starOn { color: #f5b400; filter: drop-shadow(0 0.125rem 0.25rem rgba(245, 180, 0, 0.5)); }
+.starOn { color: var(--color-primary); }
 .starPop { animation: starPop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both; }
 
 @keyframes starPop {
@@ -343,65 +188,13 @@
   100% { transform: scale(1) rotate(0); opacity: 1; }
 }
 
-.playerTitle {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.25rem;
-  font-size: 0.75rem;
-  font-weight: 700;
-  color: var(--color-on-primary);
-  background: linear-gradient(to right, var(--color-primary), var(--color-secondary));
-  padding: 0.2rem 0.75rem;
-  border-radius: 9999px;
-  margin-top: -0.5rem;
+@media (prefers-reduced-motion: reduce) {
+  .newRecord, .starPop { animation: none; }
 }
 
-.tutorialPrompt {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.375rem;
-  font-family: var(--font-headline);
-  font-weight: 700;
-  font-size: 0.85rem;
-  color: #7a4a00;
-  background: rgba(254, 178, 70, 0.3);
-  border: 1.5px solid var(--color-primary-container);
-  border-radius: 9999px;
-  padding: 0.4rem 1rem;
-  cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
-  animation: promptBob 1.6s ease-in-out infinite;
-}
-
-@keyframes promptBob {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-0.2rem); }
-}
-
-/* 짧은 화면(툴바가 보이는 폰): 스크롤 없이 들어가도록 압축 */
-@media (max-height: 720px) {
-  .parade { display: none; }
-  .tagline { display: none; }
-  .overlayContent { gap: 0.6rem; }
-  .overlayTitle { font-size: 1.85rem; }
-  .startBtn { padding: 0.7rem 2rem; font-size: 0.95rem; }
-  .missions { gap: 0.3rem; padding: 0.6rem 0.75rem; }
-  .themeSelector { margin: -0.25rem 0 0; }
-}
-
-@media (max-height: 640px) {
-  .overlayContent { gap: 0.45rem; }
-  .subtitle { display: none; }
-  .missionRow { padding: 0.2rem 0; }
-  .summary { padding: 0.35rem 0.75rem; }
-}
-
-/* 아주 짧은 화면: 헤더에 같은 도감 버튼이 있으므로 시작 화면의 도감 버튼은 숨기고 여백을 더 줄인다 */
-@media (max-height: 600px) {
-  .readyExtra { display: none; }
-  .overlayContent { gap: 0.35rem; }
-  .difficultyDesc { display: none; }
-  .highScoreLabel { margin-bottom: -0.5rem; }
-  .missions { padding: 0.45rem 0.65rem; }
-  .missionRow { padding: 0.12rem 0; }
+@media (max-height: 37.5rem) {
+  .content { gap: 0.55rem; }
+  .title { font-size: 1.6rem; }
+  .finalScore { font-size: 2.25rem; }
+  .btn { height: 2.75rem; font-size: 0.95rem; }
 }

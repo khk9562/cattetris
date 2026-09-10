@@ -1,0 +1,88 @@
+.list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+}
+
+.text {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  min-width: 0;
+}
+
+.head {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.label {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--color-on-surface);
+  min-width: 0;
+}
+
+.count {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--color-outline);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.bar {
+  display: block;
+  height: 0.1875rem;
+  border-radius: 999px;
+  background: var(--theme-grid-line);
+  overflow: hidden;
+}
+
+.fill {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: var(--color-primary);
+  transition: width 0.3s ease-out;
+}
+
+.done .fill {
+  background: var(--color-secondary);
+}
+
+.reward {
+  font-size: 0.7rem;
+  color: var(--color-outline);
+  line-height: 1.5;
+}
+
+.claimBtn {
+  font-size: 0.75rem;
+  font-weight: 800;
+  padding: 0.45rem 0.75rem;
+  border-radius: var(--radius-sm);
+  border: none;
+  background: var(--color-secondary);
+  color: var(--color-on-primary);
+  white-space: nowrap;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.claimed {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--color-secondary);
+  white-space: nowrap;
+}

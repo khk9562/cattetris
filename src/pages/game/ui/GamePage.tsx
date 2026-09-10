@@ -5,11 +5,13 @@ import { useSettings } from '@/features/settings';
 import { useTutorial } from '@/features/tutorial';
 import { useSkins } from '@/features/skins';
 import { SkinProvider } from '@/entities/cat';
+import { DIFFICULTY_PRESETS } from '@/entities/difficulty';
 import { useSound } from '@/features/sound';
 import { useDailyMissions } from '@/features/daily-missions';
 import { usePlayerStats } from '@/features/player-stats';
 import { useSessionRecorder } from '../model/useSessionRecorder';
 import { useBoardGestures } from '@/features/touch-gestures';
+import { Atmosphere } from '@/widgets/atmosphere';
 import { Header } from '@/widgets/header';
 import { StatsHUD } from '@/widgets/stats-hud';
 import { NextQueue } from '@/widgets/next-queue';
@@ -17,6 +19,7 @@ import { HoldSlot } from '@/widgets/hold-slot';
 import { Board } from '@/widgets/board';
 import { Controls } from '@/widgets/controls';
 import { GameOverlays } from '@/widgets/game-overlays';
+import { MissionModal, MissionPopover } from '@/widgets/missions';
 import { CollectionOverlay } from '@/widgets/collection';
 import { SettingsOverlay } from '@/widgets/settings-overlay';
 import { StageSelect } from '@/widgets/stage-select';
@@ -33,6 +36,8 @@ export default function GamePage() {
   const [showSettings, setShowSettings] = useState(false);
   const [showStages, setShowStages] = useState(false);
   const [showStats, setShowStats] = useState(false);
+  const [showSetup, setShowSetup] = useState(false);
+  const [showMissions, setShowMissions] = useState(false);
   const missions = useDailyMissions();
   const playerStats = usePlayerStats();
   useSessionRecorder(state, (delta, record) => {
@@ -49,14 +54,26 @@ export default function GamePage() {
   const gestures = useBoardGestures(actions, state.status === 'playing' && settings.gestures);
 
   const inGame = state.status === 'playing' || state.status === 'paused';
+  const isHome = state.status === 'ready';
   const progress = progressInput(state);
+  const modeLabel = state.mode === 'stage' && state.stage
+    ? `스테이지 ${state.stage.id}`
+    : `무한 · ${DIFFICULTY_PRESETS[settings.difficulty].label}`;
+  const missionBadge = missions.items.some(it => it.done && !it.claimed);
+  // 오늘 첫 접속이면 안내 팝업을 먼저 띄운다 (시작 화면에서만)
+  const showFirstVisit = isHome && missions.firstVisitToday;
 
   return (
     <SkinProvider value={skins.equipped}>
     <div className={styles.page}>
+      <Atmosphere theme={settings.theme} />
+
       <Header
         elapsedSeconds={Math.floor(state.elapsedMs / 1000)}
         status={state.status}
+        kicker={isHome ? 'NYANG STACK' : modeLabel}
+        missionBadge={missionBadge}
+        onOpenMissions={() => setShowMissions(v => !v)}
         onTogglePause={actions.togglePause}
         onOpenSettings={() => setShowSettings(true)}
         onOpenStats={() => setShowStats(true)}
@@ -64,73 +81,85 @@ export default function GamePage() {
         onOpenCollection={() => setShowCollection(true)}
       />
 
-      <main className={styles.main}>
-        <GameOverlays
-          status={state.status}
-          mode={state.mode}
-          stage={state.stage}
-          progress={progress}
-          lastStars={game.lastStars}
-          stageStars={game.stageStars}
-          nextUnclearedStage={game.nextUnclearedStage}
-          menuMode={menuMode}
-          onSelectMenuMode={setMenuMode}
-          startStage={actions.startStage}
-          retryStage={actions.retryStage}
-          nextStage={actions.nextStage}
-          onOpenStages={() => setShowStages(true)}
-          showTutorialPrompt={!tutorial.done}
-          onStartTutorial={tutorial.begin}
-          score={state.score}
-          level={state.level}
-          highScore={game.highScore}
-          isNewHighScore={game.isNewHighScore}
-          stats={state.stats}
-          difficulty={settings.difficulty}
-          onSelectDifficulty={id => update('difficulty', id)}
-          startGame={actions.start}
-          togglePause={actions.togglePause}
-          goHome={actions.home}
-          onOpenCollection={() => setShowCollection(true)}
-          theme={settings.theme}
-          setTheme={t => update('theme', t)}
-          missions={missions.items}
-          onClaimMission={missions.claim}
-          playerTitle={missions.currentTitle}
-        />
+      {!isHome && (
+        <main className={styles.main}>
+          {tutorial.active ? (
+            <TutorialOverlay step={tutorial.step} stepIndex={tutorial.stepIndex} total={tutorial.total} onNext={tutorial.next} onSkip={tutorial.skip} />
+          ) : state.mode === 'stage' && state.stage ? (
+            <StageGoals stage={state.stage} progress={progress} />
+          ) : (
+            <StatsHUD
+              score={state.score}
+              level={state.level}
+              lines={state.lines}
+              combo={state.combo}
+            />
+          )}
 
-        {tutorial.active ? (
-          <TutorialOverlay step={tutorial.step} stepIndex={tutorial.stepIndex} total={tutorial.total} onNext={tutorial.next} onSkip={tutorial.skip} />
-        ) : state.mode === 'stage' && state.stage ? (
-          <StageGoals stage={state.stage} progress={progress} />
-        ) : (
-          <StatsHUD
-            score={state.score}
-            level={state.level}
-            lines={state.lines}
-            combo={state.combo}
-            highScore={game.highScore}
-          />
-        )}
-        <div className={styles.hudRow}>
-          <HoldSlot piece={state.hold} disabled={state.holdUsed || !inGame} onHold={actions.hold} />
-          <NextQueue pieces={state.queue} />
-        </div>
+          <div className={styles.divider} />
 
-        <div className={styles.boardArea} {...gestures} onContextMenu={e => e.preventDefault()} data-coach-target="board">
-          <Board
-            board={state.board}
-            currentPiece={state.current}
-            ghostPiece={settings.ghost ? game.ghost : null}
-            clearing={state.clearing}
-            popups={state.popups}
-            gameOver={state.status === 'gameover'}
-            lastLocked={state.lastLocked}
-          />
-        </div>
-      </main>
+          <div className={styles.hudRow}>
+            <HoldSlot piece={state.hold} disabled={state.holdUsed || !inGame} onHold={actions.hold} />
+            <div className={styles.vDivider} />
+            <NextQueue pieces={state.queue} />
+          </div>
+
+          <div className={styles.boardArea} {...gestures} onContextMenu={e => e.preventDefault()} data-coach-target="board">
+            <Board
+              board={state.board}
+              currentPiece={state.current}
+              ghostPiece={settings.ghost ? game.ghost : null}
+              clearing={state.clearing}
+              popups={state.popups}
+              gameOver={state.status === 'gameover'}
+              lastLocked={state.lastLocked}
+            />
+          </div>
+        </main>
+      )}
+
+      <GameOverlays
+        status={state.status}
+        mode={state.mode}
+        stage={state.stage}
+        progress={progress}
+        lastStars={game.lastStars}
+        stageStars={game.stageStars}
+        nextUnclearedStage={game.nextUnclearedStage}
+        menuMode={menuMode}
+        onSelectMenuMode={setMenuMode}
+        setupOpen={showSetup}
+        onOpenSetup={() => setShowSetup(true)}
+        onCloseSetup={() => setShowSetup(false)}
+        startStage={actions.startStage}
+        retryStage={actions.retryStage}
+        nextStage={actions.nextStage}
+        onOpenStages={() => setShowStages(true)}
+        onStartTutorial={tutorial.begin}
+        score={state.score}
+        level={state.level}
+        highScore={game.highScore}
+        isNewHighScore={game.isNewHighScore}
+        stats={state.stats}
+        difficulty={settings.difficulty}
+        onSelectDifficulty={id => update('difficulty', id)}
+        startGame={actions.start}
+        togglePause={actions.togglePause}
+        goHome={actions.home}
+        onOpenCollection={() => setShowCollection(true)}
+        onOpenStats={() => setShowStats(true)}
+        theme={settings.theme}
+        setTheme={t => update('theme', t)}
+      />
 
       {inGame && <Controls actions={actions} />}
+
+      {showFirstVisit && (
+        <MissionModal items={missions.items} onClose={missions.markSeen} />
+      )}
+      {isHome && !showFirstVisit && showMissions && (
+        <MissionPopover items={missions.items} onClaim={missions.claim} onClose={() => setShowMissions(false)} />
+      )}
 
       {showCollection && (
         <CollectionOverlay
