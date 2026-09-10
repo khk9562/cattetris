@@ -7,13 +7,15 @@ interface Stored {
   date: string;
   progress: DailyProgress;
   claimed: string[];
+  /** 오늘 미션 안내를 이미 봤는지 (첫 접속 팝업을 한 번만 띄우기 위해) */
+  seen?: boolean;
 }
 
 function loadToday(): Stored {
   const today = dateKey();
   const stored = readJson<Stored | null>(MISSIONS_KEY, null);
   if (stored && stored.date === today) return { ...stored, progress: { ...EMPTY_PROGRESS, ...stored.progress } };
-  return { date: today, progress: EMPTY_PROGRESS, claimed: [] };
+  return { date: today, progress: EMPTY_PROGRESS, claimed: [], seen: false };
 }
 
 export function useDailyMissions() {
@@ -49,6 +51,16 @@ export function useDailyMissions() {
     });
   }, [missions]);
 
+  /** 오늘 안내 팝업을 봤다고 표시한다 */
+  const markSeen = useCallback(() => {
+    setStored(prev => {
+      if (prev.seen) return prev;
+      const next = { ...prev, seen: true };
+      writeJson(MISSIONS_KEY, next);
+      return next;
+    });
+  }, []);
+
   const items = useMemo(
     () => missions.map(m => ({ mission: m, ...missionProgress(m.goal, stored.progress), claimed: stored.claimed.includes(m.id) })),
     [missions, stored],
@@ -59,6 +71,9 @@ export function useDailyMissions() {
     progress: stored.progress,
     addProgress,
     claim,
+    /** 오늘 첫 접속이라 안내 팝업을 띄워야 하는지 */
+    firstVisitToday: !stored.seen,
+    markSeen,
     titles,
     /** 가장 최근에 얻은 칭호 */
     currentTitle: titles[titles.length - 1] ?? null,

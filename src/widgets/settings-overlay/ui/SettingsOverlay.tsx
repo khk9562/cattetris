@@ -1,6 +1,7 @@
 import { memo } from 'react';
 import { DIFFICULTY_ORDER, DIFFICULTY_PRESETS } from '@/entities/difficulty';
 import type { Settings } from '@/features/settings';
+import { THEMES, THEME_PAIRS } from '@/shared/config';
 import { Icon } from '@/shared/ui';
 import styles from './SettingsOverlay.module.css';
 
@@ -75,18 +76,34 @@ function SettingsOverlay({ settings, onChange, onClose, onStartTutorial }: Props
             <button className={styles.actionBtn} onClick={onStartTutorial}>다시 보기</button>
           </div>
 
-          <div className={styles.row}>
+          <div className={`${styles.row} ${styles.themeRow}`}>
             <span className={styles.rowText}>
               <span className={styles.rowLabel}>테마</span>
-              <span className={styles.rowHint}>{settings.theme === 'grass' ? '잔디와 흙' : '크림색 기본'}</span>
+              <span className={styles.rowHint}>{THEMES[settings.theme].name} · {THEMES[settings.theme].mood}</span>
             </span>
-            <div className={styles.segment} role="radiogroup" aria-label="테마">
-              <button role="radio" aria-checked={settings.theme === 'default'} className={`${styles.segmentBtn} ${settings.theme === 'default' ? styles.segmentActive : ''}`} onClick={() => onChange('theme', 'default')} aria-label="기본 테마">
-                <Icon name="moon" />
-              </button>
-              <button role="radio" aria-checked={settings.theme === 'grass'} className={`${styles.segmentBtn} ${settings.theme === 'grass' ? styles.segmentActive : ''}`} onClick={() => onChange('theme', 'grass')} aria-label="잔디 테마">
-                <Icon name="grass" />
-              </button>
+            <div className={styles.themeGroups} role="radiogroup" aria-label="테마">
+              {THEME_PAIRS.map(pair => (
+                <div key={pair.id} className={styles.themeGroup}>
+                  <span className={styles.themeGroupLabel}>{pair.label}</span>
+                  <div className={styles.themeChips}>
+                    {pair.items.map(id => (
+                      <button
+                        key={id}
+                        role="radio"
+                        aria-checked={settings.theme === id}
+                        className={`${styles.themeChip} ${settings.theme === id ? styles.themeChipOn : ''}`}
+                        onClick={() => onChange('theme', id)}
+                      >
+                        <span
+                          className={styles.themeSwatch}
+                          style={{ background: `linear-gradient(135deg, ${THEMES[id].bg} 0 55%, ${THEMES[id].accent} 55% 100%)` }}
+                        />
+                        {THEMES[id].label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         </div>

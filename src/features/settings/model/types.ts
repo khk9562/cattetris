@@ -18,5 +18,5 @@ export const DEFAULT_SETTINGS: Settings = {
   gestures: true,
   ghost: true,
   difficulty: 'easy',
-  theme: 'default',
+  theme: 'day',
 };

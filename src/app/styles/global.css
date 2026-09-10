@@ -1,44 +1,64 @@
-/* 폰트: Pretendard Variable (OFL). index.html에서 다이내믹 서브셋 CSS를 로드한다 */
+/* 폰트: Pretendard Variable(본문) + Jua(제목). 둘 다 index.html에서 서브셋 CSS를 로드한다 */
 
 :root {
-  /* 냥스택 v5 팔레트: 크림 바탕에 복숭아·라벤더·민트 파스텔 */
-  --color-primary: #c8562a;
-  --color-secondary: #7b61ff;
-  --color-tertiary: #2ba58f;
-  --color-surface: #fffaf3;
-  --color-background: #fff6ec;
-  --color-on-background: #3a2e2a;
-  --color-on-primary: #fff8f2;
-  --color-on-surface: #3a2e2a;
-  --color-primary-container: #ffb98a;
-  --color-secondary-container: #e6dfff;
-  --color-secondary-fixed-dim: #ffb3c6;
-  --color-tertiary-fixed: #c8f0e6;
-  --color-tertiary-fixed-dim: #8fdcc9;
-  --color-surface-bright: #ffffff;
-  --color-surface-dim: #efe2d6;
-  --color-surface-container: rgba(255, 255, 255, 0.62);
-  --color-surface-container-low: rgba(255, 255, 255, 0.4);
-  --color-surface-container-high: rgba(255, 255, 255, 0.82);
-  --color-surface-container-highest: #ffffff;
-  --color-outline: #9a8a80;
-  --color-outline-variant: #dccdc2;
+  /*
+   * 색은 테마 토큰이 채운다 (shared/config/theme.ts → useSettings가 :root에 주입).
+   * 여기 값은 주입 전 첫 페인트에서 쓰이는 '낮' 테마 기본값이다.
+   */
+  --color-primary: #d9622f;
+  --color-secondary: #3f7d74;
+  --color-tertiary: #3f7d74;
+  --color-surface: #fffdf9;
+  --color-background: #fdf6ec;
+  --color-on-background: #2f2a26;
+  --color-on-primary: #fffaf4;
+  --color-on-surface: #2f2a26;
+  --color-primary-container: #f7e2d3;
+  --color-secondary-container: #dfe9e6;
+  --color-surface-bright: #fffdf9;
+  --color-surface-dim: #f6ead9;
+  --color-surface-container: #fffdf9;
+  --color-surface-container-low: #fffdf9;
+  --color-surface-container-high: #fffdf9;
+  --color-surface-container-highest: #fffdf9;
+  --color-outline: #6e645c;
+  --color-outline-variant: rgba(47, 42, 38, 0.1);
   --color-error: #d64545;
 
-  --glass-border: rgba(255, 255, 255, 0.85);
-  --glass-shadow: 0 0.5rem 1.5rem rgba(140, 100, 70, 0.12);
-  --accent-gradient: linear-gradient(135deg, #ff9a62 0%, #ff6f91 55%, #b58cff 100%);
-  --blob-a: #ffd6c2;
-  --blob-b: #e4dbff;
-  --blob-c: #d6f2ea;
+  --board-bg: #f6ead9;
+  --accent-solid: #d9622f;
+  --accent-shadow: rgba(217, 98, 47, 0.3);
+  --theme-line: rgba(47, 42, 38, 0.1);
+  --theme-grid-line: rgba(47, 42, 38, 0.05);
+  --theme-glow:
+    radial-gradient(60% 50% at 20% 0%, rgba(255, 214, 178, 0.55) 0%, transparent 70%),
+    radial-gradient(70% 50% at 100% 100%, rgba(198, 226, 214, 0.45) 0%, transparent 70%);
 
+  --glass-border: rgba(47, 42, 38, 0.1);
+  --glass-shadow: 0 0.5rem 1.5rem rgba(140, 100, 70, 0.1);
+
+  /* 반경 체계: 9999px 알약을 걷어내고 10 / 14 / 20px 세 단계만 쓴다 */
+  --radius-sm: 0.625rem;
+  --radius-md: 0.875rem;
+  --radius-lg: 1.25rem;
+  --radius-sheet: 1.5rem;
+
+  /*
+   * 제목은 짧고 뭉뚝한 라운드 서체.
+   * Jua는 굵기가 400 하나뿐이라 font-weight를 올리면 브라우저 가짜 볼드로 뭉개진다.
+   * 대신 글자 외곽을 같은 색으로 덧그려 실제 획을 살찌운다(--font-title-stroke).
+   */
+  --font-title: 'Jua', 'Apple SD Gothic Neo', 'Noto Sans KR', system-ui, sans-serif;
+  --font-title-weight: 400;
+  --font-title-stroke: 0.03em;
   --font-headline: 'Pretendard Variable', 'Pretendard', 'Apple SD Gothic Neo', 'Noto Sans KR', system-ui, sans-serif;
   --font-body: 'Pretendard Variable', 'Pretendard', 'Apple SD Gothic Neo', 'Noto Sans KR', system-ui, sans-serif;
 
-  --header-height: 3.75rem;
+  --header-height: 3rem;
   --safe-top: env(safe-area-inset-top, 0px);
-  --controls-height: 5.5rem;
+  --controls-height: 4.75rem;
   --controls-padding-bottom: env(safe-area-inset-bottom, 0.75rem);
+  --screen-padding: 1.25rem;
 }
 
 *,
@@ -62,46 +82,23 @@ html, body {
 body {
   font-family: var(--font-body);
   background-color: var(--color-background);
-  background-image: var(--theme-bg, none);
-  background-size: var(--theme-bg-size, auto);
-  background-position: var(--theme-bg-position, 0 0);
-  background-attachment: fixed;
   color: var(--color-on-background);
   -webkit-user-select: none;
   user-select: none;
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
-  transition: background-color 0.3s, color 0.3s;
+  transition: background-color 0.35s, color 0.35s;
 }
 
-[data-theme='grass'] {
-  --color-primary: #558b2f;
-  --color-secondary: #33691e;
-  --color-tertiary: #a4e371;
-  --color-surface: #2d3c0e;
-  --color-background: #5d4037;
-  --color-on-background: #ffffff;
-  --color-on-primary: #ffffff;
-  --color-on-surface: #2e1c10;
-  --color-primary-container: #82da41;
-  --color-secondary-container: #684832;
-  --color-surface-bright: #b8e663;
-  --color-surface-dim: #7cb342;
-  --color-surface-container: rgba(139, 195, 74, 0.9);
-  --color-surface-container-low: rgba(0, 0, 0, 0.25);
-  --color-surface-container-high: #fdf6e3;
-  --color-surface-container-highest: #fdf6e3;
-  --color-outline: rgba(255, 255, 255, 0.9);
-  --color-outline-variant: #684832;
-
-  --theme-bg: 
-    radial-gradient(ellipse at 50% -20%, rgba(255, 245, 200, 0.4) 0%, transparent 60%),
-    linear-gradient(to bottom, #90be36 0%, #558b2f 6rem, #5d4037 14rem, transparent 18rem),
-    linear-gradient(45deg, #4e342e 25%, transparent 25%, transparent 75%, #4e342e 75%, #4e342e), 
-    linear-gradient(45deg, #4e342e 25%, transparent 25%, transparent 75%, #4e342e 75%, #4e342e);
-  --theme-bg-size: 100% 100%, 100% 100%, 48px 48px, 48px 48px;
-  --theme-bg-position: 0 0, 0 0, 0 0, 24px 24px;
-  --ui-bg: none;
+/* 테마 빛무리: 바탕 위에 얹는 단 한 겹. 예전 파스텔 블롭을 대신한다 */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image: var(--theme-glow, none);
+  transition: background-image 0.35s;
 }
 
 #root {
@@ -119,55 +116,6 @@ body {
   -webkit-overflow-scrolling: touch;
 }
 
-/* 떠다니는 파스텔 블롭 배경 (기본 테마) */
-body::before,
-body::after {
-  content: "";
-  position: fixed;
-  z-index: 0;
-  pointer-events: none;
-  border-radius: 50%;
-  filter: blur(3.5rem);
-  opacity: var(--blob-opacity, 0.85);
-  will-change: transform;
-}
-
-body::before {
-  width: 70vw;
-  height: 70vw;
-  left: -20vw;
-  top: -10vh;
-  background: radial-gradient(circle, var(--blob-a) 0%, transparent 70%);
-  animation: blobDriftA 22s ease-in-out infinite alternate;
-}
-
-body::after {
-  width: 80vw;
-  height: 80vw;
-  right: -30vw;
-  bottom: -10vh;
-  background:
-    radial-gradient(circle at 30% 30%, var(--blob-b) 0%, transparent 60%),
-    radial-gradient(circle at 70% 70%, var(--blob-c) 0%, transparent 60%);
-  animation: blobDriftB 26s ease-in-out infinite alternate;
-}
-
-@keyframes blobDriftA {
-  from { transform: translate(0, 0) scale(1); }
-  to { transform: translate(12vw, 10vh) scale(1.15); }
-}
-
-@keyframes blobDriftB {
-  from { transform: translate(0, 0) scale(1.05); }
-  to { transform: translate(-14vw, -12vh) scale(0.95); }
-}
-
-[data-theme='grass'] { --blob-opacity: 0; }
-
-@media (prefers-reduced-motion: reduce) {
-  body::before, body::after { animation: none; }
-}
-
 /* 튜토리얼 강조: body[data-coach]와 같은 이름의 data-coach-target에 펄스 링 */
 body[data-coach='board'] [data-coach-target='board'],
 body[data-coach='left'] [data-coach-target='left'],
@@ -180,18 +128,19 @@ body[data-coach='hold'] [data-coach-target='hold'] {
 }
 
 @keyframes coachPulse {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(254, 178, 70, 0.9); }
-  50% { box-shadow: 0 0 0 0.6rem rgba(254, 178, 70, 0); }
+  0%, 100% { box-shadow: 0 0 0 0 var(--accent-shadow); }
+  50% { box-shadow: 0 0 0 0.6rem transparent; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  body[data-coach] [data-coach-target] { animation: none; box-shadow: 0 0 0 0.25rem rgba(254, 178, 70, 0.9); }
+  body[data-coach] [data-coach-target] { animation: none; box-shadow: 0 0 0 0.25rem var(--accent-shadow); }
 }
 
 /* 짧은 화면에서 헤더/컨트롤을 줄여 보드에 높이를 양보 */
-@media (max-height: 640px) {
+@media (max-height: 40rem) {
   :root {
-    --header-height: 3.25rem;
-    --controls-height: 4.75rem;
+    --header-height: 2.75rem;
+    --controls-height: 4.25rem;
+    --screen-padding: 1rem;
   }
 }

@@ -1,43 +1,32 @@
+/* 다음 조각: 카드 없이 라벨 + 줄지어 놓인 조각들 */
 .container {
   position: relative;
   flex: 1;
-  background: var(--color-surface-container);
-  backdrop-filter: blur(0.75rem);
-  border-radius: 1.1rem;
-  border: 1px solid var(--glass-border);
-  box-shadow: var(--glass-shadow);
   display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem 0.75rem 0.25rem 2.25rem;
+  flex-direction: column;
+  gap: 0.25rem;
   min-width: 0;
 }
 
 .label {
-  font-size: 0.55rem;
-  font-weight: 700;
+  font-size: 0.66rem;
+  font-weight: 800;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.1em;
   color: var(--color-outline);
-  position: absolute;
-  top: 0.25rem;
-  left: 0.5rem;
 }
 
 .list {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  flex: 1;
+  gap: 0.875rem;
 }
 
-.first {
-  width: 3rem;
-}
+.first { width: 2.5rem; }
 
 .rest {
-  width: 2.25rem;
-  opacity: 0.8;
+  width: 2rem;
+  opacity: 0.85;
 }
 
 .item {
@@ -51,7 +40,3 @@
 }
 
 @media (prefers-reduced-motion: reduce) { .item { animation: none; transition: none; } }
-
-@media (max-height: 640px) {
-  .container { padding: 0.15rem 0.5rem; }
-}

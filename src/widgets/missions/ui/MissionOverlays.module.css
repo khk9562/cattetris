@@ -1,0 +1,144 @@
+.scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 400;
+  background: rgba(28, 22, 18, 0.42);
+  backdrop-filter: blur(0.125rem);
+  border: none;
+  padding: 0;
+  cursor: default;
+}
+
+/* --- 우측 상단 아이콘에 매달리는 팝오버 --- */
+.popover {
+  position: fixed;
+  top: calc(var(--safe-top) + var(--header-height) + 0.25rem);
+  right: 1rem;
+  width: min(19.125rem, calc(100vw - 2rem));
+  z-index: 420;
+  background: var(--color-surface);
+  border: 1px solid var(--theme-line);
+  border-radius: var(--radius-lg);
+  padding: 0.875rem;
+  box-shadow: 0 1rem 2.25rem rgba(28, 22, 18, 0.22);
+  animation: popIn 0.18s ease-out;
+}
+
+/* 헤더 아이콘 네 개 중 맨 왼쪽(미션)을 가리킨다 */
+.arrow {
+  position: absolute;
+  top: -0.375rem;
+  right: 7.5rem;
+  width: 0.75rem;
+  height: 0.75rem;
+  background: var(--color-surface);
+  border-left: 1px solid var(--theme-line);
+  border-top: 1px solid var(--theme-line);
+  transform: rotate(45deg);
+}
+
+@keyframes popIn {
+  from { opacity: 0; transform: translateY(-0.375rem); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 0.625rem;
+}
+
+.fieldLabel {
+  font-size: 0.66rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-outline);
+  white-space: nowrap;
+}
+
+.summary {
+  font-size: 0.7rem;
+  color: var(--color-outline);
+  white-space: nowrap;
+}
+
+/* --- 오늘 첫 접속 팝업 --- */
+.modalWrap {
+  position: fixed;
+  inset: 0;
+  z-index: 420;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  pointer-events: none;
+}
+
+.modalCard {
+  width: 100%;
+  max-width: 27.5rem;
+  pointer-events: auto;
+  background: var(--color-surface);
+  border: 1px solid var(--theme-line);
+  border-radius: var(--radius-lg);
+  padding: 1.25rem;
+  box-shadow: 0 1.25rem 2.75rem rgba(28, 22, 18, 0.28);
+  animation: cardIn 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes cardIn {
+  from { opacity: 0; transform: scale(0.92); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.modalTitle {
+  margin: 0.375rem 0 0.5rem;
+  font-family: var(--font-title);
+  font-size: 1.45rem;
+  font-weight: var(--font-title-weight);
+  -webkit-text-stroke: var(--font-title-stroke) currentColor;
+  color: var(--color-on-surface);
+}
+
+.modalLead {
+  font-size: 0.75rem;
+  line-height: 1.5;
+  color: var(--color-outline);
+}
+
+.modalRows {
+  margin: 1rem 0 1.125rem;
+}
+
+.confirmBtn {
+  width: 100%;
+  height: 3.125rem;
+  border-radius: var(--radius-md);
+  border: none;
+  background: var(--accent-solid);
+  color: var(--color-on-primary);
+  font-size: 1.03rem;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 0.5rem 1.125rem var(--accent-shadow);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.confirmBtn:active {
+  transform: scale(0.98);
+}
+
+@media (min-width: 46rem) {
+  .popover {
+    top: calc(var(--safe-top) + var(--header-height) + 1rem);
+    right: 2rem;
+    width: 22.5rem;
+  }
+  .arrow { right: 8rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .popover, .modalCard { animation: none; }
+}

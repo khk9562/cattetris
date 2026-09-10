@@ -57,7 +57,7 @@ function ControlButton({ icon, label, coach, onDown, onUp, accent }: ButtonProps
       onPointerCancel={onUp}
       onContextMenu={e => e.preventDefault()}
     >
-      <Icon name={icon} size="2rem" />
+      <Icon name={icon} size="1.625rem" />
     </button>
   );
 }
