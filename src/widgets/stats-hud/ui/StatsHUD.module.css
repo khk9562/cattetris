@@ -1,72 +1,59 @@
+/* 점수 한 줄: 카드 없이 바탕 위에 바로 올린다 */
 .container {
   width: 100%;
-  background-color: var(--color-surface-container);
-  background-image: var(--ui-bg, none);
-  backdrop-filter: blur(0.75rem);
-  border: 1px solid var(--glass-border);
-  padding: 0.35rem 0.75rem;
-  border-radius: 1.1rem;
-  box-shadow: var(--glass-shadow);
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  gap: 0.25rem;
-}
-
-.statBlock {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  min-width: 2.25rem;
+  align-items: flex-end;
+  gap: 0.75rem;
 }
 
 .scoreBlock {
-  flex: 1;
-  align-items: flex-start;
-  padding-left: 0.25rem;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
 }
 
 .label {
-  font-size: 0.55rem;
-  font-weight: 700;
+  font-size: 0.66rem;
+  font-weight: 800;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.1em;
   color: var(--color-outline);
-  opacity: 0.8;
-  line-height: 1.2;
+  line-height: 1.3;
 }
 
 .scoreValue {
-  font-family: var(--font-headline);
-  font-size: 1.2rem;
+  font-size: 2.125rem;
   font-weight: 800;
-  line-height: 1.2;
+  line-height: 1.1;
   color: var(--color-on-background);
   font-variant-numeric: tabular-nums;
 }
 
-.subValue {
-  font-family: var(--font-headline);
-  font-size: 0.85rem;
-  font-weight: 700;
-  line-height: 1.3;
-  color: var(--color-secondary);
+.metaRow {
+  display: flex;
+  align-items: baseline;
+  gap: 0.875rem;
+  flex-shrink: 0;
+}
+
+.stat {
+  font-size: 0.72rem;
+  color: var(--color-outline);
+  white-space: nowrap;
+}
+
+.stat b {
+  font-size: 0.88rem;
+  font-weight: 800;
+  color: var(--color-on-background);
   font-variant-numeric: tabular-nums;
 }
 
-.metaValue {
-  font-family: var(--font-headline);
-  font-size: 0.95rem;
-  font-weight: 700;
-  line-height: 1.3;
+.comboHot b {
   color: var(--color-primary);
-  font-variant-numeric: tabular-nums;
-}
-
-.comboHot {
-  color: var(--color-secondary);
   animation: comboPulse 0.4s ease-out;
+  display: inline-block;
 }
 
 @keyframes comboPulse {
@@ -74,8 +61,10 @@
   100% { transform: scale(1); }
 }
 
-@media (max-height: 640px) {
-  .container { padding: 0.2rem 0.6rem; }
-  .scoreValue { font-size: 1.05rem; }
-  .label { font-size: 0.5rem; }
+@media (prefers-reduced-motion: reduce) {
+  .comboHot b { animation: none; }
+}
+
+@media (max-height: 40rem) {
+  .scoreValue { font-size: 1.75rem; }
 }

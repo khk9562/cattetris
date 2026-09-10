@@ -1,15 +1,9 @@
+/* 점수 줄과 같은 결: 카드 없이 바탕 위에 바로 올린다 */
 .container {
   width: 100%;
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  background-color: var(--color-surface-container);
-  background-image: var(--ui-bg, none);
-  backdrop-filter: blur(0.75rem);
-  border: 1px solid var(--glass-border);
-  box-shadow: var(--glass-shadow);
-  border-radius: 1.1rem;
-  padding: 0.3rem 0.6rem;
+  gap: 0.875rem;
 }
 
 .stageName {
@@ -20,15 +14,15 @@
 }
 
 .num {
-  font-family: var(--font-headline);
   font-weight: 800;
-  font-size: 1rem;
+  font-size: 1.375rem;
   color: var(--color-primary);
   line-height: 1.1;
+  font-variant-numeric: tabular-nums;
 }
 
 .title {
-  font-size: 0.55rem;
+  font-size: 0.6rem;
   color: var(--color-outline);
   white-space: nowrap;
 }
@@ -49,8 +43,9 @@
 }
 
 .goalLabel {
-  font-size: 0.55rem;
-  font-weight: 700;
+  font-size: 0.6rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
   color: var(--color-outline);
   white-space: nowrap;
   overflow: hidden;
@@ -58,9 +53,8 @@
 }
 
 .goalValue {
-  font-family: var(--font-headline);
-  font-weight: 700;
-  font-size: 0.8rem;
+  font-weight: 800;
+  font-size: 0.88rem;
   color: var(--color-on-background);
   font-variant-numeric: tabular-nums;
   line-height: 1.1;
@@ -69,19 +63,19 @@
 .bar {
   height: 0.25rem;
   border-radius: 9999px;
-  background: var(--color-surface-dim);
+  background: var(--theme-grid-line);
   overflow: hidden;
 }
 
 .fill {
   display: block;
   height: 100%;
-  background: var(--accent-gradient);
+  background: var(--accent-solid);
   transition: width 0.3s;
 }
 
-.done .goalValue { color: #2e7d32; }
-.done .fill { background: #66bb6a; }
+.done .goalValue { color: var(--color-secondary); }
+.done .fill { background: var(--color-secondary); }
 
 .limit {
   display: flex;
@@ -91,15 +85,15 @@
 }
 
 .limitLabel {
-  font-size: 0.55rem;
-  font-weight: 700;
+  font-size: 0.6rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
   color: var(--color-outline);
 }
 
 .limitValue {
-  font-family: var(--font-headline);
   font-weight: 800;
-  font-size: 0.95rem;
+  font-size: 1rem;
   color: var(--color-secondary);
   font-variant-numeric: tabular-nums;
 }

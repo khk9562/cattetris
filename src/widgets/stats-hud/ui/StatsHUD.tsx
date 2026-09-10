@@ -7,31 +7,19 @@ interface Props {
   level: number;
   lines: number;
   combo: number;
-  highScore: number;
 }
 
-function StatsHUD({ score, level, lines, combo, highScore }: Props) {
+function StatsHUD({ score, level, lines, combo }: Props) {
   return (
     <div className={styles.container}>
-      <div className={`${styles.statBlock} ${styles.scoreBlock}`}>
+      <div className={styles.scoreBlock}>
         <p className={styles.label}>점수</p>
         <p className={styles.scoreValue}><RollingNumber value={score} /></p>
       </div>
-      <div className={styles.statBlock}>
-        <p className={styles.label}>최고</p>
-        <p className={styles.subValue}>{highScore.toLocaleString()}</p>
-      </div>
-      <div className={styles.statBlock}>
-        <p className={styles.label}>레벨</p>
-        <p className={styles.metaValue}>{level}</p>
-      </div>
-      <div className={styles.statBlock}>
-        <p className={styles.label}>줄</p>
-        <p className={styles.metaValue}>{lines}</p>
-      </div>
-      <div className={styles.statBlock}>
-        <p className={styles.label}>콤보</p>
-        <p key={combo} className={`${styles.metaValue} ${combo > 1 ? styles.comboHot : ''}`}>{combo > 1 ? '🔥' : ''}x{combo}</p>
+      <div className={styles.metaRow}>
+        <span className={styles.stat}>Lv <b>{level}</b></span>
+        <span className={styles.stat}>줄 <b>{lines}</b></span>
+        <span key={combo} className={`${styles.stat} ${combo > 1 ? styles.comboHot : ''}`}>콤보 <b>x{combo}</b></span>
       </div>
     </div>
   );
