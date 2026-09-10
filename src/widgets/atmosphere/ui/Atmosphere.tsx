@@ -34,8 +34,9 @@ function depthOf(t: number, minSize: number, maxSize: number): Depth {
   return {
     size: between(t, minSize, maxSize),
     opacity: between(t, 0.32, 0.95),
-    // 가까운 입자가 더 빨리 지나간다 (원경일수록 배율이 커진다)
-    speed: between(t, 1.45, 0.75),
+    // 가까운 입자가 더 빨리 지나간다 (원경일수록 배율이 커진다).
+    // 폭을 좁게 잡아야 유독 느린 입자가 눈에 걸리지 않는다
+    speed: between(t, 1.22, 0.82),
   };
 }
 
@@ -93,12 +94,16 @@ function build(kind: AtmosphereKind, count: number): Particle[] {
       continue;
     }
 
-    // 흩날려 내려오거나 떠오르는 것들
+    /*
+     * 흩날려 내려오거나 떠오르는 것들.
+     * fall은 화면 위 바깥에서 아래 바깥까지(124vh) 한 번 지나는 시간(초)이라
+     * 화면 절반까지 걸리는 시간은 그 절반이다.
+     */
     const spec = {
-      petal: { min: 7, max: 15, fall: [11, 21] as const, sway: [22, 62] as const, spin: [420, 900] as const, ratio: 0.78 },
-      snow: { min: 4, max: 10, fall: [15, 27] as const, sway: [10, 34] as const, spin: [180, 360] as const, ratio: 1 },
-      leaf: { min: 8, max: 17, fall: [12, 22] as const, sway: [26, 70] as const, spin: [360, 820] as const, ratio: 0.72 },
-      bubble: { min: 7, max: 20, fall: [13, 23] as const, sway: [14, 40] as const, spin: [120, 300] as const, ratio: 1 },
+      petal: { min: 7, max: 15, fall: [5, 9.5] as const, sway: [22, 62] as const, spin: [420, 900] as const, ratio: 0.78 },
+      snow: { min: 4, max: 10, fall: [6.5, 12] as const, sway: [10, 34] as const, spin: [180, 360] as const, ratio: 1 },
+      leaf: { min: 8, max: 17, fall: [5.5, 10] as const, sway: [26, 70] as const, spin: [360, 820] as const, ratio: 0.72 },
+      bubble: { min: 7, max: 20, fall: [6, 11] as const, sway: [14, 40] as const, spin: [120, 300] as const, ratio: 1 },
     }[kind];
 
     const { size, opacity, speed } = depthOf(c, spec.min, spec.max);
@@ -116,7 +121,7 @@ function build(kind: AtmosphereKind, count: number): Particle[] {
         width: rem(size),
         height: rem(size * spec.ratio),
         opacity,
-        animationDuration: `${between(b, 3.2, 7.5).toFixed(1)}s, ${between(d, 6, 15).toFixed(1)}s`,
+        animationDuration: `${between(b, 2.2, 4.8).toFixed(1)}s, ${between(d, 4, 10).toFixed(1)}s`,
         animationDelay: `-${(b * 7).toFixed(1)}s, -${(c * 12).toFixed(1)}s`,
         ['--sway' as string]: rem(between(b, spec.sway[0], spec.sway[1])),
         ['--spin' as string]: `${Math.round(between(d, spec.spin[0], spec.spin[1])) * (b > 0.5 ? 1 : -1)}deg`,
