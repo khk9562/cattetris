@@ -11,12 +11,17 @@ describe('mergeSettings', () => {
     const s = mergeSettings({ sound: false, difficulty: 'hard', theme: 'nope' as never, ghost: 'yes' as never });
     expect(s.sound).toBe(false);
     expect(s.difficulty).toBe('hard');
-    expect(s.theme).toBe('default');
+    expect(s.theme).toBe('day');
     expect(s.ghost).toBe(true);
   });
 
   it('inherits legacy theme/difficulty keys only when not stored', () => {
-    expect(mergeSettings(null, { theme: 'grass', difficulty: 'normal' })).toMatchObject({ theme: 'grass', difficulty: 'normal' });
-    expect(mergeSettings({ theme: 'default' }, { theme: 'grass' }).theme).toBe('default');
+    expect(mergeSettings(null, { theme: 'grass', difficulty: 'normal' })).toMatchObject({ theme: 'outdoor', difficulty: 'normal' });
+    expect(mergeSettings({ theme: 'night' }, { theme: 'grass' }).theme).toBe('night');
+  });
+
+  it('migrates the v5 theme names to the new ones', () => {
+    expect(mergeSettings({ theme: 'default' as never }).theme).toBe('day');
+    expect(mergeSettings({ theme: 'grass' as never }).theme).toBe('outdoor');
   });
 });

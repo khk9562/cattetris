@@ -1,5 +1,5 @@
 import { isDifficultyId } from '@/entities/difficulty';
-import { DIFFICULTY_KEY, SETTINGS_KEY, THEME_KEY, isThemeId } from '@/shared/config';
+import { DIFFICULTY_KEY, SETTINGS_KEY, THEME_KEY, migrateThemeId } from '@/shared/config';
 import { readJson, readString } from '@/shared/lib';
 import { DEFAULT_SETTINGS, type Settings } from './types';
 
@@ -11,11 +11,11 @@ export function mergeSettings(stored: Partial<Settings> | null, legacy?: { theme
       const v = stored[key];
       if (v === undefined) continue;
       if (key === 'difficulty') { if (isDifficultyId(v)) merged.difficulty = v; }
-      else if (key === 'theme') { if (isThemeId(v)) merged.theme = v; }
+      else if (key === 'theme') { const t = migrateThemeId(v); if (t) merged.theme = t; }
       else if (typeof v === 'boolean') (merged as unknown as Record<string, boolean>)[key] = v;
     }
   }
-  if (!stored?.theme && legacy?.theme && isThemeId(legacy.theme)) merged.theme = legacy.theme;
+  if (!stored?.theme && legacy?.theme) { const t = migrateThemeId(legacy.theme); if (t) merged.theme = t; }
   if (!stored?.difficulty && legacy?.difficulty && isDifficultyId(legacy.difficulty)) merged.difficulty = legacy.difficulty;
   return merged;
 }

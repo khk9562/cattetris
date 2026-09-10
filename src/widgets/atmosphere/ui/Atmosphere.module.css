@@ -1,0 +1,124 @@
+/* 테마 분위기 입자: 화면 전체를 덮는 장식 레이어. 클릭은 통과시킨다 */
+.layer {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.particle {
+  position: absolute;
+  will-change: transform, opacity;
+}
+
+/* 낮: 비스듬히 내려앉는 햇살 */
+.ray,
+.beam {
+  top: -30%;
+  height: 150%;
+  filter: blur(0.375rem);
+  transform-origin: top center;
+  animation-name: fxRay;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+  background: linear-gradient(to bottom, rgba(255, 240, 196, 0.85) 0%, rgba(255, 240, 196, 0) 78%);
+}
+
+/* 실내: 창가에서 들어오는 굵은 빛줄기 */
+.beam {
+  top: -25%;
+  height: 130%;
+  filter: blur(0.5rem);
+  background: linear-gradient(to bottom, rgba(255, 226, 168, 0.8) 0%, rgba(255, 226, 168, 0) 74%);
+}
+
+@keyframes fxRay {
+  0%, 100% { opacity: 0.22; transform: translateX(0) rotate(var(--rot, 18deg)); }
+  50% { opacity: 0.6; transform: translateX(0.625rem) rotate(var(--rot, 18deg)); }
+}
+
+/* 밤: 반짝이는 별 */
+.star {
+  border-radius: 50%;
+  background: #fff8e6;
+  box-shadow: 0 0 0.375rem rgba(255, 248, 230, 0.9);
+  animation-name: fxTwinkle;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+}
+
+@keyframes fxTwinkle {
+  0%, 100% { opacity: 0.18; transform: scale(0.7); }
+  50% { opacity: 1; transform: scale(1.15); }
+}
+
+/* 봄 꽃잎 / 겨울 눈 / 야외 낙엽: 위에서 흩날려 내려온다 */
+.petal,
+.snow,
+.leaf {
+  top: 0;
+  opacity: 0;
+  animation-name: fxFall;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+
+.petal {
+  background: linear-gradient(140deg, #ffd6e2, #f7a8c0);
+  border-radius: 62% 38% 58% 42% / 60% 62% 38% 40%;
+}
+
+.snow {
+  background: #ffffff;
+  border-radius: 50%;
+  box-shadow: 0 0 0.3125rem rgba(255, 255, 255, 0.75);
+}
+
+.leaf {
+  background: linear-gradient(140deg, #b8d69a, #7ba85f);
+  border-radius: 70% 30% 70% 30% / 60% 60% 40% 40%;
+}
+
+@keyframes fxFall {
+  0% { transform: translate(0, -14%) rotate(0deg); opacity: 0; }
+  12% { opacity: 1; }
+  88% { opacity: 1; }
+  100% { transform: translate(var(--dx, 1.25rem), 116%) rotate(var(--dr, 300deg)); opacity: 0; }
+}
+
+/* 파스텔: 아래에서 올라오는 비눗방울 */
+.bubble {
+  bottom: 0;
+  border-radius: 50%;
+  opacity: 0;
+  background: radial-gradient(circle at 32% 30%, rgba(255, 255, 255, 0.9), rgba(196, 182, 246, 0.35));
+  animation-name: fxRise;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+
+@keyframes fxRise {
+  0% { transform: translate(0, 110%) scale(0.7); opacity: 0; }
+  20% { opacity: 0.8; }
+  100% { transform: translate(var(--dx, 0.75rem), -14%) scale(1.1); opacity: 0; }
+}
+
+/* 우드: 햇빛에 떠다니는 먼지 */
+.mote {
+  border-radius: 50%;
+  background: rgba(255, 241, 214, 0.9);
+  animation-name: fxDrift;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+}
+
+@keyframes fxDrift {
+  0% { transform: translate(0, 0); opacity: 0.15; }
+  50% { transform: translate(0.875rem, -1.125rem); opacity: 0.6; }
+  100% { transform: translate(0, 0); opacity: 0.15; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .particle { animation: none; }
+}
