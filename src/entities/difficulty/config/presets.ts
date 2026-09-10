@@ -3,8 +3,8 @@ import type { DifficultyId, DifficultyPreset } from '../model/types';
 export const DIFFICULTY_PRESETS: Record<DifficultyId, DifficultyPreset> = {
   easy: {
     id: 'easy',
-    label: '하',
-    description: '표준 속도. 품종 5~6종, 같은 냥이 10마리면 팡',
+    label: 'Easy',
+    description: '느긋하게 · 5~6종 · 10마리 뭉치면 팡',
     startLevel: 1,
     maxSpeedLevel: 10,
     gravityScale: 1,
@@ -19,8 +19,8 @@ export const DIFFICULTY_PRESETS: Record<DifficultyId, DifficultyPreset> = {
   },
   normal: {
     id: 'normal',
-    label: '중',
-    description: '레벨 5부터 빠르게. 품종 6~7종, 같은 냥이 12마리면 팡',
+    label: 'Normal',
+    description: '레벨 5부터 슬슬 매운맛 · 6~7종 · 12마리',
     startLevel: 5,
     maxSpeedLevel: 13,
     gravityScale: 1,
@@ -35,8 +35,8 @@ export const DIFFICULTY_PRESETS: Record<DifficultyId, DifficultyPreset> = {
   },
   hard: {
     id: 'hard',
-    label: '상',
-    description: '레벨 10부터, 곧 즉시 낙하(20G). 품종 8~10종, 같은 냥이 14마리면 팡',
+    label: 'Hard',
+    description: '레벨 10부터 광속 · 8~10종 · 14마리. 자신 있냥?',
     startLevel: 10,
     maxSpeedLevel: 15,
     gravityScale: 1,
