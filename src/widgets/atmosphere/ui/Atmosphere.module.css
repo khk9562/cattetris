@@ -1,124 +1,173 @@
-/* 테마 분위기 입자: 화면 전체를 덮는 장식 레이어. 클릭은 통과시킨다 */
+/*
+ * 테마 분위기 입자: 화면 전체를 덮는 장식 레이어. 클릭은 통과시킨다.
+ *
+ * 입자마다 두 겹을 쓴다.
+ *   .track  세로 이동만 담당 (등속). 이동 거리는 vh라 화면 높이를 실제로 가로지른다.
+ *   .shape  좌우 흔들림(alternate)과 회전을 담당.
+ * 한 요소에 세로/가로를 같이 넣으면 transform이 충돌하고, 퍼센트를 쓰면
+ * 컨테이너가 아니라 제 크기 기준이라 몇 px만 움직이고 만다.
+ */
 .layer {
   position: fixed;
   inset: 0;
   z-index: 0;
   overflow: hidden;
   pointer-events: none;
+  contain: strict;
 }
 
-.particle {
+.track {
   position: absolute;
-  will-change: transform, opacity;
-}
-
-/* 낮: 비스듬히 내려앉는 햇살 */
-.ray,
-.beam {
-  top: -30%;
-  height: 150%;
-  filter: blur(0.375rem);
-  transform-origin: top center;
-  animation-name: fxRay;
-  animation-timing-function: ease-in-out;
-  animation-iteration-count: infinite;
-  background: linear-gradient(to bottom, rgba(255, 240, 196, 0.85) 0%, rgba(255, 240, 196, 0) 78%);
-}
-
-/* 실내: 창가에서 들어오는 굵은 빛줄기 */
-.beam {
-  top: -25%;
-  height: 130%;
-  filter: blur(0.5rem);
-  background: linear-gradient(to bottom, rgba(255, 226, 168, 0.8) 0%, rgba(255, 226, 168, 0) 74%);
-}
-
-@keyframes fxRay {
-  0%, 100% { opacity: 0.22; transform: translateX(0) rotate(var(--rot, 18deg)); }
-  50% { opacity: 0.6; transform: translateX(0.625rem) rotate(var(--rot, 18deg)); }
-}
-
-/* 밤: 반짝이는 별 */
-.star {
-  border-radius: 50%;
-  background: #fff8e6;
-  box-shadow: 0 0 0.375rem rgba(255, 248, 230, 0.9);
-  animation-name: fxTwinkle;
-  animation-timing-function: ease-in-out;
   animation-iteration-count: infinite;
 }
 
-@keyframes fxTwinkle {
-  0%, 100% { opacity: 0.18; transform: scale(0.7); }
-  50% { opacity: 1; transform: scale(1.15); }
+.shape {
+  display: block;
+  animation-iteration-count: infinite;
 }
 
-/* 봄 꽃잎 / 겨울 눈 / 야외 낙엽: 위에서 흩날려 내려온다 */
-.petal,
-.snow,
-.leaf {
+/* ---------- 위에서 아래로: 벚꽃잎 · 눈 · 낙엽 ---------- */
+.t_petal,
+.t_snow,
+.t_leaf {
   top: 0;
-  opacity: 0;
   animation-name: fxFall;
   animation-timing-function: linear;
-  animation-iteration-count: infinite;
-}
-
-.petal {
-  background: linear-gradient(140deg, #ffd6e2, #f7a8c0);
-  border-radius: 62% 38% 58% 42% / 60% 62% 38% 40%;
-}
-
-.snow {
-  background: #ffffff;
-  border-radius: 50%;
-  box-shadow: 0 0 0.3125rem rgba(255, 255, 255, 0.75);
-}
-
-.leaf {
-  background: linear-gradient(140deg, #b8d69a, #7ba85f);
-  border-radius: 70% 30% 70% 30% / 60% 60% 40% 40%;
 }
 
 @keyframes fxFall {
-  0% { transform: translate(0, -14%) rotate(0deg); opacity: 0; }
-  12% { opacity: 1; }
-  88% { opacity: 1; }
-  100% { transform: translate(var(--dx, 1.25rem), 116%) rotate(var(--dr, 300deg)); opacity: 0; }
+  from { transform: translate3d(0, -12vh, 0); }
+  to { transform: translate3d(0, 112vh, 0); }
 }
 
-/* 파스텔: 아래에서 올라오는 비눗방울 */
-.bubble {
+/* ---------- 아래에서 위로: 비눗방울 ---------- */
+.t_bubble {
   bottom: 0;
-  border-radius: 50%;
-  opacity: 0;
-  background: radial-gradient(circle at 32% 30%, rgba(255, 255, 255, 0.9), rgba(196, 182, 246, 0.35));
   animation-name: fxRise;
   animation-timing-function: linear;
-  animation-iteration-count: infinite;
 }
 
 @keyframes fxRise {
-  0% { transform: translate(0, 110%) scale(0.7); opacity: 0; }
-  20% { opacity: 0.8; }
-  100% { transform: translate(var(--dx, 0.75rem), -14%) scale(1.1); opacity: 0; }
+  from { transform: translate3d(0, 12vh, 0); }
+  to { transform: translate3d(0, -112vh, 0); }
 }
 
-/* 우드: 햇빛에 떠다니는 먼지 */
+/* 흩날리는 것들의 좌우 흔들림 + 회전 (rotate는 transform과 별개 속성이라 같이 걸린다) */
+.petal,
+.snow,
+.leaf,
+.bubble {
+  animation-name: fxSway, fxTumble;
+  animation-timing-function: ease-in-out, linear;
+  animation-direction: alternate, normal;
+}
+
+@keyframes fxSway {
+  from { transform: translateX(calc(var(--sway, 1rem) * -1)); }
+  to { transform: translateX(var(--sway, 1rem)); }
+}
+
+@keyframes fxTumble {
+  from { rotate: 0deg; }
+  to { rotate: var(--spin, 360deg); }
+}
+
+.petal {
+  background: linear-gradient(140deg, #ffd9e4, #f4a2bd);
+  border-radius: 62% 38% 58% 42% / 60% 62% 38% 40%;
+}
+
+/* 겨울 배경이 밝아서 흰 눈만으로는 묻힌다. 옅은 푸른 테두리와 그림자로 윤곽을 준다 */
+.snow {
+  background: #ffffff;
+  border-radius: 50%;
+  box-shadow:
+    0 0.1rem 0.35rem rgba(70, 104, 150, 0.3),
+    0 0 0.5rem rgba(255, 255, 255, 0.95);
+}
+
+.leaf {
+  background: linear-gradient(140deg, #c3dda6, #79a75c);
+  border-radius: 70% 30% 70% 30% / 60% 60% 40% 40%;
+}
+
+.bubble {
+  border-radius: 50%;
+  background: radial-gradient(circle at 32% 28%, rgba(255, 255, 255, 0.92), rgba(196, 182, 246, 0.28) 68%, rgba(196, 182, 246, 0.05));
+  box-shadow: inset 0 0 0.25rem rgba(255, 255, 255, 0.6);
+}
+
+/* ---------- 제자리에서 떠다니는 것들: 별 · 먼지 ---------- */
+.t_star,
+.t_mote {
+  animation-name: fxWander;
+  animation-timing-function: ease-in-out;
+  animation-direction: alternate;
+}
+
+@keyframes fxWander {
+  from { transform: translate3d(0, 0, 0); }
+  to { transform: translate3d(var(--dx, 1rem), var(--dy, -1rem), 0); }
+}
+
+.star,
+.mote {
+  animation-name: fxTwinkle;
+  animation-timing-function: ease-in-out;
+  animation-direction: alternate;
+}
+
+@keyframes fxTwinkle {
+  from { opacity: 0.15; scale: 0.72; }
+  to { opacity: 1; scale: 1.12; }
+}
+
+.star {
+  border-radius: 50%;
+  background: #fff8e6;
+  box-shadow: 0 0 0.4rem rgba(255, 248, 230, 0.95);
+}
+
 .mote {
   border-radius: 50%;
-  background: rgba(255, 241, 214, 0.9);
-  animation-name: fxDrift;
-  animation-timing-function: ease-in-out;
-  animation-iteration-count: infinite;
+  background: rgba(255, 241, 214, 0.95);
+  box-shadow: 0 0 0.3rem rgba(255, 236, 196, 0.7);
 }
 
-@keyframes fxDrift {
-  0% { transform: translate(0, 0); opacity: 0.15; }
-  50% { transform: translate(0.875rem, -1.125rem); opacity: 0.6; }
-  100% { transform: translate(0, 0); opacity: 0.15; }
+/* ---------- 빛줄기: 낮 햇살 · 실내 창가 ---------- */
+.t_ray,
+.t_beam {
+  top: -30%;
+  height: 150%;
+}
+
+.t_beam {
+  top: -25%;
+  height: 130%;
+}
+
+.ray,
+.beam {
+  width: 100%;
+  height: 100%;
+  transform-origin: top center;
+  animation-name: fxRay;
+  animation-timing-function: ease-in-out;
+  animation-direction: alternate;
+  filter: blur(0.5rem);
+  background: linear-gradient(to bottom, rgba(255, 240, 196, 0.8) 0%, rgba(255, 240, 196, 0) 78%);
+}
+
+.beam {
+  filter: blur(0.65rem);
+  background: linear-gradient(to bottom, rgba(255, 226, 168, 0.78) 0%, rgba(255, 226, 168, 0) 74%);
+}
+
+@keyframes fxRay {
+  from { opacity: 0.2; transform: translateX(-0.75rem) rotate(var(--rot, 18deg)); }
+  to { opacity: 0.62; transform: translateX(0.75rem) rotate(var(--rot, 18deg)); }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .particle { animation: none; }
+  .track, .shape { animation: none; }
 }
