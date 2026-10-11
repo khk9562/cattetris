@@ -5,7 +5,9 @@ import react from '@vitejs/plugin-react';
 import { VitePWA } from 'vite-plugin-pwa';
 
 // https://vite.dev/config/
+// base를 상대 경로로 두면 단독 주소(/)와 게임 포털 하위 경로(/games/cattetris/) 양쪽에서 그대로 동작한다
 export default defineConfig({
+  base: './',
   plugins: [
     react(),
     VitePWA({
@@ -20,15 +22,16 @@ export default defineConfig({
         short_name: '냥스택',
         description: '고양이를 쌓고 뭉치면 팡 터뜨리는 블록 퍼즐',
         lang: 'ko',
-        start_url: '/',
+        start_url: './',
+        scope: './',
         display: 'standalone',
         orientation: 'portrait',
         background_color: '#fdf6e3',
         theme_color: '#fdf6e3',
         icons: [
-          { src: '/icons/icon-192.png', sizes: '192x192', type: 'image/png' },
-          { src: '/icons/icon-512.png', sizes: '512x512', type: 'image/png' },
-          { src: '/icons/icon-maskable-512.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' },
+          { src: 'icons/icon-192.png', sizes: '192x192', type: 'image/png' },
+          { src: 'icons/icon-512.png', sizes: '512x512', type: 'image/png' },
+          { src: 'icons/icon-maskable-512.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' },
         ],
       },
       workbox: {

@@ -247,6 +247,13 @@ Hard는 레벨 15부터 스폰 즉시 바닥에 닿아 락 딜레이 300ms 안�
 - 폰트: Pretendard Variable(OFL) 다이내믹 서브셋 92개를 자체 호스팅. 첫 로드에 전부 받지 않도록 프리캐시에서 제외하고 런타임 CacheFirst. 아티팩트 빌드에는 전체 가변 폰트를 base64로 인라인.
 - 검증: 390x664, 375x553, 412x915에서 `scrollHeight === innerHeight`, `#root` 높이 === `visualViewport.height`, 휠/탭 후 `scrollY 0`, `document.fonts.check('Pretendard Variable')` true.
 
+## 게임 포털 하위 경로 지원
+- [fusion_game_portal](https://github.com/khk9562/fusion_game_portal)이 `/games/cattetris/` 요청을 이 게임의 Vercel 배포로 넘긴다. 단독 주소(`/`)와 포털 하위 경로 양쪽에서 동작해야 한다.
+- `vite.config.ts`의 `base: './'`로 빌드 자산을 상대 경로로 불러온다. PWA 매니페스트도 `start_url`/`scope`를 `./`, 아이콘을 `icons/...`로 둔다.
+- `public/fonts/jua/jua-subset.css`의 폰트 경로는 CSS 파일 기준 상대 경로(`./woff2-subset/...`)로 쓴다. `/`로 시작하는 경로를 새로 쓰지 않는다.
+- 서비스 워커는 열린 경로 기준으로 등록되어 포털에서는 범위가 `/games/cattetris/`로 한정된다.
+- 검증: 포털 흉내 서버에서 `/games/cattetris/` 진입 시 4xx 없음, Jua 서체 적용, 서비스 워커 범위 확인.
+
 ## v6 UI 리디자인 "냥 스택" (완료)
 디자인 원본: Claude Design 핸드오프 `냥스택 개선.dc.html` + `CatBlockV2.dc.html`.
 "테마가 투박하다 / 상단 바에 퍼레이드 고양이가 닿을 것 같다 / 아이패드에서 스크롤된다"는 지적에서 출발했다.
