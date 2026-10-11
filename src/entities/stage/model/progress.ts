@@ -1,4 +1,6 @@
 import { CAT_INFO } from '@/entities/cat/@x/stage';
+import { DIFFICULTY_PRESETS } from '@/entities/difficulty/@x/stage';
+import { CLUSTER_OFF } from '../config/stages';
 import type { GoalProgress, StageDef, StageGoal, StageLimit, StageProgressInput } from './types';
 
 export function goalLabel(goal: StageGoal): string {
@@ -9,6 +11,17 @@ export function goalLabel(goal: StageGoal): string {
     case 'chain': return `${goal.steps}연쇄`;
     case 'score': return '점수';
   }
+}
+
+/** 스테이지의 팡 기준. 프리셋에 없으면 스테이지 기본('하') 값. 꺼진 스테이지는 null */
+export function clusterThresholdOf(stage: StageDef): number | null {
+  const t = stage.preset.clusterThreshold ?? DIFFICULTY_PRESETS.easy.clusterThreshold;
+  return t >= CLUSTER_OFF ? null : t;
+}
+
+export function clusterRuleLabel(stage: StageDef): string {
+  const t = clusterThresholdOf(stage);
+  return t === null ? '팡 없음' : `${t}마리 팡`;
 }
 
 export function goalProgress(goal: StageGoal, p: StageProgressInput): GoalProgress {

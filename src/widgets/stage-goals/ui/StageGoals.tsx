@@ -1,5 +1,5 @@
 import { memo } from 'react';
-import { limitLabel, stageProgress, type StageDef, type StageProgressInput } from '@/entities/stage';
+import { clusterRuleLabel, limitLabel, stageProgress, type StageDef, type StageProgressInput } from '@/entities/stage';
 import styles from './StageGoals.module.css';
 
 interface Props {
@@ -15,6 +15,7 @@ function StageGoals({ stage, progress }: Props) {
       <div className={styles.stageName}>
         <span className={styles.num}>{stage.id}</span>
         <span className={styles.title}>{stage.title}</span>
+        <span className={styles.rule}>{clusterRuleLabel(stage)}</span>
       </div>
       <div className={styles.goals}>
         {goals.map((g, i) => (

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { STAGES, getStage } from '../config/stages';
-import { isLimitExhausted, isStageCleared, remainingFraction, stageProgress, starsFor } from './progress';
+import { clusterRuleLabel, clusterThresholdOf, isLimitExhausted, isStageCleared, remainingFraction, stageProgress, starsFor } from './progress';
 import type { StageProgressInput } from './types';
 
 const base: StageProgressInput = { lines: 0, explosions: 0, destroyed: {}, maxChain: 0, score: 0, piecesPlaced: 0, elapsedMs: 0 };
@@ -19,6 +19,23 @@ describe('stage definitions', () => {
       for (const g of s.goals) {
         if (g.type === 'breed') expect(s.breeds).toContain(g.catType);
       }
+    }
+  });
+});
+
+describe('cluster rule label', () => {
+  it('shows the stage threshold, or no explosions when it is off', () => {
+    expect(clusterThresholdOf(getStage(1)!)).toBeNull();
+    expect(clusterRuleLabel(getStage(1)!)).toBe('팡 없음');
+    expect(clusterThresholdOf(getStage(3)!)).toBe(8);
+    expect(clusterRuleLabel(getStage(28)!)).toBe('12마리 팡');
+    expect(clusterThresholdOf({ ...getStage(3)!, preset: {} })).toBe(10);
+  });
+
+  it('never asks for explosions on a stage where they are off', () => {
+    for (const s of STAGES) {
+      if (clusterThresholdOf(s) !== null) continue;
+      expect(s.goals.some(g => g.type === 'explosions' || g.type === 'chain' || g.type === 'breed')).toBe(false);
     }
   });
 });

@@ -1,5 +1,5 @@
 import { memo } from 'react';
-import { STAGES, goalLabel, type StageDef } from '@/entities/stage';
+import { STAGES, clusterRuleLabel, goalLabel, type StageDef } from '@/entities/stage';
 import { Icon } from '@/shared/ui';
 import styles from './StageSelect.module.css';
 
@@ -46,6 +46,7 @@ function StageSelect({ stars, onSelect, onClose }: Props) {
                 <span className={styles.num}>{stage.id}</span>
                 <span className={styles.name}>{unlocked ? stage.title : '???'}</span>
                 <span className={styles.goals}>{unlocked ? goalSummary(stage) : <Icon name="lock" size="1rem" />}</span>
+                {unlocked && <span className={styles.rule}>{clusterRuleLabel(stage)}</span>}
                 <span className={styles.stars} aria-label={`별 ${got}개`}>
                   {[1, 2, 3].map(n => <Icon key={n} name="star" size="0.9rem" style={{ opacity: n <= got ? 1 : 0.2 }} />)}
                 </span>

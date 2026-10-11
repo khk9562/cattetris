@@ -1,6 +1,6 @@
 import { memo } from 'react';
 import { DIFFICULTY_ORDER, DIFFICULTY_PRESETS, type DifficultyId } from '@/entities/difficulty';
-import { STAGES, type StageDef } from '@/entities/stage';
+import { STAGES, clusterRuleLabel, type StageDef } from '@/entities/stage';
 import type { GameMode } from '@/features/game-session';
 import { Icon } from '@/shared/ui';
 import styles from './StartSheet.module.css';
@@ -76,7 +76,7 @@ function StartSheet({
           </div>
         ) : (
           <p className={styles.stageNote}>
-            <span>다음 판 · {nextUnclearedStage.title}</span>
+            <span>다음 판 · {nextUnclearedStage.title} · {clusterRuleLabel(nextUnclearedStage)}</span>
             <strong>{clearedCount} / {STAGES.length}</strong>
           </p>
         )}

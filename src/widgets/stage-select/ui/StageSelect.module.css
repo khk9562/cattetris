@@ -114,6 +114,12 @@
   justify-content: center;
 }
 
+.rule {
+  font-size: 0.6rem;
+  font-weight: 800;
+  color: var(--color-secondary);
+}
+
 .stars {
   display: flex;
   gap: 0.1rem;

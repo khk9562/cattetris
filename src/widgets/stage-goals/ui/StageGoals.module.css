@@ -27,6 +27,13 @@
   white-space: nowrap;
 }
 
+.rule {
+  font-size: 0.6rem;
+  font-weight: 800;
+  color: var(--color-secondary);
+  white-space: nowrap;
+}
+
 .goals {
   flex: 1;
   display: flex;
