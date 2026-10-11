@@ -45,7 +45,7 @@ export interface ThemeDef {
 export const THEMES: Record<ThemeId, ThemeDef> = {
   day: {
     id: 'day', pair: 'dayNight', label: '낮', name: '햇살 크림', mood: '햇살 자리 내가 찜', dark: false,
-    atmosphere: 'ray', atmosphereCount: 4,
+    atmosphere: 'ray', atmosphereCount: 5,
     bg: '#fdf6ec',
     glow: 'radial-gradient(60% 50% at 20% 0%, rgba(255,214,178,0.55) 0%, transparent 70%), radial-gradient(70% 50% at 100% 100%, rgba(198,226,214,0.45) 0%, transparent 70%)',
     surface: '#fffdf9', ink: '#2f2a26', soft: '#6e645c', line: 'rgba(47,42,38,0.1)',
@@ -53,7 +53,7 @@ export const THEMES: Record<ThemeId, ThemeDef> = {
   },
   night: {
     id: 'night', pair: 'dayNight', label: '밤', name: '깊은 야경', mood: '별 세다 잘 거임', dark: true,
-    atmosphere: 'star', atmosphereCount: 22,
+    atmosphere: 'star', atmosphereCount: 44,
     bg: '#151a26',
     glow: 'radial-gradient(60% 50% at 18% 0%, rgba(94,120,190,0.4) 0%, transparent 70%), radial-gradient(70% 50% at 100% 100%, rgba(190,140,90,0.24) 0%, transparent 70%)',
     surface: '#1e2433', ink: '#f1f3f8', soft: '#9aa4ba', line: 'rgba(255,255,255,0.12)',
@@ -61,7 +61,7 @@ export const THEMES: Record<ThemeId, ThemeDef> = {
   },
   indoor: {
     id: 'indoor', pair: 'inOut', label: '실내', name: '창가 햇살', mood: '창가 자리 양보 못 해', dark: false,
-    atmosphere: 'beam', atmosphereCount: 3,
+    atmosphere: 'beam', atmosphereCount: 4,
     bg: '#f7efe2',
     glow: 'radial-gradient(55% 45% at 78% 0%, rgba(255,225,168,0.6) 0%, transparent 72%)',
     surface: '#fffaf1', ink: '#38302a', soft: '#6f6455', line: 'rgba(56,48,42,0.12)',
@@ -69,7 +69,7 @@ export const THEMES: Record<ThemeId, ThemeDef> = {
   },
   outdoor: {
     id: 'outdoor', pair: 'inOut', label: '야외', name: '잔디 정원', mood: '풀밭에 눕는다 말리지 마', dark: false,
-    atmosphere: 'leaf', atmosphereCount: 12,
+    atmosphere: 'leaf', atmosphereCount: 22,
     bg: '#eef4e5',
     glow: 'radial-gradient(60% 45% at 20% 0%, rgba(206,231,176,0.7) 0%, transparent 72%), radial-gradient(70% 50% at 100% 100%, rgba(246,224,168,0.4) 0%, transparent 70%)',
     surface: '#fbfdf6', ink: '#26301f', soft: '#55634f', line: 'rgba(38,48,31,0.12)',
@@ -77,7 +77,7 @@ export const THEMES: Record<ThemeId, ThemeDef> = {
   },
   spring: {
     id: 'spring', pair: 'season', label: '봄', name: '벚꽃', mood: '꽃잎 맞고 재채기 중', dark: false,
-    atmosphere: 'petal', atmosphereCount: 16,
+    atmosphere: 'petal', atmosphereCount: 32,
     bg: '#fdf0f3',
     glow: 'radial-gradient(60% 45% at 22% 0%, rgba(255,205,220,0.7) 0%, transparent 72%), radial-gradient(70% 50% at 100% 100%, rgba(206,231,214,0.45) 0%, transparent 70%)',
     surface: '#fffafb', ink: '#3b2b31', soft: '#77636b', line: 'rgba(59,43,49,0.11)',
@@ -85,7 +85,7 @@ export const THEMES: Record<ThemeId, ThemeDef> = {
   },
   winter: {
     id: 'winter', pair: 'season', label: '겨울', name: '눈 내린 밤', mood: '발 시려워서 안 나감', dark: false,
-    atmosphere: 'snow', atmosphereCount: 20,
+    atmosphere: 'snow', atmosphereCount: 42,
     bg: '#eef2f7',
     glow: 'radial-gradient(60% 45% at 20% 0%, rgba(214,229,246,0.8) 0%, transparent 72%), radial-gradient(70% 50% at 100% 100%, rgba(226,220,244,0.5) 0%, transparent 70%)',
     surface: '#fbfdff', ink: '#26303b', soft: '#5d6a78', line: 'rgba(38,48,59,0.11)',
@@ -93,7 +93,7 @@ export const THEMES: Record<ThemeId, ThemeDef> = {
   },
   pastel: {
     id: 'pastel', pair: 'texture', label: '파스텔', name: '부드러운 파스텔', mood: '방울 터뜨리는 게 일', dark: false,
-    atmosphere: 'bubble', atmosphereCount: 12,
+    atmosphere: 'bubble', atmosphereCount: 24,
     bg: '#f4f1fb',
     glow: 'radial-gradient(60% 45% at 20% 0%, rgba(219,212,248,0.75) 0%, transparent 72%), radial-gradient(70% 50% at 100% 100%, rgba(250,214,228,0.5) 0%, transparent 70%)',
     surface: '#fdfcff', ink: '#302a3d', soft: '#6b6479', line: 'rgba(48,42,61,0.1)',
@@ -101,7 +101,7 @@ export const THEMES: Record<ThemeId, ThemeDef> = {
   },
   wood: {
     id: 'wood', pair: 'texture', label: '우드', name: '린넨 공방', mood: '먼지랑 노는 중, 방해 금지', dark: false,
-    atmosphere: 'mote', atmosphereCount: 14,
+    atmosphere: 'mote', atmosphereCount: 24,
     bg: '#efe6d8',
     glow: 'radial-gradient(60% 45% at 22% 0%, rgba(233,215,188,0.8) 0%, transparent 72%)',
     surface: '#fbf5ea', ink: '#332a20', soft: '#6c5e4d', line: 'rgba(51,42,32,0.14)',
