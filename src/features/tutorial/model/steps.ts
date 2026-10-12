@@ -63,7 +63,7 @@ export const TUTORIAL_STEPS: TutorialStep[] = [
     presetOverride: TUTORIAL_PRESET,
   },
   { id: 'rotate', title: '돌리기', text: '보드를 톡 탭하거나 회전 버튼을 눌러 돌려 보세요.', target: 'rotate', done: 'rotate' },
-  { id: 'hardDrop', title: '내려놓기', text: '보드를 아래로 튕기면 바로 떨어져요. (키보드는 Space)', target: 'board', done: 'hardDrop' },
+  { id: 'hardDrop', title: '내려놓기', text: '보드를 아래로 튕기거나 아래 버튼을 꾹 누르면 바로 떨어져요. (키보드는 Space)', target: 'board', done: 'hardDrop' },
   { id: 'hold', title: '홀드', text: '홀드 칸을 탭하면 지금 냥이를 맡겨 두고 나중에 꺼낼 수 있어요.', target: 'hold', done: 'hold' },
   {
     id: 'line',

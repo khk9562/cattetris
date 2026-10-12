@@ -12,24 +12,31 @@ const DAS_MS = 170;
 const ARR_MS = 50;
 /** 소프트 드롭은 조금 더 느슨하게 반복 */
 const SOFT_DROP_ARR_MS = 60;
+/** 아래 버튼을 이만큼 누르고 있으면 하드 드롭 (안드로이드 길게 누르기 기본값 400ms) */
+const HARD_DROP_HOLD_MS = 400;
 
 function useRepeat() {
   const timeout = useRef<ReturnType<typeof setTimeout> | null>(null);
   const interval = useRef<ReturnType<typeof setInterval> | null>(null);
+  const long = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const stop = useCallback(() => {
     if (timeout.current) clearTimeout(timeout.current);
     if (interval.current) clearInterval(interval.current);
+    if (long.current) clearTimeout(long.current);
     timeout.current = null;
     interval.current = null;
+    long.current = null;
   }, []);
 
-  const startRepeat = useCallback((action: () => void, das: number, arr: number) => {
+  /** onLong이 있으면 longMs 동안 누르고 있을 때 반복을 멈추고 한 번 실행한다 */
+  const startRepeat = useCallback((action: () => void, das: number, arr: number, onLong?: () => void, longMs = 0) => {
     stop();
     action();
     timeout.current = setTimeout(() => {
       interval.current = setInterval(action, arr);
     }, das);
+    if (onLong) long.current = setTimeout(() => { stop(); onLong(); }, longMs);
   }, [stop]);
 
   useEffect(() => stop, [stop]);
@@ -71,7 +78,7 @@ function Controls({ actions }: Props) {
       <div className={styles.row}>
         <ControlButton icon="hold" label="홀드" coach="hold" onDown={() => actions.hold()} onUp={() => undefined} />
         <ControlButton icon="left" label="왼쪽" coach="left" onDown={() => move.startRepeat(actions.moveLeft, DAS_MS, ARR_MS)} onUp={move.stop} />
-        <ControlButton icon="down" label="소프트 드롭" coach="drop" onDown={() => drop.startRepeat(actions.softDrop, DAS_MS, SOFT_DROP_ARR_MS)} onUp={drop.stop} />
+        <ControlButton icon="down" label="소프트 드롭 (길게 누르면 하드 드롭)" coach="drop" onDown={() => drop.startRepeat(actions.softDrop, DAS_MS, SOFT_DROP_ARR_MS, actions.hardDrop, HARD_DROP_HOLD_MS)} onUp={drop.stop} />
         <ControlButton icon="right" label="오른쪽" coach="right" onDown={() => move.startRepeat(actions.moveRight, DAS_MS, ARR_MS)} onUp={move.stop} />
         <ControlButton icon="rotate" label="회전" coach="rotate" accent onDown={() => actions.rotateCW()} onUp={() => undefined} />
       </div>
