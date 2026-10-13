@@ -1,4 +1,4 @@
-/* 폰트: Pretendard Variable(본문) + Jua(제목). 둘 다 index.html에서 서브셋 CSS를 로드한다 */
+/* 폰트: Paperlogy(본문·숫자·버튼 등 제목 외 전부) + Jua(제목). 둘 다 public/fonts에 셀프 호스팅하고 index.html에서 서브셋 CSS를 로드한다 */
 
 :root {
   /*
@@ -56,8 +56,8 @@
   --font-title: 'Jua', 'Apple SD Gothic Neo', 'Noto Sans KR', system-ui, sans-serif;
   --font-title-weight: 400;
   --font-title-stroke: 0.03em;
-  --font-headline: 'Pretendard Variable', 'Pretendard', 'Apple SD Gothic Neo', 'Noto Sans KR', system-ui, sans-serif;
-  --font-body: 'Pretendard Variable', 'Pretendard', 'Apple SD Gothic Neo', 'Noto Sans KR', system-ui, sans-serif;
+  --font-headline: 'Paperlogy', 'Apple SD Gothic Neo', 'Noto Sans KR', system-ui, sans-serif;
+  --font-body: 'Paperlogy', 'Apple SD Gothic Neo', 'Noto Sans KR', system-ui, sans-serif;
 
   --header-height: 3rem;
   --safe-top: env(safe-area-inset-top, 0px);
@@ -82,6 +82,11 @@ html, body {
   height: 100%;
   overflow: hidden;
   overscroll-behavior: none;
+}
+
+/* 버튼·입력은 브라우저 기본 글꼴을 쓰므로 본문 글꼴을 물려받게 한다 (안 하면 버튼만 시스템 글꼴로 나온다) */
+button, input, select, textarea {
+  font-family: inherit;
 }
 
 body {

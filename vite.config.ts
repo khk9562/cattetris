@@ -14,7 +14,7 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: [
         'icons/*.png',
-        'fonts/pretendard/pretendardvariable-dynamic-subset.css',
+        'fonts/paperlogy/paperlogy-subset.css',
         'fonts/jua/jua-subset.css',
       ],
       manifest: {
@@ -36,13 +36,13 @@ export default defineConfig({
       },
       workbox: {
         globPatterns: ['**/*.{js,css,html,png,svg}'],
-        // 폰트 서브셋(Pretendard 92 + Jua 87)은 첫 로드에 전부 받지 않고 쓰이는 것만 런타임 캐시
-        globIgnores: ['**/fonts/pretendard/**', '**/fonts/jua/**'],
+        // 폰트 서브셋(Paperlogy 굵기 4종 x 2범위 + Jua 87)은 첫 로드에 전부 받지 않고 쓰이는 것만 런타임 캐시
+        globIgnores: ['**/fonts/paperlogy/**', '**/fonts/jua/**'],
         runtimeCaching: [
           {
-            urlPattern: /\/fonts\/pretendard\//,
+            urlPattern: /\/fonts\/paperlogy\//,
             handler: 'CacheFirst',
-            options: { cacheName: 'pretendard', expiration: { maxEntries: 120, maxAgeSeconds: 60 * 60 * 24 * 365 } },
+            options: { cacheName: 'paperlogy', expiration: { maxEntries: 20, maxAgeSeconds: 60 * 60 * 24 * 365 } },
           },
           {
             urlPattern: /\/fonts\/jua\//,
