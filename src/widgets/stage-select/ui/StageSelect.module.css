@@ -15,7 +15,7 @@
   max-width: 37.5rem;
   max-height: 88dvh;
   background: var(--color-surface);
-  border-radius: 1.25rem;
+  border-radius: var(--radius);
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -73,7 +73,7 @@
   align-items: center;
   gap: 0.2rem;
   padding: 0.6rem 0.4rem 0.5rem;
-  border-radius: 0.9rem;
+  border-radius: var(--radius);
   border: 2px solid var(--color-surface-container-highest);
   background: var(--color-surface-container);
   cursor: pointer;

@@ -29,7 +29,7 @@ describe('cluster rule label', () => {
     expect(clusterRuleLabel(getStage(1)!)).toBe('팡 없음');
     expect(clusterThresholdOf(getStage(3)!)).toBe(8);
     expect(clusterRuleLabel(getStage(28)!)).toBe('11마리 팡');
-    expect(clusterThresholdOf({ ...getStage(3)!, preset: {} })).toBe(9);
+    expect(clusterThresholdOf({ ...getStage(3)!, preset: {} })).toBe(14);
   });
 
   it('never asks for explosions on a stage where they are off', () => {

@@ -365,7 +365,10 @@ export function engineReducer(s: EngineState, action: EngineAction): EngineState
   switch (action.type) {
     case 'start': {
       const stage = action.stage ?? null;
-      const preset: DifficultyPreset = { ...action.preset, ...(stage?.preset ?? {}), ...(action.presetOverride ?? {}) };
+      const mode = action.mode ?? (stage ? 'stage' : 'endless');
+      const merged: DifficultyPreset = { ...action.preset, ...(stage?.preset ?? {}), ...(action.presetOverride ?? {}) };
+      // 무한 모드의 조각은 반드시 한 품종이다 (CLAUDE.md 게임 규칙). 프리셋이 무엇이든 여기서 강제한다
+      const preset: DifficultyPreset = mode === 'endless' ? { ...merged, mixCells: 0 } : merged;
       const base = createInitialState(preset);
       const order = stage?.breeds ? { items: stage.breeds, seed: action.seed } : shuffle(action.breeds, action.seed);
       let state: EngineState = {
@@ -375,7 +378,7 @@ export function engineReducer(s: EngineState, action: EngineAction): EngineState
         status: 'playing',
         seed: order.seed,
         breedOrder: order.items,
-        mode: action.mode ?? (stage ? 'stage' : 'endless'),
+        mode,
         stage,
         board: action.setup?.board ? action.setup.board.map(r => [...r]) : base.board,
         scripted: action.setup?.pieces ? [...action.setup.pieces] : [],

@@ -57,7 +57,7 @@
   right: -0.125rem;
   width: 0.4375rem;
   height: 0.4375rem;
-  border-radius: 50%;
+  border-radius: var(--radius);
   background: var(--color-primary);
   box-shadow: 0 0 0 0.125rem var(--color-background);
 }

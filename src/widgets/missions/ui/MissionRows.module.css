@@ -44,7 +44,7 @@
 .bar {
   display: block;
   height: 0.1875rem;
-  border-radius: 999px;
+  border-radius: var(--radius);
   background: var(--theme-grid-line);
   overflow: hidden;
 }
@@ -52,7 +52,7 @@
 .fill {
   display: block;
   height: 100%;
-  border-radius: 999px;
+  border-radius: var(--radius);
   background: var(--color-primary);
   transition: width 0.3s ease-out;
 }

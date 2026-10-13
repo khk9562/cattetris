@@ -123,8 +123,6 @@ function Board({ board, currentPiece, ghostPiece, clearing, popups, gameOver = f
                   effect={effect}
                   expression={expression}
                   blinkDelay={blinkDelayFor(x, y)}
-                  cellX={x}
-                  cellY={y}
                 />
               </div>
             );
@@ -137,7 +135,7 @@ function Board({ board, currentPiece, ghostPiece, clearing, popups, gameOver = f
               className={`${styles.floatCell} ${styles.glide}`}
               style={{ left: `${(c.x / BOARD_WIDTH) * 100}%`, top: `${(c.y / BOARD_HEIGHT) * 100}%` }}
             >
-              <CatBlock catType={c.type} ghost conn={c.conn} cellX={c.x} cellY={c.y} />
+              <CatBlock catType={c.type} ghost conn={c.conn} />
             </div>
           ))}
           {currentPiece && activeCells.map((c, i) => (
@@ -154,8 +152,6 @@ function Board({ board, currentPiece, ghostPiece, clearing, popups, gameOver = f
                 showTail={c.tail}
                 expression="idle"
                 blinkDelay={blinkDelayFor(c.x, c.y)}
-                cellX={c.x}
-                cellY={c.y}
               />
             </div>
           ))}

@@ -17,10 +17,10 @@ export interface TutorialStep {
   presetOverride?: Partial<DifficultyPreset>;
 }
 
-/** 튜토리얼 팡 기준. Easy와 같다 */
+/** 튜토리얼 팡 기준. 바닥 한 줄에 무리를 깔아 보여 줘야 해서 무한 모드보다 낮다 */
 export const TUTORIAL_THRESHOLD = 9;
 
-/** 튜토리얼 공통 프리셋: 천천히 떨어지고, Easy 기준으로 팡, 조각은 3+1 */
+/** 튜토리얼 공통 프리셋: 천천히 떨어지고, 낮은 기준으로 팡, 조각은 스테이지처럼 3+1 */
 export const TUTORIAL_PRESET: Partial<DifficultyPreset> = {
   startLevel: 1,
   gravityScale: 4,
@@ -81,7 +81,7 @@ export const TUTORIAL_STEPS: TutorialStep[] = [
   {
     id: 'explode',
     title: '팡!',
-    text: `같은 냥이가 ${TUTORIAL_THRESHOLD}마리 붙으면 팡! 큰 냥이에 업힌 새끼는 다른 품종이라, 하나 모자란 무리를 남겨 두면 연쇄가 돼요. 샴 냥이를 아래 샴 무리에 붙여 보세요.`,
+    text: `같은 냥이가 ${TUTORIAL_THRESHOLD}마리 붙으면 팡! 스테이지에서는 다른 품종 새끼를 업은 냥이도 내려와서, 하나 모자란 무리를 남겨 두면 연쇄가 돼요. 샴 냥이를 아래 샴 무리에 붙여 보세요.`,
     target: 'board',
     done: 'explode',
     setup: { board: clusterBoard(), pieces: [{ id: 'O', catType: 'siamese' }, { id: 'O', catType: 'siamese' }, { id: 'I', catType: 'siamese' }] },
