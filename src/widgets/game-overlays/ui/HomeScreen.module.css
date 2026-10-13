@@ -37,6 +37,14 @@
   height: 100%;
   position: relative;
   animation: paradeBob 1.8s ease-in-out infinite;
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.paradeCat > div {
+  width: 100%;
+  height: 100%;
 }
 
 @keyframes paradeBob {
@@ -44,13 +52,27 @@
   50% { transform: translateY(-0.3125rem); }
 }
 
+/* 누르면 통 튀어오르기: 살짝 눌렸다가 위로 솟고(세로로 길어짐) 내려와서 납작해졌다 돌아온다 */
+.paradeHop {
+  animation: paradeHop 0.42s cubic-bezier(0.2, 0.9, 0.3, 1);
+  transform-origin: center bottom;
+}
+
+@keyframes paradeHop {
+  0% { transform: translateY(0) scale(1, 1); }
+  12% { transform: translateY(0.1rem) scale(1.12, 0.84); }
+  45% { transform: translateY(-1.1rem) scale(0.9, 1.16); }
+  75% { transform: translateY(0) scale(1.1, 0.88); }
+  100% { transform: translateY(0) scale(1, 1); }
+}
+
 .title {
   margin: 0;
   font-family: var(--font-title);
   font-size: 2.375rem;
   font-weight: var(--font-title-weight);
-  /* 히어로 제목만 한 단계 더 두껍게 */
-  -webkit-text-stroke: 0.045em currentColor;
+  /* 제목 공통 두께(--font-title-stroke)와 같게. 0.045em은 너무 두껍다는 지적으로 한 단계 내렸다 */
+  -webkit-text-stroke: var(--font-title-stroke) currentColor;
   line-height: 1.15;
   color: var(--color-on-background);
 }
@@ -308,4 +330,5 @@
 
 @media (prefers-reduced-motion: reduce) {
   .paradeCat { animation: none; }
+  .paradeHop { animation: none; }
 }

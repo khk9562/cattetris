@@ -1,5 +1,6 @@
-import { memo, type ReactNode } from 'react';
+import { memo, useCallback, useState, type ReactNode } from 'react';
 import { CatBlock, type CatType } from '@/entities/cat';
+import { playUiSfx } from '@/features/sound';
 import { DIFFICULTY_PRESETS, type DifficultyId } from '@/entities/difficulty';
 import { STAGES } from '@/entities/stage';
 import { THEMES, themePairOf, type ThemeId } from '@/shared/config';
@@ -21,19 +22,35 @@ interface Props {
 
 const PARADE: CatType[] = ['ginger', 'tuxedo', 'calico', 'siamese', 'bengal', 'white'];
 
+/** 퍼레이드 고양이. 누르거나(터치) 마우스를 올리면 통처럼 튀어오르며 소리가 난다. 고양이마다 음정이 다르다 */
 function CatParade() {
+  // 고양이별 튀어오름 횟수. 바뀔 때마다 key가 바뀌어 애니메이션이 처음부터 다시 돈다
+  const [hops, setHops] = useState<number[]>(() => PARADE.map(() => 0));
+  const hop = useCallback((i: number) => {
+    setHops(prev => prev.map((n, k) => (k === i ? n + 1 : n)));
+    playUiSfx('boing', i);
+  }, []);
+
   return (
     <div className={styles.parade} aria-hidden="true">
       {PARADE.map((cat, i) => (
-        <div key={cat} className={styles.paradeCat} style={{ animationDelay: `${i * 0.14}s` }}>
-          <CatBlock
-            catType={cat}
-            showFace
-            showEars
-            expression="happy"
-            showTail={i === PARADE.length - 1}
-            conn={{ top: false, bottom: false, left: i > 0, right: i < PARADE.length - 1 }}
-          />
+        <div
+          key={cat}
+          className={styles.paradeCat}
+          style={{ animationDelay: `${i * 0.14}s` }}
+          onPointerDown={e => { e.preventDefault(); hop(i); }}
+          onPointerEnter={e => { if (e.pointerType === 'mouse') hop(i); }}
+        >
+          <div key={hops[i]} className={hops[i] > 0 ? styles.paradeHop : undefined}>
+            <CatBlock
+              catType={cat}
+              showFace
+              showEars
+              expression="happy"
+              showTail={i === PARADE.length - 1}
+              conn={{ top: false, bottom: false, left: i > 0, right: i < PARADE.length - 1 }}
+            />
+          </div>
         </div>
       ))}
     </div>
