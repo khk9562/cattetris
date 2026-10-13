@@ -149,7 +149,8 @@ export function migrateThemeId(v: unknown): ThemeId | null {
  */
 export function themeVars(id: ThemeId): Record<string, string> {
   const t = THEMES[id];
-  const onSurfaceLine = t.dark ? 'rgba(255,255,255,0.12)' : 'rgba(47,42,38,0.1)';
+  // 보드 격자선은 테두리(line)보다 한 단계 옅게. 어두운 테마는 바탕이 어두워 조금 더 밝힌다
+  const onSurfaceLine = t.dark ? 'rgba(255,255,255,0.08)' : 'rgba(47,42,38,0.06)';
   return {
     '--color-background': t.bg,
     '--color-surface': t.surface,

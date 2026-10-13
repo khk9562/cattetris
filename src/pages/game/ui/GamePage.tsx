@@ -83,25 +83,28 @@ export default function GamePage() {
 
       {!isHome && (
         <main className={styles.main}>
-          {tutorial.active ? (
-            <TutorialOverlay step={tutorial.step} stepIndex={tutorial.stepIndex} total={tutorial.total} onNext={tutorial.next} onSkip={tutorial.skip} />
-          ) : state.mode === 'stage' && state.stage ? (
-            <StageGoals stage={state.stage} progress={progress} />
-          ) : (
-            <StatsHUD
-              score={state.score}
-              level={state.level}
-              lines={state.lines}
-              combo={state.combo}
-            />
-          )}
-
-          <div className={styles.divider} />
+          <div className={styles.top}>
+            {tutorial.active ? (
+              <TutorialOverlay step={tutorial.step} stepIndex={tutorial.stepIndex} total={tutorial.total} onNext={tutorial.next} onSkip={tutorial.skip} />
+            ) : state.mode === 'stage' && state.stage ? (
+              <StageGoals stage={state.stage} progress={progress} />
+            ) : (
+              <StatsHUD
+                score={state.score}
+                level={state.level}
+                lines={state.lines}
+                combo={state.combo}
+              />
+            )}
+          </div>
 
           <div className={styles.hudRow}>
-            <HoldSlot piece={state.hold} disabled={state.holdUsed || !inGame} onHold={actions.hold} />
-            <div className={styles.vDivider} />
-            <NextQueue pieces={state.queue} />
+            <div className={styles.holdArea}>
+              <HoldSlot piece={state.hold} disabled={state.holdUsed || !inGame} onHold={actions.hold} />
+            </div>
+            <div className={styles.nextArea}>
+              <NextQueue pieces={state.queue} />
+            </div>
           </div>
 
           <div className={styles.boardArea} {...gestures} onContextMenu={e => e.preventDefault()} data-coach-target="board">

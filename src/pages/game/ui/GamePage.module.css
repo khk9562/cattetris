@@ -6,61 +6,100 @@
   position: relative;
 }
 
+/*
+ * 플레이 화면은 "위 정보 한 줄 + 홀드/다음 한 줄 + 보드"다.
+ * 보드는 높이에 맞춰 커지므로 위 두 줄을 얇게 유지하는 것이 곧 보드를 넓게 쓰는 길이다.
+ * 넓은 화면(>= 46rem)에서는 홀드와 다음이 보드 양옆 칼럼으로 빠진다 (같은 DOM, CSS만 전환).
+ */
 .main {
+  --side-width: 0px;
   position: absolute;
   top: calc(var(--safe-top) + var(--header-height));
   bottom: 0;
   left: 0;
   right: 0;
   padding: 0 var(--screen-padding);
-  padding-bottom: calc(var(--controls-height) + var(--controls-padding-bottom) + 0.5rem);
-  display: flex;
-  flex-direction: column;
-  gap: 0.7rem;
+  padding-bottom: calc(var(--controls-height) + var(--controls-padding-bottom) + 0.25rem);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: auto auto minmax(0, 1fr);
+  grid-template-areas:
+    'top'
+    'hud'
+    'board';
+  row-gap: 0.5rem;
   overflow: hidden;
 }
 
-.divider {
-  height: 1px;
-  background: var(--theme-line);
-  flex-shrink: 0;
+.top {
+  grid-area: top;
+  min-width: 0;
 }
 
 /* 홀드 · 다음 조각 한 단 */
 .hudRow {
+  grid-area: hud;
   width: 100%;
   display: flex;
   align-items: center;
-  gap: 0.875rem;
+  gap: 1rem;
+  min-width: 0;
+}
+
+.holdArea {
   flex-shrink: 0;
 }
 
-.vDivider {
-  width: 1px;
-  align-self: stretch;
-  background: var(--theme-line);
-  flex-shrink: 0;
+.nextArea {
+  flex: 1;
+  min-width: 0;
 }
 
+/* 보드 영역: 컨테이너 쿼리로 보드가 폭·높이 중 작은 쪽에 맞춰 비율을 지킨다 */
 .boardArea {
+  grid-area: board;
+  container-type: size;
   touch-action: none;
   -webkit-user-select: none;
   user-select: none;
-  flex: 1;
   width: 100%;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
   min-height: 0;
+  min-width: 0;
   overflow: hidden;
 }
 
-/* 넓은 화면에서는 보드가 지나치게 커지지 않도록 가운데로 모은다 */
+/* 넓은 화면: 홀드 | 보드 | 다음 세 칼럼. 위 정보 줄은 전체 폭 */
 @media (min-width: 46rem) {
   .main {
+    --side-width: 7rem;
+    top: calc(var(--safe-top) + var(--header-height) + 0.75rem);
     padding-left: 2.5rem;
     padding-right: 2.5rem;
-    max-width: 34rem;
+    max-width: 56rem;
     margin: 0 auto;
+    grid-template-columns: var(--side-width) minmax(0, 1fr) var(--side-width);
+    grid-template-rows: auto minmax(0, 1fr);
+    grid-template-areas:
+      'top top top'
+      'hold board next';
+    column-gap: 1.25rem;
+    row-gap: 0.75rem;
+  }
+
+  .hudRow {
+    display: contents;
+  }
+
+  .holdArea {
+    grid-area: hold;
+    justify-self: end;
+  }
+
+  .nextArea {
+    grid-area: next;
+    justify-self: start;
   }
 }
