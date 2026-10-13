@@ -37,11 +37,16 @@
   --glass-border: rgba(47, 42, 38, 0.1);
   --glass-shadow: 0 0.5rem 1.5rem rgba(140, 100, 70, 0.1);
 
-  /* 반경 체계: 9999px 알약을 걷어내고 10 / 14 / 20px 세 단계만 쓴다 */
-  --radius-sm: 0.625rem;
-  --radius-md: 0.875rem;
-  --radius-lg: 1.25rem;
-  --radius-sheet: 1.5rem;
+  /*
+   * 반경 체계: 프로젝트 전체가 2px(0.125rem) 한 가지다. 고양이 블럭, 보드, 버튼, 카드, 시트, 배지, 스위치 모두.
+   * 예전 이름(sm/md/lg/sheet)은 위젯 호환을 위해 남겨 두고 전부 같은 값을 가리킨다.
+   * 고양이 얼굴(눈·코·볼·입·귀·꼬리·무늬·액세서리)과 분위기 입자는 그림이라 이 규칙 밖이다.
+   */
+  --radius: 0.125rem;
+  --radius-sm: var(--radius);
+  --radius-md: var(--radius);
+  --radius-lg: var(--radius);
+  --radius-sheet: var(--radius);
 
   /*
    * 제목은 짧고 뭉뚝한 라운드 서체.

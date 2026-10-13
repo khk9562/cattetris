@@ -32,7 +32,7 @@
 .grip {
   width: 2.75rem;
   height: 0.25rem;
-  border-radius: 999px;
+  border-radius: var(--radius);
   background: var(--theme-line);
   margin: 0 auto 0.875rem;
 }
