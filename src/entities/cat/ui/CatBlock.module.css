@@ -12,14 +12,15 @@
 
   /*
    * 털은 세 겹으로 쌓는다: 위에서 드는 빛 → 품종 무늬 → 아래로 깔리는 그늘.
-   * 무늬(--fur-img)만 품종이 채우고, 줄무늬·로제트처럼 이어져야 하는 무늬는
-   * --fur-img-size를 200%로 키워 셀 2x2가 한 타일이 되게 한다 (위상은 --px/--py).
+   * 무늬(--fur-img)만 품종이 채우고, 줄무늬·패치·로제트는 --fur-img-size를 200%로 키워 큰 무늬를 쓴다.
+   * 위상은 모든 셀이 타일 한가운데로 고정이다. 예전에는 보드 좌표(x%2, y%2)로 위상을 정해서
+   * 조각이 한 칸 내려올 때마다 무늬가 바뀌어 보였다 (얼룩무늬 품종이 특히 헷갈렸다).
    */
   --fur-light: radial-gradient(120% 95% at 30% 10%, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 55%);
   --fur-shade: radial-gradient(120% 80% at 50% 118%, rgba(60, 35, 20, 0.28) 0%, rgba(60, 35, 20, 0) 62%);
   --fur-soft: color-mix(in srgb, var(--fur-pattern) 34%, transparent);
   --fur-strong: color-mix(in srgb, var(--fur-pattern) 92%, transparent);
-  --fur-tile: calc(var(--px, 0) * -100%) calc(var(--py, 0) * -100%);
+  --fur-tile: 50% 50%;
 
   background-color: var(--fur-base);
   background-image: var(--fur-light), var(--fur-img, none), var(--fur-shade);

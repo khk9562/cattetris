@@ -24,9 +24,6 @@ interface Props {
   expression?: CatExpression;
   /** 깜빡임 타이밍을 셀마다 다르게 하기 위한 지연(초) */
   blinkDelay?: number;
-  /** 보드 좌표. 무늬 타일이 셀에 붙어 이어지도록 위상을 정한다 */
-  cellX?: number;
-  cellY?: number;
   /** 방금 착지한 셀: 젤리처럼 눌렸다 튀어오름 */
   landing?: boolean;
   /** 컨텍스트 대신 직접 지정할 스킨 (도감 미리보기용) */
@@ -36,12 +33,12 @@ interface Props {
 
 export type CatExpression = 'idle' | 'happy' | 'scared' | 'dizzy' | 'sleepy';
 
-/** 바깥 모서리 반경. 안쪽으로 이어지는 모서리는 살짝만 깎아 덩어리로 붙어 보이게 한다 */
-const R = '44%';
-const R_INNER = '4%';
+/** 바깥 모서리 반경. 프로젝트 공통 반경(2px)과 같고, 같은 품종으로 이어지는 안쪽 모서리는 0이라 덩어리로 붙는다 */
+const R = 'var(--radius-sm)';
+const R_INNER = '0';
 
 function CatBlock({
-  catType, ghost, conn, showFace, showEars, showTail, effect, expression = 'idle', blinkDelay = 0, cellX = 0, cellY = 0, landing = false, skinId, accessory,
+  catType, ghost, conn, showFace, showEars, showTail, effect, expression = 'idle', blinkDelay = 0, landing = false, skinId, accessory,
 }: Props) {
   const isDark = DARK_CAT_TYPES.includes(catType);
   const equipped = useEquippedSkins();
@@ -49,7 +46,7 @@ function CatBlock({
   const acc = accessory === undefined ? equipped.accessory : accessory;
   const c = conn || { top: false, right: false, bottom: false, left: false };
 
-  // 조각 전체가 하나의 둥근 덩어리로 보이도록 바깥 모서리만 크게 둥글린다
+  // 조각 전체가 한 덩어리로 보이도록 바깥 모서리만 살짝 둥글린다
   const tl = !c.top && !c.left ? R : R_INNER;
   const tr = !c.top && !c.right ? R : R_INNER;
   const bl = !c.bottom && !c.left ? R : R_INNER;
@@ -77,8 +74,6 @@ function CatBlock({
 
   const style = {
     ...paletteVars(skin.palette),
-    '--px': String(Math.abs(cellX) % 2),
-    '--py': String(Math.abs(cellY) % 2),
     borderRadius: `${tl} ${tr} ${br} ${bl}`,
     boxShadow: ghost ? 'none' : shadows.join(', '),
   } as React.CSSProperties;
