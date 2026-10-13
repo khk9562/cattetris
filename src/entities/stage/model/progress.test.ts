@@ -27,9 +27,9 @@ describe('cluster rule label', () => {
   it('shows the stage threshold, or no explosions when it is off', () => {
     expect(clusterThresholdOf(getStage(1)!)).toBeNull();
     expect(clusterRuleLabel(getStage(1)!)).toBe('팡 없음');
-    expect(clusterThresholdOf(getStage(3)!)).toBe(7);
-    expect(clusterRuleLabel(getStage(28)!)).toBe('9마리 팡');
-    expect(clusterThresholdOf({ ...getStage(3)!, preset: {} })).toBe(7);
+    expect(clusterThresholdOf(getStage(3)!)).toBe(8);
+    expect(clusterRuleLabel(getStage(28)!)).toBe('11마리 팡');
+    expect(clusterThresholdOf({ ...getStage(3)!, preset: {} })).toBe(9);
   });
 
   it('never asks for explosions on a stage where they are off', () => {
