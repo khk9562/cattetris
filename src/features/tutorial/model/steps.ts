@@ -18,7 +18,7 @@ export interface TutorialStep {
 }
 
 /** 튜토리얼 팡 기준. Easy와 같다 */
-export const TUTORIAL_THRESHOLD = 7;
+export const TUTORIAL_THRESHOLD = 9;
 
 /** 튜토리얼 공통 프리셋: 천천히 떨어지고, Easy 기준으로 팡, 조각은 3+1 */
 export const TUTORIAL_PRESET: Partial<DifficultyPreset> = {

@@ -147,6 +147,8 @@ function play(stageId: number, seed: number) {
   const over: Record<string, number> = {};
   if (process.env.THR) over.clusterThreshold = Number(process.env.THR);
   if (process.env.MIX) over.mixCells = Number(process.env.MIX);
+  if (process.env.BREEDS) { over.breedsStart = Number(process.env.BREEDS); over.breedsMax = Number(process.env.BREEDS); }
+  if (process.env.REP) over.breedRepeatChance = Number(process.env.REP);
   let s = engineReducer(createInitialState(), { type: 'start', preset: DIFFICULTY_PRESETS.easy, breeds: ALL_CAT_TYPES, seed, stage, mode: 'stage', presetOverride: over });
   let rnd = seed;
   const next = () => { rnd = (rnd * 1664525 + 1013904223) >>> 0; return rnd / 4294967296; };
