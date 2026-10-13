@@ -13,6 +13,7 @@
     "preview": "vite preview",
     "sim": "vite-node scripts/balance-sim.ts",
     "sim:sweep": "vite-node scripts/balance-sweep.ts",
+    "sim:stages": "vite-node scripts/stage-check.ts",
     "build:single": "vite build -c vite.artifact.config.ts"
   },
   "dependencies": {
