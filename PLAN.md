@@ -21,7 +21,7 @@ v3에서 게임 엔진을 표준 가이드라인 수준으로 표준화하고, �
 | 린트 | ESLint + steiger(FSD 레이어 검사) (`npm run lint`) |
 | 밸런스 | 봇 시뮬레이션 `npm run sim`, `npm run sim:sweep`, 스테이지 점검 `npm run sim:stages` |
 | 아이콘 | 인라인 SVG (폰트 로딩 실패에 영향받지 않음) |
-| 폰트 | 본문 Pretendard Variable, 제목 Jua (둘 다 다이내믹 서브셋 자체 호스팅) |
+| 폰트 | 제목 Jua, 그 밖의 모든 글자 Paperlogy (둘 다 서브셋 자체 호스팅, 둘 다 SIL OFL 1.1) |
 
 ---
 
@@ -73,7 +73,7 @@ src/
     ├── lib/                     시드 난수(mulberry32), 안전한 storage 유틸
     └── ui/                      Icon(SVG)
 public/
-├── fonts/pretendard/            Pretendard Variable 다이내믹 서브셋(92개) + 전체 가변 폰트(아티팩트용)
+├── fonts/paperlogy/             Paperlogy 굵기 4종(400/600/700/800) x 2범위 서브셋 + OFL.txt
 ├── fonts/jua/                   Jua 다이내믹 서브셋(87개, 제목용)
 └── icons/                       PWA 아이콘 (192/512/maskable/apple-touch)
 scripts/
@@ -323,7 +323,7 @@ v7 첫 조정은 "연쇄가 가능한가"만 보고 기준을 7로 내렸는데,
 - `app/lib/lockScroll`: `[data-scroll]` 안에서 실제로 더 스크롤할 수 있을 때만 터치/휠을 통과, 그 외엔 preventDefault (iOS 바운스·툴바 접힘 제스처 차단). 스크롤이 생기면 즉시 0으로 되돌린다.
 - 내부 스크롤 영역(시작/게임오버 오버레이, 도감, 스테이지 목록, 설정, 통계)에만 `data-scroll` + `overscroll-behavior: contain`.
 - `viewport-fit=cover` + safe-area-inset 반영, `max-height` 720/640/600px 단계로 압축 레이아웃(행렬·태그라인·부제·시작 화면 도감 버튼 순으로 숨김).
-- 폰트: Pretendard Variable(OFL) 다이내믹 서브셋 92개를 자체 호스팅. 첫 로드에 전부 받지 않도록 프리캐시에서 제외하고 런타임 CacheFirst. 아티팩트 빌드에는 전체 가변 폰트를 base64로 인라인.
+- 폰트(v5.1 당시): Pretendard Variable(OFL) 다이내믹 서브셋 92개를 자체 호스팅. v7.3에서 Paperlogy로 교체. 첫 로드에 전부 받지 않도록 프리캐시에서 제외하고 런타임 CacheFirst. 아티팩트 빌드에는 전체 가변 폰트를 base64로 인라인.
 - 검증: 390x664, 375x553, 412x915에서 `scrollHeight === innerHeight`, `#root` 높이 === `visualViewport.height`, 휠/탭 후 `scrollY 0`, `document.fonts.check('Pretendard Variable')` true.
 
 ## 게임 포털 하위 경로 지원
@@ -439,6 +439,19 @@ iPad 820x1180에서 452px -> 476px(58%) + 양옆 칼럼. 비율은 전부 정확
 - 고양이 블럭 바깥 모서리 44% -> 2px, 이어지는 안쪽 모서리 4% -> 0
 - 보드, 버튼, 시작 시트, 설정 시트, 도감·통계·스테이지 카드, 미션 진행 바, 스테이지 목표 바, 설정 스위치와 손잡이, 헤더 배지, 닫기 버튼, 튜토리얼 점까지 전부
 - 그림은 예외로 둠: 고양이 눈·코·볼·입·귀·꼬리, 털 무늬, 액세서리, 분위기 입자, 캔버스 폭발 파티클
+
+## v7.3 본문 글꼴 Paperlogy
+제목(Jua)은 그대로 두고 그 밖의 모든 글자(본문, 점수, 버튼, 라벨, 시트)를 Paperlogy(페이퍼로지)로 바꿨다.
+- 출처: 눈누 배포 저장소(projectnoonnu/2408-3)의 원본 woff2. 폰트 메타데이터에 "Copyright © 2024 PT&", SIL Open Font License 1.1이 들어 있다.
+  라이선스 전문은 `public/fonts/paperlogy/OFL.txt`. 배포처는 https://freesentation.blog/paperlogyfont
+- 쓰는 굵기만 둔다: 400(본문), 600, 700, 800. 원본은 굵기당 약 160KB라서 fontTools로 두 범위로 나눴다.
+  core = 라틴·기호 + KS X 1001 완성형 한글 2,350자(약 120KB), ext = 나머지 한글(약 48KB). 게임 문구의 한글 625자는 전부 core에 있어서
+  실제로는 화면에 쓰인 굵기마다 core 파일 하나만 받는다 (시작 화면 기준 400/700/800 세 개, 약 355KB).
+- 서브셋 CSS는 `public/fonts/paperlogy/paperlogy-subset.css`이고 경로는 상대 경로라 게임 포털 하위 경로에서도 동작한다.
+  서비스 워커는 Jua와 같이 프리캐시에서 빼고 런타임 CacheFirst(`paperlogy` 캐시)로 받는다.
+- Pretendard(`public/fonts/pretendard`, 약 5.1MB)는 지웠다. 그중 전체 가변 폰트 파일은 원래 어디서도 쓰이지 않던 파일이었다.
+- 버튼이 본문 글꼴을 물려받지 않아 시스템 글꼴로 나오던 문제도 고쳤다 (`button, input, select, textarea { font-family: inherit }`).
+- 검증: 375x667, 390x844, 820x1180에서 `document.fonts.check('800 16px Paperlogy')` 참, 본문·버튼 계산 글꼴 Paperlogy, 제목 Jua, 잘린 글자 없음, 스크롤 없음.
 
 ## 시작 화면 소소한 손질 (v7.1)
 - 히어로 제목 "냥 스택"의 획 두께를 0.045em에서 공통 토큰 `--font-title-stroke`(0.03em)로 한 단계 내렸다.
