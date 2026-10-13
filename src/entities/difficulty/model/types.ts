@@ -23,6 +23,8 @@ export interface DifficultyPreset {
   breedRepeatChance: number;
   /** 같은 품종이 이 개수 이상 붙으면 폭발 */
   clusterThreshold: number;
+  /** 조각 4칸 중 대표와 다른 품종이 업히는 칸 수 (0: 한 품종, 1: 3+1, 2: 2+2) */
+  mixCells: number;
   /** 획득 점수 배율 */
   scoreMultiplier: number;
 }

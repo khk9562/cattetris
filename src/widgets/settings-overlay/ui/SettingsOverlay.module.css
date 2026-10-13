@@ -167,7 +167,7 @@
   font-size: 0.85rem;
   padding: 0.5rem 1rem;
   border-radius: var(--radius-sm);
-  border: 1.5px solid var(--theme-line);
+  border: 1px solid var(--theme-line);
   background: transparent;
   color: var(--color-on-surface);
   cursor: pointer;
@@ -217,7 +217,7 @@
   font-weight: 600;
   padding: 0.5rem 0.625rem;
   border-radius: var(--radius-sm);
-  border: 1.5px solid var(--theme-line);
+  border: 1px solid var(--theme-line);
   background: transparent;
   color: var(--color-on-surface);
   white-space: nowrap;

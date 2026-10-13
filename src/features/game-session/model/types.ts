@@ -115,6 +115,8 @@ export interface EngineState {
 export interface ScriptedPiece {
   id: TetrominoId;
   catType: CatType;
+  /** 셀 번호별 품종 4개. 없으면 한 품종 */
+  catTypes?: CatType[];
 }
 
 /** 시작 시 보드와 조각 순서를 미리 정한다 (튜토리얼) */

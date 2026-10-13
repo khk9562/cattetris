@@ -31,7 +31,7 @@ describe('tutorialReducer', () => {
     expect(segmentStart(5).id).toBe('explode');
   });
 
-  it('keeps the explode setup board solvable: 7 siamese + O piece reaches the threshold', () => {
+  it('keeps the explode setup board solvable: the siamese row + an O piece reaches the threshold', () => {
     const step = TUTORIAL_STEPS.find(s => s.id === 'explode')!;
     const siamese = step.setup!.board!.flat().filter(c => c === 'siamese').length;
     expect(siamese + 4).toBeGreaterThanOrEqual(step.presetOverride!.clusterThreshold!);

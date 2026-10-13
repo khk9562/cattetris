@@ -1,62 +1,33 @@
 import { CatBlock } from '@/entities/cat/@x/piece';
-import type { ActivePiece } from '../model/pieces';
+import { pieceCellInfo, type ActivePiece, type PieceCell } from '../model/pieces';
 import styles from './PiecePreview.module.css';
 
 interface Props {
   piece: ActivePiece;
-  
 }
 
-function normalizeShape(shape: number[][]): number[][] {
-  const grid = Array.from({ length: 4 }, () => Array<number>(4).fill(0));
-  let minR = shape.length, maxR = 0, minC = shape[0].length, maxC = 0;
-  for (let r = 0; r < shape.length; r++) {
-    for (let c = 0; c < shape[r].length; c++) {
-      if (shape[r][c]) {
-        minR = Math.min(minR, r); maxR = Math.max(maxR, r);
-        minC = Math.min(minC, c); maxC = Math.max(maxC, c);
-      }
-    }
-  }
-  const offsetR = Math.floor((4 - (maxR - minR + 1)) / 2);
-  const offsetC = Math.floor((4 - (maxC - minC + 1)) / 2);
-  for (let r = minR; r <= maxR; r++) {
-    for (let c = minC; c <= maxC; c++) {
-      if (shape[r][c]) grid[offsetR + (r - minR)][offsetC + (c - minC)] = 1;
-    }
-  }
-  return grid;
-}
-
-/** 스폰 상태의 조각을 4x4 격자에 고양이 모양으로 그린다. */
+/** 스폰 상태의 조각을 4x4 격자 가운데에 고양이 모양으로 그린다. 셀마다 자기 품종을 쓴다 */
 export default function PiecePreview({ piece }: Props) {
-  const grid = normalizeShape(piece.shapes[0]);
-  const filled: { x: number; y: number }[] = [];
-  grid.forEach((row, y) => row.forEach((c, x) => { if (c) filled.push({ x, y }); }));
-  const byFace = [...filled].sort((a, b) => (a.y !== b.y ? a.y - b.y : a.x - b.x))[0];
-  const byTail = [...filled].sort((a, b) => (a.y !== b.y ? b.y - a.y : b.x - a.x))[0];
+  const spawn: ActivePiece = { ...piece, shape: piece.shapes[0], rotationIndex: 0, position: { x: 0, y: 0 } };
+  const cells = pieceCellInfo(spawn);
+  const minX = Math.min(...cells.map(c => c.x));
+  const maxX = Math.max(...cells.map(c => c.x));
+  const minY = Math.min(...cells.map(c => c.y));
+  const maxY = Math.max(...cells.map(c => c.y));
+  const offX = Math.floor((4 - (maxX - minX + 1)) / 2) - minX;
+  const offY = Math.floor((4 - (maxY - minY + 1)) / 2) - minY;
+  const at = new Map<string, PieceCell>();
+  for (const c of cells) at.set(`${c.y + offY},${c.x + offX}`, c);
 
   return (
     <div className={styles.grid}>
-      {grid.map((row, y) =>
-        row.map((cell, x) => {
+      {Array.from({ length: 4 }, (_, y) =>
+        Array.from({ length: 4 }, (_, x) => {
+          const cell = at.get(`${y},${x}`);
           if (!cell) return <div key={`${y}-${x}`} className={styles.cell} />;
-          const isFace = byFace.x === x && byFace.y === y;
-          const isTail = filled.length > 1 && byTail.x === x && byTail.y === y;
           return (
             <div key={`${y}-${x}`} className={styles.cell}>
-              <CatBlock
-                catType={piece.catType}
-                conn={{
-                  top: y > 0 && grid[y - 1][x] === 1,
-                  right: x < 3 && grid[y][x + 1] === 1,
-                  bottom: y < 3 && grid[y + 1][x] === 1,
-                  left: x > 0 && grid[y][x - 1] === 1,
-                }}
-                showFace={isFace}
-                showEars={isFace}
-                showTail={isTail}
-              />
+              <CatBlock catType={cell.type} conn={cell.conn} showFace={cell.face} showEars={cell.face} showTail={cell.tail} />
             </div>
           );
         }),

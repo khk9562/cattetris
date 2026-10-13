@@ -14,11 +14,10 @@ import {
   type Position,
 } from '@/entities/board';
 import type { CatType } from '@/entities/cat';
-import { drawBreed, drawFromBag, makePiece, movedPiece, resetPiece, rotateWithKicks, type ActivePiece } from '@/entities/piece';
+import { drawBreeds, drawFromBag, makePiece, movedPiece, resetPiece, rotateWithKicks, type ActivePiece } from '@/entities/piece';
 import { DIFFICULTY_PRESETS, breedCountForLevel, gravityIntervalMs, type DifficultyPreset } from '@/entities/difficulty';
 import { isLimitExhausted, isStageCleared, type StageProgressInput } from '@/entities/stage';
 import {
-  CHAIN_STEP_MULTIPLIER,
   CLEAR_ANIMATION_MS,
   CLUSTER_CELL_SCORE,
   COMBO_SCORE,
@@ -29,7 +28,10 @@ import {
   POPUP_MS,
   SETTLE_MS,
   SOFT_DROP_SCORE,
+  SPLASH_BIG_CLUSTER_EXTRA,
   SPLASH_CELL_SCORE,
+  SPLASH_MIN_CHAIN,
+  chainMultiplier,
 } from '@/shared/config';
 import { nextRandom } from '@/shared/lib';
 import type { ClearCell, EngineAction, EngineState, FeedbackKind, PopupKind } from './types';
@@ -107,9 +109,9 @@ function shuffle<T>(items: T[], seed: number): { items: T[]; seed: number } {
 
 function drawPiece(s: EngineState): { piece: ActivePiece; state: EngineState } {
   const b = drawFromBag(s.bag, s.seed);
-  const c = drawBreed(breedPool(s), s.lastBreed, s.preset.breedRepeatChance, b.seed);
-  const piece = makePiece(b.id, c.catType);
-  return { piece, state: { ...s, bag: b.bag, seed: c.seed, lastBreed: c.catType } };
+  const c = drawBreeds(breedPool(s), s.lastBreed, s.preset.breedRepeatChance, s.preset.mixCells, b.seed);
+  const piece = makePiece(b.id, c.catTypes[0], c.catTypes);
+  return { piece, state: { ...s, bag: b.bag, seed: c.seed, lastBreed: c.catTypes[0] } };
 }
 
 function refillQueue(s: EngineState): EngineState {
@@ -120,7 +122,7 @@ function refillQueue(s: EngineState): EngineState {
   while (queue.length < NEXT_QUEUE_SIZE) {
     const next = scripted.shift();
     if (next) {
-      queue.push({ ...makePiece(next.id, next.catType), uid: ++pieceUid });
+      queue.push({ ...makePiece(next.id, next.catType, next.catTypes), uid: ++pieceUid });
       state = { ...state, lastBreed: next.catType };
       continue;
     }
@@ -217,6 +219,13 @@ function centroid(cells: Position[]): Position {
   };
 }
 
+/** 뭉치/줄 셀을 지우고 중력을 적용했을 때 또 터질 것이 남는가 (여파 없이) */
+function continuesAfterClear(board: Board, cells: Position[], lines: number[], threshold: number): boolean {
+  const lineCells = lines.flatMap(y => Array.from({ length: board[y].length }, (_, x) => ({ x, y })));
+  const { newBoard } = applyGravity(clearMatches(board, [...cells, ...lineCells]));
+  return getCompletedRows(newBoard).length > 0 || findClusters(newBoard, threshold).length > 0;
+}
+
 /** 줄과 뭉치를 판정해 제거 연출 단계로 들어가거나, 없으면 다음 조각을 낸다. */
 function evaluate(s: EngineState, chain: number): EngineState {
   const lines = getCompletedRows(s.board);
@@ -232,7 +241,13 @@ function evaluate(s: EngineState, chain: number): EngineState {
     for (const c of cluster.cells) marked.set(key(c), { ...c, kind: 'cluster' });
     clusterCells += cluster.cells.length;
   }
+  // 여파는 기본이 아니라 보상이다. 기준보다 한참 큰 뭉치이거나, 연쇄의 "마지막" 팡일 때만 주변을 휩쓴다.
+  // 그래야 옆에 쌓아 둔 "하나 모자란 뭉치"가 멋대로 사라지지 않고 연쇄 재료로 남으며,
+  // 연쇄 도중의 여파가 위에 쌓아 둔 다음 단계를 지워 버리는 일도 없다
+  const finale = chain >= SPLASH_MIN_CHAIN && !continuesAfterClear(s.board, [...marked.values()], lines, s.preset.clusterThreshold);
   for (const cluster of clusters) {
+    const big = cluster.cells.length >= s.preset.clusterThreshold + SPLASH_BIG_CLUSTER_EXTRA;
+    if (!finale && !big) continue;
     for (const c of getSplashCells(s.board, cluster.cells)) {
       if (!marked.has(key(c))) {
         marked.set(key(c), { ...c, kind: 'splash' });
@@ -250,8 +265,7 @@ function evaluate(s: EngineState, chain: number): EngineState {
   const level = s.level;
   const lineBase = lines.length === 0 ? 0 : lines.length <= 4 ? LINE_SCORE[lines.length] : LINE_SCORE[4] + 400 * (lines.length - 4);
   const clusterBase = clusterCells * CLUSTER_CELL_SCORE + splashCells * SPLASH_CELL_SCORE;
-  const chainMultiplier = 1 + CHAIN_STEP_MULTIPLIER * chain;
-  const gained = Math.round((lineBase + clusterBase) * level * chainMultiplier * s.preset.scoreMultiplier);
+  const gained = Math.round((lineBase + clusterBase) * level * chainMultiplier(chain) * s.preset.scoreMultiplier);
 
   let state: EngineState = {
     ...s,

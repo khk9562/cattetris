@@ -1,20 +1,21 @@
-/* 점수 한 줄: 카드 없이 바탕 위에 바로 올린다 */
+/* 점수 한 줄: 카드 없이 바탕 위에 바로. 라벨과 숫자를 나란히 두어 높이를 아낀다 */
 .container {
   width: 100%;
   display: flex;
   justify-content: space-between;
-  align-items: flex-end;
+  align-items: baseline;
   gap: 0.75rem;
 }
 
 .scoreBlock {
   display: flex;
-  flex-direction: column;
+  align-items: baseline;
+  gap: 0.5rem;
   min-width: 0;
 }
 
 .label {
-  font-size: 0.66rem;
+  font-size: 0.6rem;
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.1em;
@@ -23,7 +24,7 @@
 }
 
 .scoreValue {
-  font-size: 2.125rem;
+  font-size: 1.625rem;
   font-weight: 800;
   line-height: 1.1;
   color: var(--color-on-background);
@@ -65,6 +66,6 @@
   .comboHot b { animation: none; }
 }
 
-@media (max-height: 40rem) {
-  .scoreValue { font-size: 1.75rem; }
+@media (min-width: 46rem) {
+  .scoreValue { font-size: 2rem; }
 }

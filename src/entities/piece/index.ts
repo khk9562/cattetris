@@ -1,9 +1,12 @@
-export type { ActivePiece } from './model/pieces';
+export type { ActivePiece, PieceCell, PieceConn } from './model/pieces';
 export type { TetrominoId } from './model/tetromino';
-export { TETROMINO_IDS, TETROMINO_SHAPES, getKicks } from './model/tetromino';
+export { TETROMINO_IDS, TETROMINO_SHAPES, getKicks, rotateMatrixCW } from './model/tetromino';
 export {
   drawFromBag,
   drawBreed,
+  drawBreeds,
+  cellBreed,
+  pieceCellInfo,
   makePiece,
   resetPiece,
   rotatedPiece,
