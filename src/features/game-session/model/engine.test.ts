@@ -240,6 +240,30 @@ describe('cluster explosion', () => {
   });
 });
 
+describe('endless mode pieces', () => {
+  it('always uses a single breed per piece, even if a preset asks for mixed pieces', () => {
+    let s = engineReducer(createInitialState(), { type: 'start', preset: { ...normal, mixCells: 2 }, breeds: ALL_CAT_TYPES, seed: 21 });
+    expect(s.mode).toBe('endless');
+    expect(s.preset.mixCells).toBe(0);
+    for (let i = 0; i < 30; i++) {
+      for (const p of [s.current!, ...s.queue]) expect(new Set(p.catTypes).size).toBe(1);
+      s = settle(engineReducer(s, { type: 'hardDrop' }));
+      if (s.status !== 'playing') break;
+    }
+  });
+
+  it('keeps every difficulty preset single-breed', () => {
+    for (const p of Object.values(DIFFICULTY_PRESETS)) expect(p.mixCells).toBe(0);
+  });
+
+  it('still allows mixed pieces in stage mode', () => {
+    const stage: StageDef = { id: 99, title: 't', goals: [{ type: 'lines', count: 99 }], limit: { type: 'pieces', count: 99 }, preset: { mixCells: 1, breedsStart: 4, breedsMax: 4 } };
+    const s = engineReducer(createInitialState(), { type: 'start', preset: normal, breeds: ALL_CAT_TYPES, seed: 4, stage });
+    expect(s.preset.mixCells).toBe(1);
+    expect([s.current!, ...s.queue].some(p => new Set(p.catTypes).size === 2)).toBe(true);
+  });
+});
+
 describe('chain multiplier', () => {
   it('grows steeply like a chain table and keeps growing past it', () => {
     expect(chainMultiplier(0)).toBe(1);
