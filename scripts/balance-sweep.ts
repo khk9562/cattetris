@@ -1,8 +1,8 @@
 /** 폭발 기준/품종 수/반복 확률 조합 스윕 (휴리스틱 봇, normal 기반) */
 import { ALL_CAT_TYPES } from '@/entities/cat';
-import { getGhostPosition, isValidPosition, type Board } from '@/entities/board';
+import { getGhostPosition, isValidPosition, placePiece, type Board } from '@/entities/board';
 import { DIFFICULTY_PRESETS, type DifficultyPreset } from '@/entities/difficulty';
-import { rotatedPiece, type ActivePiece } from '@/entities/piece';
+import { cellBreed, rotatedPiece, type ActivePiece } from '@/entities/piece';
 import { createInitialState, engineReducer, type EngineState } from '@/features/game-session';
 import { BOARD_HEIGHT, BOARD_WIDTH, CLEAR_ANIMATION_MS, SETTLE_MS } from '@/shared/config';
 
@@ -52,14 +52,15 @@ function playGame(preset: DifficultyPreset, seed: number, maxPieces: number, sam
     const opts = placements(s.board, s.current!);
     let best = -Infinity; let target = opts[0];
     for (const o of opts) {
-      const b = s.board.map(r => [...r]);
+      const b = placePiece(s.board, o);
       let same = 0;
       for (let r = 0; r < o.shape.length; r++) for (let c = 0; c < o.shape[r].length; c++) {
-        if (!o.shape[r][c]) continue;
-        const y = o.position.y + r, x = o.position.x + c; if (y >= 0) b[y][x] = o.catType;
+        const v = o.shape[r][c];
+        if (!v) continue;
+        const y = o.position.y + r, x = o.position.x + c;
         for (const [dx, dy] of [[1,0],[-1,0],[0,1],[0,-1]]) {
           const nx = x + dx, ny = y + dy;
-          if (ny >= 0 && ny < BOARD_HEIGHT && nx >= 0 && nx < BOARD_WIDTH && s.board[ny][nx] === o.catType) same++;
+          if (ny >= 0 && ny < BOARD_HEIGHT && nx >= 0 && nx < BOARD_WIDTH && s.board[ny][nx] === cellBreed(o, v)) same++;
         }
       }
       const v = evaluateBoard(b) + same * samePref + next() * 0.2;

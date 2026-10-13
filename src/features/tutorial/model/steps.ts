@@ -17,11 +17,15 @@ export interface TutorialStep {
   presetOverride?: Partial<DifficultyPreset>;
 }
 
-/** 튜토리얼 공통 프리셋: 천천히 떨어지고, 10마리면 팡 */
+/** 튜토리얼 팡 기준. Easy와 같다 */
+export const TUTORIAL_THRESHOLD = 7;
+
+/** 튜토리얼 공통 프리셋: 천천히 떨어지고, Easy 기준으로 팡, 조각은 3+1 */
 export const TUTORIAL_PRESET: Partial<DifficultyPreset> = {
   startLevel: 1,
   gravityScale: 4,
-  clusterThreshold: 10,
+  clusterThreshold: TUTORIAL_THRESHOLD,
+  mixCells: 1,
   lockDelayMs: 900,
   lockResetLimit: 30,
   breedsStart: 4,
@@ -37,8 +41,8 @@ function lineBoard(): Board {
 
 function clusterBoard(): Board {
   const b = createBoard();
-  // 바닥 가운데 시암 7마리 (O 조각 4마리가 붙으면 11마리 = 팡)
-  for (let x = 2; x <= 8; x++) b[BOARD_HEIGHT - 1][x] = 'siamese';
+  // 바닥 가운데 샴 (기준 - 3)마리. O 조각 4마리가 붙으면 기준 + 1 = 팡
+  for (let x = 3; x < 3 + TUTORIAL_THRESHOLD - 3; x++) b[BOARD_HEIGHT - 1][x] = 'siamese';
   b[BOARD_HEIGHT - 1][0] = 'black';
   b[BOARD_HEIGHT - 2][0] = 'black';
   b[BOARD_HEIGHT - 1][9] = 'tabby';
@@ -54,8 +58,8 @@ export const TUTORIAL_STEPS: TutorialStep[] = [
     done: 'move',
     setup: {
       pieces: [
-        { id: 'T', catType: 'ginger' },
-        { id: 'L', catType: 'tuxedo' },
+        { id: 'T', catType: 'ginger', catTypes: ['ginger', 'ginger', 'ginger', 'tuxedo'] },
+        { id: 'L', catType: 'tuxedo', catTypes: ['tuxedo', 'tuxedo', 'tuxedo', 'ginger'] },
         { id: 'O', catType: 'tabby' },
         { id: 'S', catType: 'black' },
       ],
@@ -77,7 +81,7 @@ export const TUTORIAL_STEPS: TutorialStep[] = [
   {
     id: 'explode',
     title: '팡!',
-    text: '같은 냥이가 10마리 붙으면 팡 터지고 주변까지 같이 터져요. 샴 냥이를 아래 샴 무리 위에 붙여 보세요.',
+    text: `같은 냥이가 ${TUTORIAL_THRESHOLD}마리 붙으면 팡! 큰 냥이에 업힌 새끼는 다른 품종이라, 하나 모자란 무리를 남겨 두면 연쇄가 돼요. 샴 냥이를 아래 샴 무리에 붙여 보세요.`,
     target: 'board',
     done: 'explode',
     setup: { board: clusterBoard(), pieces: [{ id: 'O', catType: 'siamese' }, { id: 'O', catType: 'siamese' }, { id: 'I', catType: 'siamese' }] },

@@ -1,6 +1,6 @@
 import { memo, useCallback, useMemo, useState } from 'react';
 import type { Board as BoardType, Position } from '@/entities/board';
-import type { ActivePiece } from '@/entities/piece';
+import { pieceCellInfo, type ActivePiece } from '@/entities/piece';
 import { CatBlock, type CatType } from '@/entities/cat';
 import type { ClearCell, ClearKind, Popup } from '@/features/game-session';
 import { BOARD_HEIGHT, BOARD_WIDTH } from '@/shared/config';
@@ -20,32 +20,6 @@ interface Props {
 }
 
 type RenderCell = { type: CatType; ghost: boolean; active?: boolean } | null;
-
-interface FloatCell {
-  x: number;
-  y: number;
-  conn: { top: boolean; right: boolean; bottom: boolean; left: boolean };
-  face: boolean;
-  tail: boolean;
-}
-
-/** 조각 하나의 셀 목록과 조각 내부 연결/얼굴/꼬리 정보 */
-function pieceFloatCells(p: ActivePiece): FloatCell[] {
-  const cells: { r: number; c: number }[] = [];
-  p.shape.forEach((row, r) => row.forEach((v, c) => { if (v) cells.push({ r, c }); }));
-  const has = (r: number, c: number) => !!p.shape[r]?.[c];
-  const sorted = [...cells].sort((a, b) => (a.r !== b.r ? a.r - b.r : a.c - b.c));
-  const face = sorted[0];
-  const tail = [...cells].sort((a, b) => (a.r !== b.r ? b.r - a.r : b.c - a.c))[0];
-  return cells.map(({ r, c }) => ({
-    x: p.position.x + c,
-    y: p.position.y + r,
-    conn: { top: has(r - 1, c), right: has(r, c + 1), bottom: has(r + 1, c), left: has(r, c - 1) },
-    face: r === face.r && c === face.c,
-    tail: cells.length > 1 && r === tail.r && c === tail.c,
-  }));
-}
-
 
 function cellAt(grid: RenderCell[][], x: number, y: number): RenderCell {
   if (y < 0 || y >= BOARD_HEIGHT || x < 0 || x >= BOARD_WIDTH) return null;
@@ -102,8 +76,8 @@ function Board({ board, currentPiece, ghostPiece, clearing, popups, gameOver = f
   const { faceMap, tailMap } = useMemo(() => computeFeatures(grid), [grid]);
 
   // 활성 조각 셀은 조각 번호(uid)를 키로 써서 새 조각이면 마운트 팝, 같은 조각이면 left/top 트랜지션으로 미끄러진다
-  const activeCells = useMemo(() => (currentPiece ? pieceFloatCells(currentPiece) : []), [currentPiece]);
-  const ghostCells = useMemo(() => (ghostPiece ? pieceFloatCells(ghostPiece) : []), [ghostPiece]);
+  const activeCells = useMemo(() => (currentPiece ? pieceCellInfo(currentPiece) : []), [currentPiece]);
+  const ghostCells = useMemo(() => (ghostPiece ? pieceCellInfo(ghostPiece) : []), [ghostPiece]);
   const landedSet = useMemo(() => new Set((lastLocked?.cells ?? []).map(c => `${c.x},${c.y}`)), [lastLocked]);
   const clearMap = useMemo(() => {
     const m = new Map<string, ClearKind>();
@@ -163,7 +137,7 @@ function Board({ board, currentPiece, ghostPiece, clearing, popups, gameOver = f
               className={`${styles.floatCell} ${styles.glide}`}
               style={{ left: `${(c.x / BOARD_WIDTH) * 100}%`, top: `${(c.y / BOARD_HEIGHT) * 100}%` }}
             >
-              <CatBlock catType={ghostPiece.catType} ghost conn={c.conn} cellX={c.x} cellY={c.y} />
+              <CatBlock catType={c.type} ghost conn={c.conn} cellX={c.x} cellY={c.y} />
             </div>
           ))}
           {currentPiece && activeCells.map((c, i) => (
@@ -173,7 +147,7 @@ function Board({ board, currentPiece, ghostPiece, clearing, popups, gameOver = f
               style={{ left: `${(c.x / BOARD_WIDTH) * 100}%`, top: `${(c.y / BOARD_HEIGHT) * 100}%`, zIndex: 3 }}
             >
               <CatBlock
-                catType={currentPiece.catType}
+                catType={c.type}
                 conn={c.conn}
                 showFace={c.face}
                 showEars={c.face}

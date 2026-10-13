@@ -13,7 +13,9 @@ import {
   isValidPosition,
   placePiece,
 } from './board';
-import type { Board } from './types';
+import type { Board, CellValue } from './types';
+
+type CatType = NonNullable<CellValue>;
 
 const O_SHAPE = [
   [1, 1],
@@ -21,7 +23,7 @@ const O_SHAPE = [
 ];
 
 function piece(x: number, y: number, shape = O_SHAPE) {
-  return { id: 'O' as const, shape, shapes: [shape, shape, shape, shape], rotationIndex: 0, catType: 'ginger' as const, position: { x, y } };
+  return { id: 'O' as const, shape, shapes: [shape, shape, shape, shape], rotationIndex: 0, catType: 'ginger' as const, catTypes: ['ginger', 'ginger', 'ginger', 'ginger'] as const as CatType[], position: { x, y } };
 }
 
 describe('createBoard', () => {
@@ -66,6 +68,16 @@ describe('line clears', () => {
 });
 
 describe('getGhostPosition', () => {
+  it('places each cell with its own breed for a mixed piece', () => {
+    const shape = [[1, 2], [3, 4]];
+    const p = { ...piece(0, 18, shape), catTypes: ['ginger', 'ginger', 'ginger', 'black'] as CatType[] };
+    const board = placePiece(createBoard(), p);
+    expect(board[18][0]).toBe('ginger');
+    expect(board[18][1]).toBe('ginger');
+    expect(board[19][0]).toBe('ginger');
+    expect(board[19][1]).toBe('black');
+  });
+
   it('drops the piece to the lowest valid row', () => {
     const ghost = getGhostPosition(createBoard(), piece(3, 0));
     expect(ghost.position).toEqual({ x: 3, y: BOARD_HEIGHT - 2 });

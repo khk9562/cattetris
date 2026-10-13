@@ -3,7 +3,7 @@ import { ALL_CAT_TYPES } from '@/entities/cat';
 import { DIFFICULTY_PRESETS, gravityIntervalMs } from '@/entities/difficulty';
 import { makePiece } from '@/entities/piece';
 import type { StageDef, StageLimit } from '@/entities/stage';
-import { BOARD_HEIGHT, BOARD_WIDTH, CLEAR_ANIMATION_MS, NEXT_QUEUE_SIZE, SETTLE_MS } from '@/shared/config';
+import { BOARD_HEIGHT, BOARD_WIDTH, CLEAR_ANIMATION_MS, NEXT_QUEUE_SIZE, SETTLE_MS, chainMultiplier } from '@/shared/config';
 import { createInitialState, engineReducer } from './engine';
 import type { EngineState } from './types';
 
@@ -146,35 +146,108 @@ describe('line clear flow', () => {
 });
 
 describe('cluster explosion', () => {
-  it('explodes a cluster at the threshold together with its 8-neighbour ring and chains', () => {
+  /** 보드만 바꾼 뒤 정착 단계 tick으로 판정에 진입시킨다. chain은 진입 시 1 증가하므로 settling 전 값으로 조절 */
+  function judge(s: EngineState, board: EngineState['board'], chainBefore = -1): EngineState {
+    return ticks({ ...s, board, current: null, phase: 'settling', phaseMs: 0, chain: chainBefore }, SETTLE_MS + 16);
+  }
+
+  it('explodes a cluster at the threshold but leaves the neighbours alone on a first pop', () => {
     let s = start(11);
     const board = s.board.map(r => [...r]);
-    // 왼쪽 0~4열을 아래에서부터 채워 정확히 기준 개수만큼의 시암 뭉치를 만든다
     const thr = normal.clusterThreshold;
     for (let i = 0; i < thr; i++) board[BOARD_HEIGHT - 1 - Math.floor(i / 5)][i % 5] = 'siamese';
     const rows = Math.ceil(thr / 5);
-    // 폭발 여파 대상: 뭉치 오른쪽에 붙은 5열
     board[BOARD_HEIGHT - 1][5] = 'black';
     board[BOARD_HEIGHT - rows][5] = 'black';
-    // 여파 밖 셀
     board[BOARD_HEIGHT - 1][8] = 'tabby';
-    board[BOARD_HEIGHT - 3][8] = 'tabby';
-    s = { ...s, board, current: null };
-    // 직접 판정 단계로 진입시키기 위해 settling 단계에서 tick
-    s = { ...s, phase: 'settling', phaseMs: 0 };
-    s = ticks(s, SETTLE_MS + 16);
+    s = judge(s, board);
     expect(s.phase).toBe('clearing');
+    expect(s.chain).toBe(0);
     expect(s.clearing.filter(c => c.kind === 'cluster')).toHaveLength(thr);
-    expect(s.clearing.filter(c => c.kind === 'splash')).toHaveLength(2);
+    expect(s.clearing.filter(c => c.kind === 'splash')).toHaveLength(0);
     expect(s.stats.explosions).toBe(1);
 
     const after = settle(s);
     expect(after.board[BOARD_HEIGHT - 1][0]).toBeNull();
-    expect(after.board[BOARD_HEIGHT - 1][5]).toBeNull();
-    expect(after.board[BOARD_HEIGHT - 1][8]).toBe('tabby');
-    expect(after.board[BOARD_HEIGHT - 2][8]).toBe('tabby'); // 중력으로 한 칸 내려옴
+    expect(after.board[BOARD_HEIGHT - 1][5]).toBe('black');
     expect(after.destroyed.siamese).toBe(thr);
-    expect(after.destroyed.black).toBe(2);
+    expect(after.destroyed.black).toBeUndefined();
+  });
+
+  it('sweeps the 8-neighbour ring when the cluster is much bigger than the threshold', () => {
+    let s = start(11);
+    const board = s.board.map(r => [...r]);
+    const n = normal.clusterThreshold + 4;
+    for (let i = 0; i < n; i++) board[BOARD_HEIGHT - 1 - Math.floor(i / 5)][i % 5] = 'siamese';
+    board[BOARD_HEIGHT - 1][5] = 'black';
+    board[BOARD_HEIGHT - 1][8] = 'tabby';
+    s = judge(s, board);
+    expect(s.clearing.filter(c => c.kind === 'cluster')).toHaveLength(n);
+    expect(s.clearing.filter(c => c.kind === 'splash').map(c => `${c.x},${c.y}`)).toEqual([`5,${BOARD_HEIGHT - 1}`]);
+  });
+
+  it('runs a designed 3-chain and only sweeps the neighbours on the final pop', () => {
+    let s = start(5, { ...DIFFICULTY_PRESETS.easy, clusterThreshold: 7 });
+    const board = s.board.map(r => [...r]);
+    const y = BOARD_HEIGHT - 1;
+    // 1단: 샴 7 (19행 0~4, 18행 0~1). 터지면 위의 치즈 3마리가 내려와 19행 치즈 4마리와 7마리가 된다
+    for (let x = 0; x <= 4; x++) board[y][x] = 'siamese';
+    board[y - 1][0] = 'siamese';
+    board[y - 1][1] = 'siamese';
+    for (let x = 2; x <= 4; x++) board[y - 1][x] = 'ginger';
+    for (let x = 5; x <= 8; x++) board[y][x] = 'ginger';
+    // 3단: 까망이 5 (17행 0~4) + 2 (18행 5~6). 2단이 터지면 모두 19행에 모여 7마리
+    for (let x = 0; x <= 4; x++) board[y - 2][x] = 'black';
+    board[y - 1][5] = 'black';
+    board[y - 1][6] = 'black';
+    // 여파 확인용: 3단 뭉치 옆에 붙을 태비 (17행 5)
+    board[y - 2][5] = 'tabby';
+
+    s = judge(s, board);
+    expect(s.chain).toBe(0);
+    expect(s.clearing.filter(c => c.kind === 'cluster')).toHaveLength(7);
+    expect(s.clearing.filter(c => c.kind === 'splash')).toHaveLength(0);
+
+    s = settle({ ...s, phase: 'clearing' });
+    // settle은 active까지 진행하므로 연쇄 통계로 확인한다
+    expect(s.stats.maxChain).toBe(2);
+    expect(s.stats.explosions).toBe(3);
+    expect(s.destroyed.siamese).toBe(7);
+    expect(s.destroyed.ginger).toBe(7);
+    expect(s.destroyed.black).toBe(7);
+    // 마지막 팡의 여파로 태비가 함께 사라졌다
+    expect(s.destroyed.tabby).toBe(1);
+    expect(s.board.flat().filter(Boolean)).toHaveLength(0);
+  });
+
+  it('does not sweep neighbours mid-chain so the next step survives', () => {
+    let s = start(5, { ...DIFFICULTY_PRESETS.easy, clusterThreshold: 7 });
+    const board = s.board.map(r => [...r]);
+    const y = BOARD_HEIGHT - 1;
+    for (let x = 0; x <= 4; x++) board[y][x] = 'siamese';
+    board[y - 1][0] = 'siamese';
+    board[y - 1][1] = 'siamese';
+    for (let x = 2; x <= 4; x++) board[y - 1][x] = 'ginger';
+    for (let x = 5; x <= 8; x++) board[y][x] = 'ginger';
+    for (let x = 0; x <= 4; x++) board[y - 2][x] = 'black';
+    board[y - 1][5] = 'black';
+    board[y - 1][6] = 'black';
+    // 1단을 "연쇄 도중"으로 만든다 (chainBefore 0 -> 진입 시 chain 1)
+    s = judge(s, board, 0);
+    expect(s.chain).toBe(1);
+    // 아직 2단이 남아 있으므로 여파 없음: 위의 까망이/치즈는 그대로다
+    expect(s.clearing.filter(c => c.kind === 'splash')).toHaveLength(0);
+  });
+});
+
+describe('chain multiplier', () => {
+  it('grows steeply like a chain table and keeps growing past it', () => {
+    expect(chainMultiplier(0)).toBe(1);
+    expect(chainMultiplier(1)).toBe(2);
+    expect(chainMultiplier(2)).toBe(4);
+    expect(chainMultiplier(5)).toBe(16);
+    expect(chainMultiplier(6)).toBe(21);
+    expect(chainMultiplier(7)).toBe(26);
   });
 });
 

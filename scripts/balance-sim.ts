@@ -6,9 +6,9 @@
  * 실행: npx vite-node scripts/balance-sim.ts
  */
 import { ALL_CAT_TYPES } from '@/entities/cat';
-import { getGhostPosition, isValidPosition, type Board } from '@/entities/board';
+import { getGhostPosition, isValidPosition, placePiece, type Board } from '@/entities/board';
 import { DIFFICULTY_ORDER, DIFFICULTY_PRESETS } from '@/entities/difficulty';
-import { rotatedPiece, type ActivePiece } from '@/entities/piece';
+import { cellBreed, rotatedPiece, type ActivePiece } from '@/entities/piece';
 import { createInitialState, engineReducer } from '@/features/game-session';
 import type { EngineState } from '@/features/game-session';
 import { BOARD_HEIGHT, BOARD_WIDTH, CLEAR_ANIMATION_MS, SETTLE_MS } from '@/shared/config';
@@ -81,18 +81,16 @@ function playGame(bot: Bot, seed: number, presetId: 'easy' | 'normal' | 'hard', 
       let best = -Infinity;
       target = opts[0];
       for (const o of opts) {
-        const b = s.board.map(r => [...r]);
-        for (let r = 0; r < o.shape.length; r++) for (let c = 0; c < o.shape[r].length; c++) {
-          if (o.shape[r][c]) { const y = o.position.y + r, x = o.position.x + c; if (y >= 0) b[y][x] = o.catType; }
-        }
-        // 뭉치 형성을 약간 선호 (사람이 같은 색을 붙이려는 경향)
+        const b = placePiece(s.board, o);
+        // 뭉치 형성을 약간 선호 (사람이 같은 색을 붙이려는 경향). 셀마다 자기 품종으로 센다
         let same = 0;
         for (let r = 0; r < o.shape.length; r++) for (let c = 0; c < o.shape[r].length; c++) {
-          if (!o.shape[r][c]) continue;
+          const v = o.shape[r][c];
+          if (!v) continue;
           const y = o.position.y + r, x = o.position.x + c;
           for (const [dx, dy] of [[1,0],[-1,0],[0,1],[0,-1]]) {
             const nx = x + dx, ny = y + dy;
-            if (ny >= 0 && ny < BOARD_HEIGHT && nx >= 0 && nx < BOARD_WIDTH && s.board[ny][nx] === o.catType) same++;
+            if (ny >= 0 && ny < BOARD_HEIGHT && nx >= 0 && nx < BOARD_WIDTH && s.board[ny][nx] === cellBreed(o, v)) same++;
           }
         }
         const v = evaluateBoard(b) + same * 0.8 + next() * 0.2;

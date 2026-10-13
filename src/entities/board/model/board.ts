@@ -1,6 +1,6 @@
 import { BOARD_WIDTH, BOARD_HEIGHT } from '@/shared/config';
 import type { Board, CellValue, Position } from './types';
-import type { ActivePiece } from '@/entities/piece/@x/board';
+import { cellBreed, type ActivePiece } from '@/entities/piece/@x/board';
 
 export function createBoard(): Board {
   return Array.from({ length: BOARD_HEIGHT }, () => Array<CellValue>(BOARD_WIDTH).fill(null));
@@ -34,10 +34,17 @@ export function pieceCells(piece: ActivePiece): Position[] {
   return cells;
 }
 
+/** 조각을 보드에 굳힌다. 셀마다 자기 품종(섞인 조각이면 업힌 품종)으로 채운다 */
 export function placePiece(board: Board, piece: ActivePiece): Board {
   const newBoard = board.map(row => [...row]);
-  for (const { x, y } of pieceCells(piece)) {
-    if (isInside(x, y)) newBoard[y][x] = piece.catType;
+  for (let row = 0; row < piece.shape.length; row++) {
+    for (let col = 0; col < piece.shape[row].length; col++) {
+      const v = piece.shape[row][col];
+      if (!v) continue;
+      const x = piece.position.x + col;
+      const y = piece.position.y + row;
+      if (isInside(x, y)) newBoard[y][x] = cellBreed(piece, v);
+    }
   }
   return newBoard;
 }
